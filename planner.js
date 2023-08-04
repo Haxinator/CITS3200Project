@@ -21,20 +21,23 @@ function makeCell(rowNum, colNum)
 function makeRow(rowNum)
 {
     let row = document.createElement("tr");
+    let container = document.createElement("div");
     let head = document.createElement("th");
+
 
     head.innerHTML = "S" + (1 + rowNum % 2);
     row.appendChild(head);
+    row.appendChild(container);
 
     for(let i = 0; i<4; i++)
     {
-        row.appendChild(makeCell(rowNum, i));
+        container.appendChild(makeCell(rowNum, i));
     }
 
-    row.addEventListener("dragover", dragover);
-    row.addEventListener("dragenter", dragenter);
-    row.addEventListener("dragleave", dragleave);
-    row.addEventListener("drop", drop);
+    container.addEventListener("dragover", dragover);
+    container.addEventListener("dragenter", dragenter);
+    container.addEventListener("dragleave", dragleave);
+    container.addEventListener("drop", drop);
 
     return row;
 }
@@ -68,35 +71,45 @@ function makeTable(CourseDuration)
     addToRoot(table);
 }
 
+//--------------------- EVENT LISTENER FUNCTIONS -------------------------//
+
 function dragover(e)
 {
+    // if(e.target !== e.currentTarget) return;
     //prevent default to have drop cursor appear
     e.preventDefault();
-    e.target.classList.add("dragover");
+    e.currentTarget.classList.add("dragover");
 }
 
 function dragenter(e)
 {
     e.preventDefault();
-    e.target.classList.add("dragover");
+    e.currentTarget.classList.add("dragover");
 }
 
 function dragleave(e)
 {
-    e.target.classList.remove("dragover");
+    e.currentTarget.classList.remove("dragover");
 }
 
 function drop(e)
 {
-    e.target.classList.remove("dragover");
+    //currentTarget used instead of target to prevent cells being dropped into cells.
+    e.currentTarget.classList.remove("dragover");
 
     //element id that was stored in datatransfer when drag started
     let id = e.dataTransfer.getData('text/plain');
     //use to get the item
     let item = document.getElementById(id);
 
-    //append item to row
-    e.target.appendChild(item);
+    //if hovering over container
+    if(e.currentTarget == e.target)
+    {
+        e.target.appendChild(item);
+    } else {
+        //insert item in the container before current cell user is targeting
+        e.currentTarget.insertBefore(item, e.target);
+    }
 
     //show item
     item.classList.remove("hide");
@@ -112,5 +125,6 @@ function dragstart(e)
 
 function dragend(e)
 {
+    //put item back if not drop occured at end of drag.
     e.target.classList.remove("hide");
 }

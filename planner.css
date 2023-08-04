@@ -7,6 +7,10 @@ td:hover{
     border: 1px solid lightblue;
 }
 
+tr div {
+    width: 100%;
+}
+
 table {
     text-align: center;
 
