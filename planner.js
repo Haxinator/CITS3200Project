@@ -5,6 +5,13 @@ function addToRoot(element)
     document.getElementById("root").appendChild(element);
 }
 
+//to add events to unit cells.
+function addCellEvents(item)
+{
+    item.addEventListener("dragstart", dragstart);
+    item.addEventListener("dragend", dragend);
+}
+
 function makeCell(rowNum, colNum)
 {
     let data = document.createElement("td");
@@ -12,20 +19,26 @@ function makeCell(rowNum, colNum)
     data.innerHTML = "unit" + rowNum + colNum;
     data.setAttribute("id", "unit" + rowNum + colNum);
     data.setAttribute("draggable", "true");
-    data.addEventListener("dragstart", dragstart);
-    data.addEventListener("dragend", dragend);
+    addCellEvents(data);
     
     return data;
 }
 
 function makeRow(rowNum)
 {
+    //instead of passing rowNum, pass number of semesters
+
     let row = document.createElement("tr");
     let container = document.createElement("div");
     let head = document.createElement("th");
+    let semesterNum = (rowNum % 3);
+    let yearNum = Math.trunc((rowNum/3) + 1);
+    let semesterID = "S" + semesterNum;
+    let yearID = "Y" + yearNum;
 
 
-    head.innerHTML = "S" + (1 + rowNum % 2);
+    head.innerHTML = semesterID;
+    container.setAttribute("id", yearID + semesterID);
     row.appendChild(head);
     row.appendChild(container);
 
@@ -75,7 +88,6 @@ function makeTable(CourseDuration)
 
 function dragover(e)
 {
-    // if(e.target !== e.currentTarget) return;
     //prevent default to have drop cursor appear
     e.preventDefault();
     e.currentTarget.classList.add("dragover");
@@ -99,16 +111,41 @@ function drop(e)
 
     //element id that was stored in datatransfer when drag started
     let id = e.dataTransfer.getData('text/plain');
+    console.log(id);
     //use to get the item
     let item = document.getElementById(id);
 
     //if hovering over container
     if(e.currentTarget == e.target)
     {
-        e.target.appendChild(item);
+        //only add to sem if less than 4 units.
+        if(e.currentTarget.childElementCount < 4)
+        {
+            e.target.appendChild(item);
+        }
     } else {
-        //insert item in the container before current cell user is targeting
-        e.currentTarget.insertBefore(item, e.target);
+        //condition if hovering over cell
+        if(e.currentTarget.childElementCount < 4)
+        {
+            //insert item in the container before current cell user is targeting
+            e.currentTarget.insertBefore(item, e.target);
+        } else {
+            // swap units if container full
+            //create clone elements.
+            let targetClone = e.target.cloneNode(true);
+            let itemClone = item.cloneNode(true); 
+
+            //swap
+            item.replaceWith(targetClone);
+            e.target.replaceWith(itemClone);
+
+            //show item
+            itemClone.classList.remove("hide");
+
+            //add the event listeners to swapped units.
+            addCellEvents(targetClone);
+            addCellEvents(itemClone);
+        }
     }
 
     //show item
@@ -118,7 +155,6 @@ function drop(e)
 //hide when dragging, the timeout ends hide when item released (or else hidden forever).
 function dragstart(e)
 {
-    //store item id for when its dropped.
     e.dataTransfer.setData('text/plain', e.target.id);
     setTimeout(() => e.target.classList.add("hide"), 0);
 }
