@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<!-- Include Bootstrap CSS -->
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+<!-- Include the index-specific CSS file -->
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/getStartedStyle.css') }}">
+
+<div class="container text-center">
+    <h1 class="display-4 mb-4">Masters of Professional Engineering</h1>
+    <p class="lead">Please select your specialization:</p>
+
+    <form action="{{ url_for('preferences') }}" method="post" id="specialization-form">
+        <div class="form-group">
+            <select class="form-control" name="specialization" id="specialization" required>
+                <option value="" selected>Select Specialization</option>
+                <option value="SP-EBIOM">Biomedical Engineering</option>
+                <option value="SP-ECHEM">Chemical Engineering</option>
+                <option value="SP-ECIVI">Civil Engineering</option>
+                <option value="SP-EELEC">Electrical and Electronic Engineering</option>
+                <option value="SP-EENVI">Environmental Engineering</option>
+                <option value="SP-EMECH">Mechanical Engineering</option>
+                <option value="SP-EMINI">Mining Engineering</option>
+                <option value="SP-ESOFT">Software Engineering</option>
+            </select>
+        </div>
+
+        <!-- High School Courses Questions -->
+        <div class="form-group">
+            <label>Did you take Mathematics Specialist ATAR in high school and did you achieve a scaled score of >50%?</label><br>
+            <input type="radio" name="mathSpecialist" value="yes" required> Yes
+            <input type="radio" name="mathSpecialist" value="no"> No
+        </div>
+
+        <div class="form-group">
+            <label>Did you take Mathematics Methods ATAR in high school and did you achieve a scaled score of >50%?</label><br>
+            <input type="radio" name="mathMethods" value="yes" required> Yes
+            <input type="radio" name="mathMethods" value="no"> No
+        </div>
+
+        <div class="form-group">
+            <label>Did you take Chemistry ATAR in high school and did you achieve a scaled score of >50%?</label><br>
+            <input type="radio" name="chemistry" value="yes" required> Yes
+            <input type="radio" name="chemistry" value="no"> No
+        </div>
+
+        <div class="form-group">
+            <label>Did you take Physics ATAR in high school and did you achieve a scaled score of >50%?</label><br>
+            <input type="radio" name="physics" value="yes" required> Yes
+            <input type="radio" name="physics" value="no"> No
+        </div>
+
+        <button type="submit" class="btn btn-primary" disabled style="opacity:0.5;">Submit</button>
+    </form>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initial check for form validation
+        validateForm();
+
+        // Event listener for changes in the form
+        document.getElementById('specialization-form').addEventListener('change', validateForm);
+    });
+
+    function validateForm() {
+        // Retrieve form elements
+        var specialization = document.getElementById('specialization');
+        var mathSpecialist = document.getElementsByName('mathSpecialist');
+        var mathMethods = document.getElementsByName('mathMethods');
+        var chemistry = document.getElementsByName('chemistry');
+        var physics = document.getElementsByName('physics');
+        var submitButton = document.querySelector('.btn-primary');
+
+        // Check if all fields are filled
+        if (specialization.value !== "" && radioIsChecked(mathSpecialist) && radioIsChecked(mathMethods) &&
+            radioIsChecked(chemistry) && radioIsChecked(physics)) {
+            submitButton.disabled = false;
+            submitButton.style.opacity = "1";
+        } else {
+            submitButton.disabled = true;
+            submitButton.style.opacity = "0.5";
+        }
+    }
+
+    // Function to check if any radio button in a group is checked
+    function radioIsChecked(radioGroup) {
+        for (var i = 0; i < radioGroup.length; i++) {
+            if (radioGroup[i].checked) {
+                return true;
+            }
+        }
+        return false;
+    }
+</script>
+
+{% endblock %}

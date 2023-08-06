@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block content %}
+
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/planner.css') }}">
+    
+    
+    
+    <h1>Welcome to the {{ specialization }} program!</h1>
+    
+
+    <main id = "root">
+        <h1>Planner v.02</h1>  
+        <h2> Item swapping, no infinite rows, correct semester numbers </h2>
+    </main>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/planner.js') }}"></script>
+        
+    <script>
+        // Access the variable in JavaScript
+        var specialization = "{{ specialization }}";
+        var isSpec = "{{mathSpecialist}}"
+
+
+        // Now you can use the specialization variable in your JavaScript code
+        // Example: Display a welcome message in an alert box
+        alert("Welcome to the " + specialization + " program!");
+        if (isSpec == "yes"){
+            alert("You have passed Maths specialist! well done!")
+        }
+        else{
+            alert("You have not completed or passed maths specialist. Unlucky Bud")
+        }
+        
+    </script>
+{% endblock %}
