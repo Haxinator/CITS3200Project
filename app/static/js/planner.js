@@ -2,6 +2,56 @@ var year = 0; //may improve somehow.
 
 makeTable(3);
 
+// Function to fetch the graph data from the server
+function fetchGraphData() {
+  fetch('/preferences') // Update the endpoint if needed
+    .then(response => response.json())
+    .then(graph => {
+      // Organize the units by level
+      let unitsByLevel = organizeUnitsByLevel(graph.nodes);
+
+      // Iterate through the organized units and populate the table
+      unitsByLevel.forEach((levelUnits, level) => {
+        levelUnits.forEach((unit, index) => {
+          // Create a cell for each unit and add it to the table
+          let rowNum = Math.floor(index / 6); // Example: 6 units per row
+          let colNum = index % 6;
+          let cell = makeCell(rowNum, colNum, unit);
+          // Add the cell to the table (modify as needed based on your table structure)
+          // ...
+        });
+      });
+    });
+}
+
+// Function to organize units by level
+function organizeUnitsByLevel(nodes) {
+  let unitsByLevel = {};
+  nodes.forEach(node => {
+    let unit = node.unit; // Extract the unit object from the node
+    let level = parseInt(unit.code.charAt(4)); // Extract level from unit code
+    unitsByLevel[level] = unitsByLevel[level] || [];
+    unitsByLevel[level].push(unit);
+  });
+  return unitsByLevel;
+}
+
+// Updated function to create a cell for a specific unit
+function makeCell(rowNum, colNum, unit) {
+  let data = document.createElement("td");
+
+  // Populate the cell with the unit code and name
+  data.innerHTML = unit.code + " " + unit.title;
+  data.setAttribute("id", "unit" + rowNum + colNum);
+  data.setAttribute("draggable", "true");
+  addCellEvents(data);
+
+  return data;
+}
+
+// Call the fetchGraphData function when the page is loaded
+fetchGraphData();
+
 function addToRoot(element)
 {
     document.getElementById("root").appendChild(element);
@@ -132,6 +182,8 @@ function makeTable(CourseDuration)
     addToRoot(table);
     addToRoot(makeSensor());
 }
+
+
 
 //--------------------- EVENT LISTENER FUNCTIONS -------------------------//
 
