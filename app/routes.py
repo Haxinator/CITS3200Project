@@ -47,7 +47,7 @@ session=driver.session()
 @app.route("/display", methods=["GET","POST"])
 def display_node():
     query="""
-    match (n) return n
+    match (n) return n.unitcode as unitcode, n.type as type, n.semester as semester, n.credit_points as credit_points
     """
     results=session.run(query)
     data=results.data()
