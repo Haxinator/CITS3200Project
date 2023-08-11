@@ -11,7 +11,15 @@
     <main id = "root">
         <h1>Planner v.05</h1>  
         <h3>Drag unit under table to add a row. More intuitive unit swapping. Table no longer "moves" when moving units around.</h3>
+        <!-- <form id="unit" onsubmit="return create_units('unit')" method="post">
+            <input name="unitcode" type="text">
+            <input type="submit" value="Add unit">
+        </form> 
+        <div id="status"></div> -->
+        <button onclick="display_units()">Generate nodes</button>
+        <div id="nodes"></div>
     </main>
+    
     <script type="text/javascript" src="{{ url_for('static', filename='js/planner.js') }}"></script>
         
     <script>
