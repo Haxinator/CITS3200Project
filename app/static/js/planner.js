@@ -233,3 +233,27 @@ function appendRow(e)
     let semester1 = document.getElementById("Y" + year +"S1");
     semester1.appendChild(item);
 }
+
+//create units
+// function create_units(unit_form) {
+//     let form_elements = document.getElementById(unit_form).elements;
+//     let unitcode = form_elements["unitcode"].value;
+
+//     const xhttp = new XMLHttpRequest();
+//     let server = '/create'
+//     xhttp.open("POST", server, true);
+//     xhttp.send(unitcode);
+// }
+
+//TEST: generating nodes from neo4j graph 
+function display_units() {
+    const xhttp = new XMLHttpRequest();
+    let server = '/display'
+    xhttp.open("GET", server, true);
+    xhttp.onload = function (e) {
+        document.getElementById("nodes").innerHTML = xhttp.responseText;
+        alert("I worked!! TvT")
+    }
+    xhttp.send();
+}
+
