@@ -234,19 +234,8 @@ function appendRow(e)
     semester1.appendChild(item);
 }
 
-//create units
-// function create_units(unit_form) {
-//     let form_elements = document.getElementById(unit_form).elements;
-//     let unitcode = form_elements["unitcode"].value;
-
-//     const xhttp = new XMLHttpRequest();
-//     let server = '/create'
-//     xhttp.open("POST", server, true);
-//     xhttp.send(unitcode);
-// }
-
 //TEST: generating nodes from neo4j graph 
-function display_units() {
+function display_all() {
     const xhttp = new XMLHttpRequest();
     let server = '/display'
     xhttp.open("GET", server, true);
@@ -257,3 +246,52 @@ function display_units() {
     xhttp.send();
 }
 
+
+function display_unit() {
+    chosen_unit = document.getElementById("chosen_unit").value;
+    document.getElementById("unitchosen").innerHTML = chosen_unit;
+}
+
+//retrieve the requirements of chosen unit 
+function get_prereqs() {
+    chosen_unit = document.getElementById("chosen_unit").value;
+    
+    const xhttp = new XMLHttpRequest();
+    let server = '/prereqs/'.concat(chosen_unit);
+    xhttp.open("GET", server, true);
+    xhttp.onload = function (e) {
+        document.getElementById('prereqs_head').innerHTML = "This unit requires the following:"
+        document.getElementById('prereqs').innerHTML = xhttp.responseText;
+    }
+    xhttp.send();
+}
+
+//retrieve units that require chosen unit
+function get_children() {
+    chosen_unit = document.getElementById("chosen_unit").value;
+
+    const xhttp = new XMLHttpRequest();
+    let server = '/child_units/'.concat(chosen_unit);
+    xhttp.open("GET", server, true);
+    xhttp.onload = function (e) {
+        document.getElementById('child_head').innerHTML = "This unit is a requirement for the following:"
+        document.getElementById('child_units').innerHTML = xhttp.responseText;
+    }
+    xhttp.send();
+}
+
+//disable buttons if chosen unit field is empty
+const inputField = document.getElementById('chosen_unit');
+const prereqsBtn = document.getElementById('prereqs_btn');
+const childBtn = document.getElementById('child_btn');
+
+inputField.addEventListener('input', function() {
+    if (inputField.value.trim() === '') {
+        prereqsBtn.disabled = true;
+        childBtn.disabled = true;
+    } 
+    else {
+        prereqsBtn.disabled = false;
+        childBtn.disabled = false;
+    }
+});

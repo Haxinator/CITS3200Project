@@ -11,13 +11,20 @@
     <main id = "root">
         <h1>Planner v.05</h1>  
         <h3>Drag unit under table to add a row. More intuitive unit swapping. Table no longer "moves" when moving units around.</h3>
-        <!-- <form id="unit" onsubmit="return create_units('unit')" method="post">
-            <input name="unitcode" type="text">
-            <input type="submit" value="Add unit">
-        </form> 
-        <div id="status"></div> -->
-        <button onclick="display_units()">Generate nodes</button>
+
+        <button onclick="display_all()">Generate nodes</button>
         <div id="nodes"></div>
+        <br>
+        <label>chosen unit:</label>
+        <input type="text" id="chosen_unit">
+        <button id="prereqs_btn" onclick="display_unit(); get_prereqs()">Check Pre-requisites</button>
+        <button id="child_btn" onclick="display_unit(); get_children()">Check Children</button>
+        <br>
+        <h6 id="unitchosen"></h6>
+        <h6 id="prereqs_head"></h6>
+        <div id="prereqs"></div>
+        <h6 id="child_head"></h6>
+        <div id="child_units"></div>
     </main>
     
     <script type="text/javascript" src="{{ url_for('static', filename='js/planner.js') }}"></script>
@@ -37,6 +44,7 @@
         else{
             alert("You have not completed or passed maths specialist. Unlucky Bud")
         }
+
         
     </script>
 {% endblock %}
