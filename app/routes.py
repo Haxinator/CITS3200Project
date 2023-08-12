@@ -34,17 +34,12 @@ def preferences():
     return render_template('preferences.html', title='Preferences', specialization = specialization, mathSpecialist = mathSpecialist, mathMethods = mathMethods, chemistry = chemistry, physics = physics) # Render the preferences page
 
 
-# Graph database - neo4j 
-# creds:  user, password, uri
-# file = open("app/creds.txt", "r")
-# for f in file:
-#     creds = f.split(',')
 
 # Connect to remote Neo4j driver
 driver=GraphDatabase.driver(uri="bolt://3.222.113.151:7687",auth=("neo4j", "offense-augmentation-advertisements"))
 session=driver.session() 
 
-@app.route("/display", methods=["GET","POST"])
+@app.route("/display", methods=["GET"])
 def display_node():
     query="""
     match (n) return n.unitcode as unitcode, n.type as type, n.semester as semester, n.credit_points as credit_points
@@ -53,14 +48,29 @@ def display_node():
     data=results.data()
     return(jsonify(data))
 
-# @app.route("/create", methods=["POST"])
-# def create_units(unitcode):
-#     query="""
-#     create (n:Unit {unitcode:$unitcode})
-#     """
-#     map={"unitcode":unitcode}
-#     try:
-#         session.run(query,map)
-#         return (f"unit {unitcode} has been created")
-#     except Exception as e:
-#         return (str(e))
+@app.route("/prereqs/<string:chosen_unit>", methods=["GET"])
+def get_prereq_units(chosen_unit):
+    query="""
+    MATCH (u:Unit {unitcode: $chosen_unit})
+    CALL apoc.path.expandConfig(u, {relationshipFilter: "REQUIRES>", minLevel: 1, maxLevel: 5})
+    YIELD path
+    RETURN [node IN nodes(path) | node.unitcode] AS prerequisites
+    """
+    x = {"chosen_unit":chosen_unit}
+    results=session.run(query,x)
+    data = results.data()
+    return(jsonify(data))
+    
+
+@app.route("/child_units/<string:chosen_unit>", methods=["GET"])
+def get_child_units(chosen_unit):
+    query="""
+    MATCH (u:Unit {unitcode: $chosen_unit})
+    CALL apoc.path.expandConfig(u, {relationshipFilter: "<REQUIRES", minLevel: 1, maxLevel: 5})
+    YIELD path
+    RETURN [node IN nodes(path) | node.unitcode] AS child_units
+    """
+    x = {"chosen_unit":chosen_unit}
+    results=session.run(query,x)
+    data=results.data()
+    return(jsonify(data))
