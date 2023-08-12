@@ -1,7 +1,31 @@
 var year = 0; //may improve somehow.
+var numberOfUnits = 0; //Number of units in the planner
 
-makeTable(3);
+//names of units to display
+var unitNames = makeUnitArray(21); //dummy units
 
+// Instance function calls start
+makeTable();
+
+// function calls end
+
+//Dummy functions for testing
+//creates fake units for testing.
+function makeUnitArray(size)
+{
+    const units = [];
+
+    for(let i = 0; i< size; i++)
+    {
+        units[i] = "unit00" + i;
+    }
+
+    return units;
+}
+
+//Dummy Functions END
+
+//adds given element to main
 function addToRoot(element)
 {
     document.getElementById("root").appendChild(element);
@@ -14,15 +38,16 @@ function addCellEvents(item)
     item.addEventListener("dragend", dragend);
 }
 
+//creates sensor that senses when a unit is dragged under table.
 function makeSensor()
 {
     sensor = document.createElement("div");
     text = document.createElement("h2");
     sensor.setAttribute("class", "sensor");
 
-    sensor.addEventListener("dragover", dragover);
-    sensor.addEventListener("dragenter", dragenter);
-    sensor.addEventListener("dragleave", dragleave);
+    sensor.addEventListener("dragover", sensordragover);
+    // sensor.addEventListener("dragenter", dragenter);
+    // sensor.addEventListener("dragleave", dragleave);
     sensor.addEventListener("drop", appendRow);
 
     text.innerHTML = "drag a unit here to add a row!";
@@ -30,11 +55,13 @@ function makeSensor()
     return sensor;
 }
 
+//creates a single table cell
 function makeCell(rowNum, colNum)
 {
     let data = document.createElement("td");
     
-    data.innerHTML = "unit" + rowNum + colNum;
+    // data.innerHTML = "unit" + rowNum + colNum;
+    data.innerHTML = unitNames[numberOfUnits];
     data.setAttribute("id", "unit" + rowNum + colNum);
     data.setAttribute("draggable", "true");
     addCellEvents(data);
@@ -42,6 +69,7 @@ function makeCell(rowNum, colNum)
     return data;
 }
 
+//makes a semester row of the table
 function makeRow(rowNum)
 {
     //instead of passing rowNum, pass number of semesters
@@ -60,9 +88,15 @@ function makeRow(rowNum)
     row.appendChild(head);
     row.appendChild(container);
 
+
     for(let i = 0; i<4; i++)
     {
-        container.appendChild(makeCell(rowNum, i));
+        //if all units have been listed, don't list anymore
+        if(numberOfUnits < unitNames.length)
+        {
+            container.appendChild(makeCell(rowNum, i));
+            numberOfUnits++;
+        }
     }
 
     container.addEventListener("dragover", dragover);
@@ -73,6 +107,8 @@ function makeRow(rowNum)
     return row;
 }
 
+//makes an empty semester row in the table
+//used by sensor to add new rows.
 function makeEmptyRow(rowNum)
 {
     //instead of passing rowNum, pass number of semesters
@@ -99,6 +135,7 @@ function makeEmptyRow(rowNum)
     return row;
 }
 
+//adds the row that marks the year
 function makeYearRow()
 {
     let row = document.createElement("tr");
@@ -112,12 +149,13 @@ function makeYearRow()
     return row;
 }
 
-function makeTable(CourseDuration)
+//creates the entire planner table
+function makeTable()
 {
     let table = document.createElement("table");
     table.setAttribute("id", "table");
 
-    for(let i = 0; i<CourseDuration * 3; i++)
+    for(let i = 0; unitNames.length>numberOfUnits; i++)
     {
         if(i % 3 == 0)
         {
@@ -134,6 +172,14 @@ function makeTable(CourseDuration)
 }
 
 //--------------------- EVENT LISTENER FUNCTIONS -------------------------//
+
+//if your cursor (whilst dragging unit) is over the row add red lines.
+function sensordragover(e)
+{
+    //prevent default to have drop cursor appear
+    e.preventDefault();
+    // e.target.classList.add("dragover");
+}
 
 //if your cursor (whilst dragging unit) is over the row add red lines.
 function dragover(e)
@@ -217,7 +263,7 @@ function dragend(e)
 function appendRow(e)
 {
     //remove lines
-    e.target.classList.remove("dragover");
+    // e.target.classList.remove("dragover");
     let table = document.getElementById("table");
 
     //get currently dragged unit.
