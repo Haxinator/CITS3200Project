@@ -308,6 +308,7 @@ function appendRow(e)
 }
 
 //TEST: generating nodes from neo4j graph 
+//LOL MY FUNCTIO NOW!
 function display_all() {
     const xhttp = new XMLHttpRequest();
     let server = '/display';
@@ -319,6 +320,7 @@ function display_all() {
 
         document.getElementById("nodes").innerHTML = JSON.parse(xhttp.responseText);
 
+        //generate table on SUCCESS
         unitNames = extractNames(unitInformationArray);
         makeTable(unitNames);
 
