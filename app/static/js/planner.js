@@ -145,6 +145,7 @@ function makeYearRow()
     head.innerHTML = "Y" + year;
     head.setAttribute("colspan", "5");
     row.appendChild(head);
+    row.setAttribute("class","year");
     
     return row;
 }
@@ -223,6 +224,13 @@ function drop(e)
         {
             e.target.appendChild(item);
         }
+
+        //if container empty, check if all container for year empty
+        //check if year below, if not, delete this year.
+        // if(e.currentTarget.childElementCount == 0)
+        // {
+        //     // if()
+        // }
     } else {
             // swap units
             //create clone elements.
