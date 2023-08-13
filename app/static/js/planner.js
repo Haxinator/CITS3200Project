@@ -287,3 +287,65 @@ function appendRow(e)
     let semester1 = document.getElementById("Y" + year +"S1");
     semester1.appendChild(item);
 }
+
+//TEST: generating nodes from neo4j graph 
+function display_all() {
+    const xhttp = new XMLHttpRequest();
+    let server = '/display'
+    xhttp.open("GET", server, true);
+    xhttp.onload = function (e) {
+        document.getElementById("nodes").innerHTML = xhttp.responseText;
+        alert("I worked!! TvT")
+    }
+    xhttp.send();
+}
+
+
+function display_unit() {
+    chosen_unit = document.getElementById("chosen_unit").value;
+    document.getElementById("unitchosen").innerHTML = chosen_unit;
+}
+
+//retrieve the requirements of chosen unit 
+function get_prereqs() {
+    chosen_unit = document.getElementById("chosen_unit").value;
+    
+    const xhttp = new XMLHttpRequest();
+    let server = '/prereqs/'.concat(chosen_unit);
+    xhttp.open("GET", server, true);
+    xhttp.onload = function (e) {
+        document.getElementById('prereqs_head').innerHTML = "This unit requires the following:"
+        document.getElementById('prereqs').innerHTML = xhttp.responseText;
+    }
+    xhttp.send();
+}
+
+//retrieve units that require chosen unit
+function get_children() {
+    chosen_unit = document.getElementById("chosen_unit").value;
+
+    const xhttp = new XMLHttpRequest();
+    let server = '/child_units/'.concat(chosen_unit);
+    xhttp.open("GET", server, true);
+    xhttp.onload = function (e) {
+        document.getElementById('child_head').innerHTML = "This unit is a requirement for the following:"
+        document.getElementById('child_units').innerHTML = xhttp.responseText;
+    }
+    xhttp.send();
+}
+
+//disable buttons if chosen unit field is empty
+const inputField = document.getElementById('chosen_unit');
+const prereqsBtn = document.getElementById('prereqs_btn');
+const childBtn = document.getElementById('child_btn');
+
+inputField.addEventListener('input', function() {
+    if (inputField.value.trim() === '') {
+        prereqsBtn.disabled = true;
+        childBtn.disabled = true;
+    } 
+    else {
+        prereqsBtn.disabled = false;
+        childBtn.disabled = false;
+    }
+});
