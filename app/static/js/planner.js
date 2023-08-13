@@ -1,24 +1,43 @@
 var year = 0; //may improve somehow.
 var numberOfUnits = 0; //Number of units in the planner
+var unitInformationArray = [];
+var unitNames = [];
 
 //names of units to display
-var unitNames = makeUnitArray(21); //dummy units
+// var unitNames = makeUnitArray(21); //dummy units
+// var unitNames;
 
 // Instance function calls start
-makeTable();
+
+display_all(); //gimmie units.
+
 
 // function calls end
 
 //Dummy functions for testing
 //creates fake units for testing.
-function makeUnitArray(size)
+// function makeUnitArray(size)
+// {
+//     const units = [];
+
+//     for(let i = 0; i< size; i++)
+//     {
+//         units[i] = "unit00" + i;
+//     }
+
+//     return units;
+// }
+
+function extractNames(unitInformationArray)
 {
     const units = [];
 
-    for(let i = 0; i< size; i++)
+    for(let i in unitInformationArray)
     {
-        units[i] = "unit00" + i;
+        units[i] = unitInformationArray[i].unitcode;
     }
+
+    console.log(units);
 
     return units;
 }
@@ -151,7 +170,7 @@ function makeYearRow()
 }
 
 //creates the entire planner table
-function makeTable()
+function makeTable(unitNames)
 {
     let table = document.createElement("table");
     table.setAttribute("id", "table");
@@ -291,11 +310,19 @@ function appendRow(e)
 //TEST: generating nodes from neo4j graph 
 function display_all() {
     const xhttp = new XMLHttpRequest();
-    let server = '/display'
+    let server = '/display';
     xhttp.open("GET", server, true);
     xhttp.onload = function (e) {
-        document.getElementById("nodes").innerHTML = xhttp.responseText;
-        alert("I worked!! TvT")
+
+        unitInformationArray = JSON.parse(xhttp.responseText);
+        console.log(unitInformationArray);
+
+        document.getElementById("nodes").innerHTML = JSON.parse(xhttp.responseText);
+
+        unitNames = extractNames(unitInformationArray);
+        makeTable(unitNames);
+
+        // alert("I worked!! TvT");
     }
     xhttp.send();
 }
