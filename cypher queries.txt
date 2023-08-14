@@ -7,11 +7,10 @@ RETURN node
 
 //rels
 LOAD CSV WITH HEADERS FROM 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQP5WQa-uyd7vr3Fwi-7eEPZSCdSVZ2TDw-yfMtWeJNZmXjITYXDB170uwQ_1MbOjioW_paYc9SPPk7/pub?gid=977693252&single=true&output=csv' AS row
-MATCH (child:Unit {unitcode: row.unitcode}), (parent:Unit {unitcode: row.unitcode})
+MATCH (child:Unit {unitcode: row.child_unit}), (parent:Unit {unitcode: row.parent_unit})
 CALL apoc.create.relationship(child, row.relationship, {}, parent)
 YIELD rel
 RETURN rel
-
 
 //return prereqs chosen unit
 MATCH (u:Unit {unitcode: "ENSC2004"})

@@ -36,7 +36,7 @@ def preferences():
 
 
 # Connect to remote Neo4j driver
-driver=GraphDatabase.driver(uri="bolt://3.222.113.151:7687",auth=("neo4j", "offense-augmentation-advertisements"))
+driver=GraphDatabase.driver(uri="bolt://3.236.190.97:7687",auth=("neo4j", "ideals-extensions-necks"))
 session=driver.session() 
 
 @app.route("/display", methods=["GET"])
