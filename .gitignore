@@ -5,6 +5,7 @@ app.db
 
 # Dependency directories
 venv/
+.venv/
 env/
 env*/
 lib/
