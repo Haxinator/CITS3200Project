@@ -9,24 +9,9 @@
     
 
     <main id = "root">
-        <h1>Planner v.07</h1>  
-        <h3>Gen's work merged. Display units from Neo4j.</h3>
-
-        <button onclick="display_all()">Generate nodes</button>
-        <div id="nodes"></div>
-        <br>
-        <label>chosen unit:</label>
-        <input type="text" id="chosen_unit">
-        <button id="prereqs_btn" onclick="display_unit(); get_prereqs()">Check Pre-requisites</button>
-        <button id="child_btn" onclick="display_unit(); get_children()">Check Children</button>
-        <br>
-        <h6 id="unitchosen"></h6>
-        <h6 id="prereqs_head"></h6>
-        <div id="prereqs"></div>
-        <h6 id="child_head"></h6>
-        <div id="child_units"></div>
+        <h1>Planner v.06</h1>  
+        <h3>Planner size dependent on units provided. Provide array of unit names as input</h3>
     </main>
-    
     <script type="text/javascript" src="{{ url_for('static', filename='js/planner.js') }}"></script>
         
     <script>
@@ -37,14 +22,13 @@
 
         // Now you can use the specialization variable in your JavaScript code
         // Example: Display a welcome message in an alert box
-        // alert("Welcome to the " + specialization + " program!");
-        // if (isSpec == "yes"){
-        //     alert("You have passed Maths specialist! well done!")
-        // }
-        // else{
-        //     alert("You have not completed or passed maths specialist. Unlucky Bud")
-        // }
-
+        alert("Welcome to the " + specialization + " program!");
+        if (isSpec == "yes"){
+            alert("You have passed Maths specialist! well done!")
+        }
+        else{
+            alert("You have not completed or passed maths specialist. Unlucky Bud")
+        }
         
     </script>
 {% endblock %}
