@@ -42,7 +42,9 @@ session=driver.session()
 @app.route("/display", methods=["GET"])
 def display_node():
     query="""
-    match (n) return n.unitcode as unitcode, n.type as type, n.semester as semester, n.credit_points as credit_points
+    match (n) 
+    where (n.type <> "ATAR") AND (n.type <> "BRIDGING")
+    return n.unitcode as unitcode, n.type as type, n.semester as semester, n.credit_points as credit_points
     """
     results=session.run(query)
     data=results.data()
@@ -66,7 +68,7 @@ def get_prereq_units(chosen_unit):
 def get_child_units(chosen_unit):
     query="""
     MATCH (u:Unit {unitcode: $chosen_unit})
-    CALL apoc.path.expandConfig(u, {relationshipFilter: "<REQUIRES", minLevel: 1, maxLevel: 5})
+    CALL apoc.path.expandConfig(u, {relationshipFilter: "<REQUIRES", minLevel: 1, maxLevel: 5, uniqueness: "NODE_GLOBAL"})
     YIELD path
     RETURN [node IN nodes(path) | node.unitcode] AS child_units
     """
