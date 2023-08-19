@@ -2,8 +2,7 @@ var planner;
 
 //------------------- INSTANCE FUNCTIONS -------------------------//
 
-display_all(); //gimmie units.
-
+fetchCourseRequirementsAndBuildPlanner();
 //--------------------SUPPORT FUNCTIONS--------------------------//
 
 makeInfoBar();
@@ -411,7 +410,7 @@ function printInfo(e)
 //Sends request to 4j for some awesome unit info.
 //mmmm unit info.
 //Creates a the planner based on that info.
-function display_all() {
+function fetchCourseRequirementsAndBuildPlanner() {
     const xhttp = new XMLHttpRequest();
     let server = '/unitInformation';
     xhttp.open("GET", server, true);
