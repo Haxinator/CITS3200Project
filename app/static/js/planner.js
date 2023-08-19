@@ -59,16 +59,15 @@ getById("SemesterFilter").addEventListener("click", () => {
 //     return units;
 // }
 
-array = [1, 2, 3, 4, 900];
-array = removeFromArray(array, 900);
+let array = [1, 2, 3, 4, 900];
+removeFromArray(array, 1);
 console.log(array);
 
 //removes given value from given array and returns new array.
 function removeFromArray(array, value)
 {
-    array = array.filter((item) => {return item !== value});
-
-    return array
+    index = array.indexOf(value);
+    array.splice(index, 1);
 }
 
 //adds given element to main
@@ -149,14 +148,15 @@ function Table()
     }
 
     //makes a cell which represent a unit.
-    this.makeCell = () =>{
+    this.makeCell = (unitCode) =>{
         let data = document.createElement("td");
-        let unitCode = this.unitNames[this.numberOfUnits];
     
         data.innerHTML = unitCode;
         data.setAttribute("id", unitCode);
         data.setAttribute("draggable", "true");
         addCellEvents(data);
+
+        removeFromArray(this.unitNames, unitCode);
     
         return data;
     }
@@ -189,15 +189,33 @@ function Table()
         row.appendChild(head);
         row.appendChild(container);
 
-
-        for(let i = 0; i<4; i++)
+        //will loop through all units until unit names empty or
+        //container is full.
+        for(let i = 0; i < this.unitNames.length; i++)
         {
-            //if all units have been listed, don't list anymore
-            if(this.numberOfUnits < this.unitNames.length)
-            {
-                container.appendChild(this.makeCell());
-                this.numberOfUnits++;
-            }
+                let unit = this.unitNames[i];
+                let unitAvaliability = this.unitInformation.get(unit).semester
+
+                //need to place NS units somewhere. Not sure where yet.
+                if((unitAvaliability == semesterID || unitAvaliability == "BOTH"
+                    || unitAvaliability == "NS"))
+                {
+                    container.appendChild(this.makeCell(unit));
+
+                    //problem when i == length.
+                    //e.g. if element 4 in length 5 array deleted.
+                    //length becomes 4, but last element ignored.
+                    //need to reset i to 0 or else loop will end.
+                    if(i == this.unitNames.length)
+                    {
+                        i = -1;
+                    }
+                }
+
+                if(container.childElementCount > 3)
+                {
+                    break;
+                }
         }
 
         container.addEventListener("dragover", dragover);
@@ -244,7 +262,7 @@ function Table()
         this.extractInformation(response);
         this.extractNames();
 
-        while(this.unitNames.length > this.numberOfUnits)
+        while(this.unitNames.length > 0)
         {
             table.appendChild(this.makeYearContainer());
         }
