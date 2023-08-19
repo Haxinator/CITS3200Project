@@ -43,7 +43,7 @@ session=driver.session()
 def display_node():
     query="""
     match (n) 
-    where (n.type <> "ATAR") AND (n.type <> "BRIDGING")
+    where n.type = "CORE"
     return n.unitcode as unitcode, n.type as type, n.semester as semester, n.credit_points as credit_points
     """
     results=session.run(query)
