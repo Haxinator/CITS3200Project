@@ -39,7 +39,7 @@ def preferences():
 driver=GraphDatabase.driver(uri="bolt://3.236.190.97:7687",auth=("neo4j", "ideals-extensions-necks"))
 session=driver.session() 
 
-@app.route("/display", methods=["GET"])
+@app.route("/unitInformation", methods=["GET"])
 def display_node():
     query=""" MATCH (n) -[:REQUIRES]-> (m)
 
@@ -49,6 +49,17 @@ def display_node():
 
     RETURN unitcode, type, semester, credit_points, points_req, enrolment_req, unit_req
 
+    """
+    results=session.run(query)
+    data=results.data()
+    return(jsonify(data))
+
+@app.route("/display", methods=["GET"])
+def display_node():
+    query="""
+    match (n) 
+    where n.type = "CORE"
+    return n.unitcode as unitcode, n.type as type, n.semester as semester, n.credit_points as credit_points
     """
     results=session.run(query)
     data=results.data()

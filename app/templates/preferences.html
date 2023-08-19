@@ -9,23 +9,23 @@
     
 
     <main id = "root">
-        <h1>Planner v.10</h1>  
-        <h3>Year gets deleted when empty. CSS improvements.</h3>
+        <h1>Planner v.11</h1>  
+        <h3>Units placed into correct semester. Info bar. Semester Filter. Try clicking on a unit. Edited display handle. Too much to list.</h3>
 
         <button id="SemesterFilter">Semesters Offered</button>
-        <button onclick="display_all()">Generate nodes</button>
-        <div id="nodes"></div>
+        <!-- <button onclick="display_all()">Generate nodes</button> -->
+        <!-- <div id="nodes"></div> -->
         <br>
-        <label>chosen unit:</label>
-        <input type="text" id="chosen_unit">
-        <button id="prereqs_btn" onclick="display_unit(); get_prereqs()">Check Pre-requisites</button>
+        <!-- <label>chosen unit:</label>
+        <input type="text" id="chosen_unit"> -->
+        <!-- <button id="prereqs_btn" onclick="display_unit(); get_prereqs()">Check Pre-requisites</button>
         <button id="child_btn" onclick="display_unit(); get_children()">Check Children</button>
         <br>
         <h6 id="unitchosen"></h6>
         <h6 id="prereqs_head"></h6>
         <div id="prereqs"></div>
         <h6 id="child_head"></h6>
-        <div id="child_units"></div>
+        <div id="child_units"></div> -->
     </main>
     
     <script type="text/javascript" src="{{ url_for('static', filename='js/planner.js') }}"></script>

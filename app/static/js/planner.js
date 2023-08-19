@@ -98,15 +98,17 @@ function addCellEvents(item)
 //------------------- PROTOTYPES ----------------------------------//
 
 //unit prototype
-function Unit(code, creditPoints, type, semester)
+function Unit(code, creditPoints, type, semester, prerequisites, enrollmentReq, pointReq)
 {
     this.unitCode = code;
     this.creditPoints = creditPoints;
     this.type = type;
     this.semester = semester;
-    this.prerequisites = [];
+    this.prerequisites = prerequisites;
+    this.prerequisites = prerequisites;
     this.equivalences = []; //equivalent units to this one.
-    this.enrollmentPeriod = "None";
+    this.enrollmentRequirements = enrollmentReq;
+    this.pointRequirements = pointReq;
 
     this.addPrerequisites = () => {
         return this.prerequisites = prerequisitesList
@@ -130,7 +132,10 @@ function Table()
                                         new Unit(unitInfo[i].unitcode,
                                             unitInfo[i].credit_points,
                                             unitInfo[i].type,
-                                            unitInfo[i].semester));
+                                            unitInfo[i].semester,
+                                            unitInfo[i].unit_req,
+                                            unitInfo[i].enrolment_req,
+                                            unitInfo[i].points_req));
     
             //only returns 1 unit before failing.
             // getUnitPrerequisites(unitInformation[i].unitCode);
@@ -408,20 +413,26 @@ function printInfo(e)
 //Creates a the planner based on that info.
 function display_all() {
     const xhttp = new XMLHttpRequest();
+    let server = '/unitInformation';
+    xhttp.open("GET", server, true);
+    xhttp.onload = function (e) {
+        response = JSON.parse(xhttp.responseText);
+        planner = new Table();
+
+        planner.makeTable(response);
+    }
+    xhttp.send();
+}
+
+function display_all() {
+    const xhttp = new XMLHttpRequest();
     let server = '/display';
     xhttp.open("GET", server, true);
     xhttp.onload = function (e) {
 
-        response = JSON.parse(xhttp.responseText);
-        console.log(response);
+        document.getElementById("nodes").innerHTML = this.response;
 
-        // document.getElementById("nodes").innerHTML = this.response;
-
-        planner = new Table();
-
-        planner.makeTable(response);
-
-        // alert("I worked!! TvT");
+        alert("I worked!! TvT");
     }
     xhttp.send();
 }
@@ -474,17 +485,17 @@ function get_children() {
 }
 
 //disable buttons if chosen unit field is empty
-const inputField = document.getElementById('chosen_unit');
-const prereqsBtn = document.getElementById('prereqs_btn');
-const childBtn = document.getElementById('child_btn');
+// const inputField = document.getElementById('chosen_unit');
+// const prereqsBtn = document.getElementById('prereqs_btn');
+// const childBtn = document.getElementById('child_btn');
 
-inputField.addEventListener('input', function() {
-    if (inputField.value.trim() === '') {
-        prereqsBtn.disabled = true;
-        childBtn.disabled = true;
-    } 
-    else {
-        prereqsBtn.disabled = false;
-        childBtn.disabled = false;
-    }
-});
+// inputField.addEventListener('input', function() {
+//     if (inputField.value.trim() === '') {
+//         prereqsBtn.disabled = true;
+//         childBtn.disabled = true;
+//     } 
+//     else {
+//         prereqsBtn.disabled = false;
+//         childBtn.disabled = false;
+//     }
+// });
