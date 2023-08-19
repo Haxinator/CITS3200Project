@@ -1,18 +1,10 @@
-var year = 0; //may improve somehow.
-var numberOfUnits = 0; //Number of units in the planner
-var unitInformationArray = [];
-var unitNames = [];
+var planner;
 
-//names of units to display
-// var unitNames = makeUnitArray(21); //dummy units
-// var unitNames;
-
-// Instance function calls start
+//------------------- INSTANCE FUNCTIONS -------------------------//
 
 display_all(); //gimmie units.
 
-
-// function calls end
+//--------------------SUPPORT FUNCTIONS--------------------------//
 
 //Dummy functions for testing
 //creates fake units for testing.
@@ -28,26 +20,33 @@ display_all(); //gimmie units.
 //     return units;
 // }
 
-function extractNames(unitInformationArray)
+array = [1, 2, 3, 4, 900];
+array = removeFromArray(array, 900);
+console.log(array);
+
+//removes given value from given array and returns new array.
+function removeFromArray(array, value)
 {
-    const units = [];
+    array = array.filter((item) => {return item !== value});
 
-    for(let i in unitInformationArray)
-    {
-        units[i] = unitInformationArray[i].unitcode;
-    }
-
-    console.log(units);
-
-    return units;
+    return array
 }
-
-//Dummy Functions END
 
 //adds given element to main
 function addToRoot(element)
 {
     document.getElementById("root").appendChild(element);
+}
+
+function getById(id)
+{
+    return document.getElementById(id);
+}
+
+//gets the enrollment period of given unit.
+function getEnrollmentPeriod(unit)
+{
+    return unit.parentElement.id
 }
 
 //to add events to unit cells.
@@ -57,138 +56,156 @@ function addCellEvents(item)
     item.addEventListener("dragend", dragend);
 }
 
-//creates sensor that senses when a unit is dragged under table.
-function makeSensor()
+//------------------- PROTOTYPES ----------------------------------//
+
+//unit prototype
+function Unit(code, creditPoints, type, semester)
 {
-    sensor = document.createElement("div");
-    text = document.createElement("h2");
-    sensor.setAttribute("class", "sensor");
+    this.unitCode = code;
+    this.creditPoints = creditPoints;
+    this.type = type;
+    this.semester = semester;
+    this.prerequisites = [];
+    this.equivalences = []; //equivalent units to this one.
 
-    sensor.addEventListener("dragover", sensordragover);
-    // sensor.addEventListener("dragenter", dragenter);
-    // sensor.addEventListener("dragleave", dragleave);
-    sensor.addEventListener("drop", appendRow);
-
-    text.innerHTML = "drag a unit here to add a row!";
-    sensor.appendChild(text);
-    return sensor;
+    this.addPrerequisites = () => {
+        return this.prerequisites = prerequisitesList
+    };
 }
 
-//creates a single table cell
-function makeCell(rowNum, colNum)
+//Table prototype contains all the functions necessary for making
+//the unit planner.
+function Table()
 {
-    let data = document.createElement("td");
-    
-    // data.innerHTML = "unit" + rowNum + colNum;
-    data.innerHTML = unitNames[numberOfUnits];
-    data.setAttribute("id", "unit" + rowNum + colNum);
-    data.setAttribute("draggable", "true");
-    addCellEvents(data);
-    
-    return data;
-}
+    this.year = 0; //may improve somehow.
+    this.numberOfUnits = 0; //Number of units in the planner
+    this.unitInformationArray = [];
+    this.unitNames = [];
 
-//makes a semester row of the table
-function makeRow(rowNum)
-{
-    //instead of passing rowNum, pass number of semesters
-
-    let row = document.createElement("tr");
-    let container = document.createElement("div");
-    let head = document.createElement("th");
-    let semesterNum = (rowNum % 3);
-   // let yearNum = Math.trunc((rowNum/3) + 1);
-    let semesterID = "S" + semesterNum;
-    let yearID = "Y" + year;
-
-
-    head.innerHTML = semesterID;
-    container.setAttribute("id", yearID + semesterID);
-    row.appendChild(head);
-    row.appendChild(container);
-
-
-    for(let i = 0; i<4; i++)
-    {
-        //if all units have been listed, don't list anymore
-        if(numberOfUnits < unitNames.length)
+    this.extractInformation = (unitInfo) => {
+        for(let i in unitInfo)
         {
-            container.appendChild(makeCell(rowNum, i));
-            numberOfUnits++;
+            this.unitInformationArray[i] = new Unit(unitInfo[i].unitcode,
+                                            unitInfo[i].credit_points,
+                                            unitInfo[i].type,
+                                            unitInfo[i].semester);
+    
+            //only returns 1 unit before failing.
+            // getUnitPrerequisites(unitInformationArray[i].unitCode);
         }
     }
 
-    container.addEventListener("dragover", dragover);
-    container.addEventListener("dragenter", dragenter);
-    container.addEventListener("dragleave", dragleave);
-    container.addEventListener("drop", drop);
-
-    return row;
-}
-
-//makes an empty semester row in the table
-//used by sensor to add new rows.
-function makeEmptyRow(rowNum)
-{
-    //instead of passing rowNum, pass number of semesters
-
-    let row = document.createElement("tr");
-    let container = document.createElement("div");
-    let head = document.createElement("th");
-    let semesterNum = (rowNum % 3);
-    //let yearNum = Math.trunc((rowNum/3) + 1);
-    let semesterID = "S" + semesterNum;
-    let yearID = "Y" + year;
-
-
-    head.innerHTML = semesterID;
-    container.setAttribute("id", yearID + semesterID);
-    row.appendChild(head);
-    row.appendChild(container);
-
-    container.addEventListener("dragover", dragover);
-    container.addEventListener("dragenter", dragenter);
-    container.addEventListener("dragleave", dragleave);
-    container.addEventListener("drop", drop);
-
-    return row;
-}
-
-//adds the row that marks the year
-function makeYearRow()
-{
-    let row = document.createElement("tr");
-    let head = document.createElement("th");
-    
-    year++;
-    head.innerHTML = "Y" + year;
-    head.setAttribute("colspan", "5");
-    row.appendChild(head);
-    row.setAttribute("class","year");
-    
-    return row;
-}
-
-//creates the entire planner table
-function makeTable(unitNames)
-{
-    let table = document.createElement("table");
-    table.setAttribute("id", "table");
-
-    for(let i = 0; unitNames.length>numberOfUnits; i++)
-    {
-        if(i % 3 == 0)
+    this.extractNames = () =>{
+        for(let i = 0 ; i < this.unitInformationArray.length; i++)
         {
-            table.appendChild(makeYearRow());
-        } else {
-            table.appendChild(makeRow(i));
+            this.unitNames[i] = this.unitInformationArray[i].unitCode;
         }
     }
 
+    //makes a cell which represent a unit.
+    this.makeCell = () =>{
+        let data = document.createElement("td");
+    
+        data.innerHTML = this.unitNames[this.numberOfUnits];
+        data.setAttribute("id", this.unitNames[this.numberOfUnits]);
+        data.setAttribute("draggable", "true");
+        addCellEvents(data);
+    
+        return data;
+    }
+    
+    //makes a year row.
+    this.makeYearRow = () => {
+        let row = document.createElement("tr");
+        let head = document.createElement("th");
+        
+        this.year++;
+        head.innerHTML = "Y" + this.year;
+        head.setAttribute("colspan", "5");
+        row.appendChild(head);
+        row.setAttribute("class","year");
+        
+        return row;
+    }
 
-    //make table then sensor underneath
-    addToRoot(table);
-    addToRoot(makeSensor());
+    //makes a row
+    this.makeRow = (semesterNum) =>{
+        let row = document.createElement("tr");
+        let container = document.createElement("div");
+        let head = document.createElement("th");
+        let semesterID = "S" + semesterNum;
+        let yearID = "Y" + this.year;
+
+
+        head.innerHTML = semesterID;
+        container.setAttribute("id", yearID + semesterID);
+        row.appendChild(head);
+        row.appendChild(container);
+
+
+        for(let i = 0; i<4; i++)
+        {
+            //if all units have been listed, don't list anymore
+            if(this.numberOfUnits < this.unitNames.length)
+            {
+                container.appendChild(this.makeCell());
+                this.numberOfUnits++;
+            }
+        }
+
+        container.addEventListener("dragover", dragover);
+        container.addEventListener("dragenter", dragenter);
+        container.addEventListener("dragleave", dragleave);
+        container.addEventListener("drop", drop);
+
+        return row;
+    }
+
+    this.makeYearContainer = () =>{
+        let container = document.createElement("div");
+
+        container.appendChild(this.makeYearRow());
+        container.appendChild(this.makeRow(1));
+        container.appendChild(this.makeRow(2));
+
+        container.setAttribute("id", "Y" + this.year);
+
+        return container
+    }
+
+    //makes a sensor
+    this.makeSensor = () =>{    
+        sensor = document.createElement("div");
+        text = document.createElement("h2");
+        sensor.setAttribute("class", "sensor");
+
+        sensor.addEventListener("dragover", sensordragover);
+        sensor.addEventListener("drop", appendRow);
+
+        text.innerHTML = "drag a unit here to add a row!";
+        sensor.appendChild(text);
+
+        return sensor;
+    }
+
+    //makes the actual table.
+    this.makeTable = (response) => {
+        let table = document.createElement("table");
+
+        table.setAttribute("id", "table");
+
+        this.extractInformation(response);
+        this.extractNames();
+
+        while(this.unitNames.length > this.numberOfUnits)
+        {
+            table.appendChild(this.makeYearContainer());
+        }
+
+        //make table then sensor underneath
+        addToRoot(table);
+        addToRoot(this.makeSensor());
+    }
 }
 
 //--------------------- EVENT LISTENER FUNCTIONS -------------------------//
@@ -231,7 +248,6 @@ function drop(e)
 
     //element id that was stored in datatransfer when drag started
     let id = e.dataTransfer.getData('text/plain');
-    console.log(id);
     //use to get the item
     let item = document.getElementById(id);
 
@@ -244,12 +260,15 @@ function drop(e)
             e.target.appendChild(item);
         }
 
-        //if container empty, check if all container for year empty
-        //check if year below, if not, delete this year.
-        // if(e.currentTarget.childElementCount == 0)
-        // {
-        //     // if()
-        // }
+        //if container in last year empty delete year and years
+        //inbetween that year, until units are found.
+        while(getById("Y" + planner.year + "S1").childElementCount == 0 &&
+            getById("Y" + planner.year + "S2").childElementCount == 0)
+        {
+            //deleete year and decrement year in planner
+            getById("Y" + planner.year).remove();
+            planner.year--;
+        }
     } else {
             // swap units
             //create clone elements.
@@ -297,32 +316,33 @@ function appendRow(e)
     let id = e.dataTransfer.getData('text/plain');
     let item = document.getElementById(id);
 
-    //make year and semester 1 and 2 rows.
-    table.appendChild(makeYearRow());
-    table.appendChild(makeEmptyRow(1));
-    table.appendChild(makeEmptyRow(2));
+    table.appendChild(planner.makeYearContainer());
 
     //add dragged unit in S1 of the new row
-    let semester1 = document.getElementById("Y" + year +"S1");
+    let semester1 = document.getElementById("Y" + planner.year +"S1");
     semester1.appendChild(item);
 }
 
-//TEST: generating nodes from neo4j graph 
+// --------------------------- XHTTP ---------------------------------//
+
 //LOL MY FUNCTIO NOW!
+//Sends request to 4j for some awesome unit info.
+//mmmm unit info.
+//Creates a the planner based on that info.
 function display_all() {
     const xhttp = new XMLHttpRequest();
     let server = '/display';
     xhttp.open("GET", server, true);
     xhttp.onload = function (e) {
 
-        unitInformationArray = JSON.parse(xhttp.responseText);
-        console.log(unitInformationArray);
+        response = JSON.parse(xhttp.responseText);
+        console.log(response);
 
-        document.getElementById("nodes").innerHTML = JSON.parse(xhttp.responseText);
+        document.getElementById("nodes").innerHTML = this.response;
 
-        //generate table on SUCCESS
-        unitNames = extractNames(unitInformationArray);
-        makeTable(unitNames);
+        planner = new Table();
+
+        planner.makeTable(response);
 
         // alert("I worked!! TvT");
     }
@@ -333,6 +353,19 @@ function display_all() {
 function display_unit() {
     chosen_unit = document.getElementById("chosen_unit").value;
     document.getElementById("unitchosen").innerHTML = chosen_unit;
+}
+
+//retrieve the requirements of given unit
+function getUnitPrerequisites(unit) {
+    const xhttp = new XMLHttpRequest();
+    let server = '/prereqs/'.concat(unit);
+    xhttp.open("GET", server, true);
+
+    xhttp.onload = function (e) {
+        prerequisites = JSON.parse(xhttp.responseText);
+        console.log(prerequisites);
+    }
+    xhttp.send();
 }
 
 //retrieve the requirements of chosen unit 
