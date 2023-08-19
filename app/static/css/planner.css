@@ -6,6 +6,10 @@ td {
     min-width: 100px;
 }
 
+main {
+    padding-bottom: 50px;
+}
+
 td:hover{
     border: 1px solid lightblue;
 }
@@ -54,4 +58,34 @@ table {
 
 h2 {
     text-align: center;
+}
+
+.NS{
+    background-color: tomato;
+}
+
+.S1 {
+    background-color: aqua;
+}
+
+.S2 {
+    background-color: lightgreen;
+}
+
+.S1S2 {
+    background-color: yellow;
+}
+
+#infoBar {
+    background-color: white;
+    text-align: center;
+    margin: auto;
+    position: fixed;
+    width: 80%;
+    height: 50px;
+    bottom: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 900;
 }

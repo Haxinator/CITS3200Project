@@ -6,6 +6,45 @@ display_all(); //gimmie units.
 
 //--------------------SUPPORT FUNCTIONS--------------------------//
 
+makeInfoBar();
+
+function updateInfoBar(info){
+    getById("infoBar").firstElementChild.innerHTML = info;
+}
+
+function makeInfoBar() {
+    infoBar = document.createElement("div");
+    infoBar.setAttribute("id", "infoBar");
+
+    text = document.createElement("p");
+    text.innerHTML = "Info Bar Hi";
+
+    infoBar.appendChild(text);
+
+    addToRoot(infoBar);
+}
+
+getById("SemesterFilter").addEventListener("click", () => {
+    for(let unit of planner.unitInformation.values())
+    {
+        console.log(unit);
+        console.log(planner.unitInformation.get(unit.unitCode));
+        item = getById(unit.unitCode);
+
+        if(unit.semester == "S1")
+        {
+            item.classList.toggle("S1");
+        } else if(unit.semester == "S2"){
+            item.classList.toggle("S2");
+        } else if(unit.semester == "NS"){
+            item.classList.toggle("NS")
+        }else {
+            item.classList.toggle("S1S2");
+        }
+    }
+        updateInfoBar("Legend: <br>Blue - S1, Green - S2, Yellow - S1/S2, red - NS");
+})
+
 //Dummy functions for testing
 //creates fake units for testing.
 // function makeUnitArray(size)
@@ -54,6 +93,7 @@ function addCellEvents(item)
 {
     item.addEventListener("dragstart", dragstart);
     item.addEventListener("dragend", dragend);
+    item.addEventListener("click", printInfo);
 }
 
 //------------------- PROTOTYPES ----------------------------------//
@@ -67,10 +107,12 @@ function Unit(code, creditPoints, type, semester)
     this.semester = semester;
     this.prerequisites = [];
     this.equivalences = []; //equivalent units to this one.
+    this.enrollmentPeriod = "None";
 
     this.addPrerequisites = () => {
         return this.prerequisites = prerequisitesList
     };
+    this.isEnrolled = () => {return this.enrollmentPeriod != "None"};
 }
 
 //Table prototype contains all the functions necessary for making
@@ -79,35 +121,40 @@ function Table()
 {
     this.year = 0; //may improve somehow.
     this.numberOfUnits = 0; //Number of units in the planner
-    this.unitInformationArray = [];
+    this.unitInformation = new Map();
     this.unitNames = [];
 
     this.extractInformation = (unitInfo) => {
         for(let i in unitInfo)
         {
-            this.unitInformationArray[i] = new Unit(unitInfo[i].unitcode,
+            this.unitInformation.set(unitInfo[i].unitcode,
+                                        new Unit(unitInfo[i].unitcode,
                                             unitInfo[i].credit_points,
                                             unitInfo[i].type,
-                                            unitInfo[i].semester);
+                                            unitInfo[i].semester));
     
             //only returns 1 unit before failing.
-            // getUnitPrerequisites(unitInformationArray[i].unitCode);
+            // getUnitPrerequisites(unitInformation[i].unitCode);
         }
     }
 
     this.extractNames = () =>{
-        for(let i = 0 ; i < this.unitInformationArray.length; i++)
+        let i = 0;
+
+        for(let unit of this.unitInformation.values())
         {
-            this.unitNames[i] = this.unitInformationArray[i].unitCode;
+            this.unitNames[i] = unit.unitCode;
+            i++;
         }
     }
 
     //makes a cell which represent a unit.
     this.makeCell = () =>{
         let data = document.createElement("td");
+        let unitCode = this.unitNames[this.numberOfUnits];
     
-        data.innerHTML = this.unitNames[this.numberOfUnits];
-        data.setAttribute("id", this.unitNames[this.numberOfUnits]);
+        data.innerHTML = unitCode;
+        data.setAttribute("id", unitCode);
         data.setAttribute("draggable", "true");
         addCellEvents(data);
     
@@ -308,19 +355,31 @@ function dragend(e)
 //adds a new row underneath the last row in the table when item dropped beneath row.
 function appendRow(e)
 {
-    //remove lines
-    // e.target.classList.remove("dragover");
-    let table = document.getElementById("table");
+    if(planner.year < 10)
+    {
+        //remove lines
+        // e.target.classList.remove("dragover");
+        let table = document.getElementById("table");
 
-    //get currently dragged unit.
-    let id = e.dataTransfer.getData('text/plain');
-    let item = document.getElementById(id);
+        //get currently dragged unit.
+        let id = e.dataTransfer.getData('text/plain');
+        let item = document.getElementById(id);
 
-    table.appendChild(planner.makeYearContainer());
+        table.appendChild(planner.makeYearContainer());
 
-    //add dragged unit in S1 of the new row
-    let semester1 = document.getElementById("Y" + planner.year +"S1");
-    semester1.appendChild(item);
+        //add dragged unit in S1 of the new row
+        let semester1 = document.getElementById("Y" + planner.year +"S1");
+        semester1.appendChild(item);
+    } else {
+        alert("Course duration is a maximum of 10 years!");
+    }
+}
+
+function printInfo(e)
+{
+    let unitCode = e.currentTarget.id;
+
+    updateInfoBar(JSON.stringify(planner.unitInformation.get(unitCode)));
 }
 
 // --------------------------- XHTTP ---------------------------------//
@@ -338,7 +397,7 @@ function display_all() {
         response = JSON.parse(xhttp.responseText);
         console.log(response);
 
-        document.getElementById("nodes").innerHTML = this.response;
+        // document.getElementById("nodes").innerHTML = this.response;
 
         planner = new Table();
 
