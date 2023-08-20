@@ -23,8 +23,8 @@ th{
 
 div tr div {
     border: 1px dashed white;
-    min-width: 485px;
-    /* max-width: 485px; */
+    min-width: 495px;
+    max-width: 495px;
     min-height: 65px;
 }
 
