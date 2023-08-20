@@ -94,6 +94,18 @@ function addCellEvents(item)
     item.addEventListener("click", printInfo);
 }
 
+function canEnrollInPeriod(unitCode, container)
+{
+    let unit = planner.unitInformation.get(unitCode);
+    let semester = container.id;
+    let unitAvaliability = unit.semester;
+
+    semester = semester.substring(2,4);
+
+    return (unitAvaliability.includes(semester) ||
+      (unitAvaliability == "BOTH" && !semester.includes("NS")));
+}
+
 //------------------- PROTOTYPES ----------------------------------//
 
 //unit prototype
@@ -202,16 +214,11 @@ function Table()
         //container is full.
         for(let i = 0; i < this.unitNames.length; i++)
         {
-                let unit = this.unitNames[i];
-                let unitAvaliability = this.unitInformation.get(unit).semester
+                let unitCode = this.unitNames[i];
 
-                //substring used for NS case.
-                semester = semester.substring(0,2);
-
-                if(unitAvaliability.includes(semester) ||
-                  (unitAvaliability == "BOTH" && !semester.includes("NS")))
+                if(canEnrollInPeriod(unitCode, container))
                 {
-                    container.appendChild(this.makeCell(unit));
+                    container.appendChild(this.makeCell(unitCode));
                 }
 
                 if(container.childElementCount > 3)
@@ -340,7 +347,9 @@ function drop(e)
     if(e.currentTarget == e.target)
     {
         //only add to sem if less than 4 units.
-        if(e.currentTarget.childElementCount < 4)
+        //and semester is valid
+        if(e.currentTarget.childElementCount < 4 && 
+            canEnrollInPeriod(id, e.currentTarget))
         {
             e.target.appendChild(item);
         }
@@ -354,7 +363,13 @@ function drop(e)
             getById("Y" + planner.year).remove();
             planner.year--;
         }
-    } else {
+
+        //before swap see if currently dragged unit can be dropped
+        //into that semester AND if the other unit user is swapping with
+        //can go into the other semester
+    } else if(canEnrollInPeriod(id, e.currentTarget) &&
+                canEnrollInPeriod(e.target.id, item.parentElement)){
+
             // swap units
             //create clone elements.
             let targetClone = e.target.cloneNode(true);
@@ -405,9 +420,22 @@ function appendRow(e)
 
         table.appendChild(planner.makeYearContainer());
 
-        //add dragged unit in S1 of the new row
         let semester1 = document.getElementById("Y" + planner.year +"S1");
-        semester1.appendChild(item);
+        let semester2 = document.getElementById("Y" + planner.year +"S2");
+        let NS = document.getElementById("Y" + planner.year +"NS1");
+
+        //see what period to enroll unit into
+        if(canEnrollInPeriod(id, semester1)){
+            semester1.appendChild(item);
+
+        } else if (canEnrollInPeriod(id, semester2)) {
+            semester2.appendChild(item);
+
+        } else {
+            NS.appendChild(item);
+
+        }
+
     } else {
         alert("Course duration is a maximum of 10 years!");
     }
