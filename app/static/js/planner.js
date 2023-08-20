@@ -109,6 +109,11 @@ function getByPeriod(year, period)
     return document.getElementById("Y" + year + period);
 }
 
+function getPeriodOffered(id)
+{
+    return planner.unitInformation.get(id).semester;
+}
+
 //------------------- PROTOTYPES ----------------------------------//
 
 //unit prototype
@@ -338,6 +343,7 @@ function dragleave(e)
 //if the row is full with the unit user is hovering over.
 function drop(e)
 {
+    updateInfoBar("");
     //currentTarget used instead of target to prevent cells being dropped into cells.
     e.target.classList.remove("dragover");
 
@@ -355,6 +361,16 @@ function drop(e)
             canEnrollInPeriod(id, e.currentTarget))
         {
             e.target.appendChild(item);
+        } else {
+            if(e.currentTarget.childElementCount > 3)
+            {
+                updateInfoBar(`${e.currentTarget.id} is full`);
+            }
+
+            if(!canEnrollInPeriod(id, e.currentTarget))
+            {
+                updateInfoBar(`${id} only available in ${getPeriodOffered(id)}!`);
+            }
         }
 
         //if container in last year empty delete year and years
@@ -390,6 +406,9 @@ function drop(e)
             //add the event listeners to swapped units.
             addCellEvents(targetClone);
             addCellEvents(itemClone);
+    } else {
+        updateInfoBar(`${id} only available in ${getPeriodOffered(id)} <br>
+                        ${e.target.id} only available in ${getPeriodOffered(e.target.id)}`);
     }
 
     //show item
@@ -442,7 +461,7 @@ function appendRow(e)
         }
 
     } else {
-        alert("Course duration is a maximum of 10 years!");
+        updateInfoBar("Course duration is a maximum of 10 years!");
     }
 }
 
