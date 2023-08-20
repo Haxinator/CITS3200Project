@@ -123,10 +123,17 @@ function Table()
     this.numberOfUnits = 0; //Number of units in the planner
     this.unitInformation = new Map();
     this.unitNames = [];
+    this.hasNSUnits = false;
 
     this.extractInformation = (unitInfo) => {
         for(let i in unitInfo)
         {
+            //if it has NS units
+            if(unitInfo[i].semester == "NS")
+            {
+                this.hasNSUnits = true;
+            }
+
             this.unitInformation.set(unitInfo[i].unitcode,
                                         new Unit(unitInfo[i].unitcode,
                                             unitInfo[i].credit_points,
@@ -180,16 +187,14 @@ function Table()
     }
 
     //makes a row
-    this.makeRow = (semesterNum) =>{
+    this.makeRow = (semester) =>{
         let row = document.createElement("tr");
         let container = document.createElement("div");
         let head = document.createElement("th");
-        let semesterID = "S" + semesterNum;
         let yearID = "Y" + this.year;
 
-
-        head.innerHTML = semesterID;
-        container.setAttribute("id", yearID + semesterID);
+        head.innerHTML = semester;
+        container.setAttribute("id", yearID + semester);
         row.appendChild(head);
         row.appendChild(container);
 
@@ -200,25 +205,27 @@ function Table()
                 let unit = this.unitNames[i];
                 let unitAvaliability = this.unitInformation.get(unit).semester
 
-                //need to place NS units somewhere. Not sure where yet.
-                if((unitAvaliability == semesterID || unitAvaliability == "BOTH"
-                    || unitAvaliability == "NS"))
+                //substring used for NS case.
+                semester = semester.substring(0,2);
+
+                if(unitAvaliability.includes(semester) ||
+                  (unitAvaliability == "BOTH" && !semester.includes("NS")))
                 {
                     container.appendChild(this.makeCell(unit));
-
-                    //problem when i == length.
-                    //e.g. if element 4 in length 5 array deleted.
-                    //length becomes 4, but last element ignored.
-                    //need to reset i to 0 or else loop will end.
-                    if(i == this.unitNames.length)
-                    {
-                        i = -1;
-                    }
                 }
 
                 if(container.childElementCount > 3)
                 {
                     break;
+                }
+
+                //problem when i == length.
+                //e.g. if element 4 in length 5 array deleted.
+                //length becomes 4, but last element ignored.
+                //need to reset i to 0 or else loop will end.
+                if(i == this.unitNames.length)
+                {
+                    i = -1;
                 }
         }
 
@@ -234,8 +241,17 @@ function Table()
         let container = document.createElement("div");
 
         container.appendChild(this.makeYearRow());
-        container.appendChild(this.makeRow(1));
-        container.appendChild(this.makeRow(2));
+        if(this.hasNSUnits)
+        {
+            container.appendChild(this.makeRow("S1"));
+            container.appendChild(this.makeRow("NS1"));
+            container.appendChild(this.makeRow("S2"));
+            container.appendChild(this.makeRow("NS2"));
+        } else {
+            container.appendChild(this.makeRow("S1"));
+            container.appendChild(this.makeRow("S2"));
+        }
+
 
         container.setAttribute("id", "Y" + this.year);
 

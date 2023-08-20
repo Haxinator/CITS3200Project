@@ -19,14 +19,14 @@ td:hover{
 div tr div {
     border: 1px dashed white;
     min-width: 485px;
-    max-width: 485px;
+    /* max-width: 485px; */
     min-height: 65px;
 }
 
 table div{
-    max-width: 500px;
+    /* max-height: 193px;
+    max-width: 500px; */
     min-height: 180px;
-    max-height: 193px;
 }
 
 /* gives more space to drop units*/
