@@ -26,8 +26,6 @@ function makeInfoBar() {
 getById("SemesterFilter").addEventListener("click", () => {
     for(let unit of planner.unitInformation.values())
     {
-        console.log(unit);
-        console.log(planner.unitInformation.get(unit.unitCode));
         item = getById(unit.unitCode);
 
         if(unit.semester == "S1")
@@ -104,6 +102,11 @@ function canEnrollInPeriod(unitCode, container)
 
     return (unitAvaliability.includes(semester) ||
       (unitAvaliability == "BOTH" && !semester.includes("NS")));
+}
+
+function getByPeriod(year, period)
+{
+    return document.getElementById("Y" + year + period);
 }
 
 //------------------- PROTOTYPES ----------------------------------//
@@ -356,8 +359,10 @@ function drop(e)
 
         //if container in last year empty delete year and years
         //inbetween that year, until units are found.
-        while(getById("Y" + planner.year + "S1").childElementCount == 0 &&
-            getById("Y" + planner.year + "S2").childElementCount == 0)
+        while(getByPeriod(planner.year, "S1").childElementCount == 0 &&
+            getByPeriod(planner.year, "S2").childElementCount == 0 &&
+            getByPeriod(planner.year, "NS1").childElementCount == 0 &&
+            getByPeriod(planner.year, "NS2").childElementCount == 0)
         {
             //deleete year and decrement year in planner
             getById("Y" + planner.year).remove();
