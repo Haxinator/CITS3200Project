@@ -40,7 +40,7 @@ driver=GraphDatabase.driver(uri="bolt://3.236.190.97:7687",auth=("neo4j", "ideal
 session=driver.session() 
 
 @app.route("/unitInformation", methods=["GET"])
-def display_node():
+def send_unit_information():
     query=""" MATCH (n) -[:REQUIRES]-> (m)
 
     WHERE n.type = "CORE"
