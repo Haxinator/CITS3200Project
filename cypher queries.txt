@@ -1,12 +1,24 @@
-//nodes
+//nodes - just mech
 LOAD CSV WITH HEADERS FROM 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQnRbOQw37eU9L86N0u4BJmu88lOxLWR0UxqP0NM_YpzHvwAZTz_BYGDXG414KV4_9Z5itTUHWmzVvb/pub?gid=145100429&single=true&output=csv' AS row
 CALL apoc.create.node(["Unit"], row)
 YIELD node
 RETURN node
 
+//nodes - mech + soft
+LOAD CSV WITH HEADERS FROM 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSJQDscKwJwArti3eXQa9fCMHHKVLbIDjPAe9Ky4I0dDQbg0JHtDg73EE5AzO7PBIYBIlL8XTXa5bXD/pub?gid=2027284511&single=true&output=csv' AS row
+CALL apoc.create.node(["Unit"], row)
+YIELD node
+RETURN node
 
-//rels
+//rels - just mech
 LOAD CSV WITH HEADERS FROM 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTlj2y3wdM76_8Tcn1ADgdVvinWmcIx0KmawL9pppxcB0npAnKEzqG0xV0wkRl_IXaUZhUA2cJAoEzg/pub?gid=66934476&single=true&output=csv' AS row
+MATCH (child:Unit {unitcode: row.child_unit}), (parent:Unit {unitcode: row.parent_unit})
+CALL apoc.create.relationship(child, row.relationship, {}, parent)
+YIELD rel
+RETURN rel
+
+//rels - mech + soft
+LOAD CSV WITH HEADERS FROM 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRxQJBNXRmpfqGbl2ZbKPFLgPLVsqFgiMxtk33pne9bomN1VOSXMkQi778mg-vteejKloFaI7oGoEA3/pub?gid=889593185&single=true&output=csv' AS row
 MATCH (child:Unit {unitcode: row.child_unit}), (parent:Unit {unitcode: row.parent_unit})
 CALL apoc.create.relationship(child, row.relationship, {}, parent)
 YIELD rel
