@@ -34,25 +34,38 @@ def preferences():
     return render_template('preferences.html', title='Preferences', specialization = specialization, mathSpecialist = mathSpecialist, mathMethods = mathMethods, chemistry = chemistry, physics = physics) # Render the preferences page
 
 
+uri= "bolt://3.236.190.97:7687"
+user="neo4j"
+pswd= "ideals-extensions-necks" # "engmajors"
 
 # Connect to remote Neo4j driver
-driver=GraphDatabase.driver(uri="bolt://3.236.190.97:7687",auth=("neo4j", "ideals-extensions-necks"))
+driver=GraphDatabase.driver(uri,auth=(user, pswd))
 session=driver.session() 
 
-@app.route("/unitInformation", methods=["GET"])
-def send_unit_information():
-    query=""" MATCH (n) -[:REQUIRES]-> (m)
-
-    WHERE n.type = "CORE"
-
-    WITH n.unitcode as unitcode, n.type as type, n.semester as semester, n.credit_points as credit_points, n.points_req as points_req, n.enrolment_req as enrolment_req, COLLECT(m.unitcode) as unit_req
-
-    RETURN unitcode, type, semester, credit_points, points_req, enrolment_req, unit_req
-
-    """
-    results=session.run(query)
-    data=results.data()
-    return(jsonify(data))
+@app.route("/unitInformation/<string:major>", methods=["GET"])
+def send_unit_information(major):
+    # if major does not have option units (soft)
+    if(major == "SP-ESOFT"):
+        query=""" MATCH (n) -[:REQUIRES]-> (m)
+        WHERE n.major CONTAINS $major
+        WITH n.unitcode as unitcode, n.type as type, n.semester as semester, n.credit_points as credit_points, n.points_req as points_req, n.enrolment_req as enrolment_req, COLLECT(m.unitcode) as unit_req
+        RETURN unitcode, type, semester, credit_points, points_req, enrolment_req, unit_req
+        """
+        x = {"major":major}
+        results=session.run(query,x)
+        data=results.data()
+        return(jsonify(data))
+    # if major does have option units (mech)
+    else:
+        query=""" MATCH (n) -[:REQUIRES]-> (m)
+        WHERE n.major CONTAINS $major AND n.type = "CORE"
+        WITH n.unitcode as unitcode, n.type as type, n.semester as semester, n.credit_points as credit_points, n.points_req as points_req, n.enrolment_req as enrolment_req, COLLECT(m.unitcode) as unit_req
+        RETURN unitcode, type, semester, credit_points, points_req, enrolment_req, unit_req
+        """
+        x = {"major":major}
+        results=session.run(query,x)
+        data=results.data()
+        return(jsonify(data))
 
 @app.route("/display", methods=["GET"])
 def display_node():
