@@ -46,10 +46,12 @@ session=driver.session()
 def send_unit_information(major):
     # if major does not have option units (soft)
     if(major == "SP-ESOFT"):
-        query=""" MATCH (n) -[:REQUIRES]-> (m)
-        WHERE n.major CONTAINS $major
-        WITH n.unitcode as unitcode, n.type as type, n.semester as semester, n.credit_points as credit_points, n.points_req as points_req, n.enrolment_req as enrolment_req, COLLECT(m.unitcode) as unit_req
-        RETURN unitcode, type, semester, credit_points, points_req, enrolment_req, unit_req
+        query=""" MATCH (u:Unit)
+        MATCH (n) -[:REQUIRES]-> (m)
+        WHERE u.major CONTAINS $major
+        WITH u.unitcode as unitcode, u.type as type, u.semester as semester, u.major as major, u.level as level, u.credit_points as credit_points, u.points_req as points_req, u.enrolment_req as enrolment_req, COLLECT(m.unitcode) as unit_req
+        RETURN unitcode, type, semester, level, major, credit_points, points_req, enrolment_req, unit_req
+        ORDER BY level
         """
         x = {"major":major}
         results=session.run(query,x)
@@ -57,10 +59,12 @@ def send_unit_information(major):
         return(jsonify(data))
     # if major does have option units (mech)
     else:
-        query=""" MATCH (n) -[:REQUIRES]-> (m)
-        WHERE n.major CONTAINS $major AND n.type = "CORE"
-        WITH n.unitcode as unitcode, n.type as type, n.semester as semester, n.credit_points as credit_points, n.points_req as points_req, n.enrolment_req as enrolment_req, COLLECT(m.unitcode) as unit_req
-        RETURN unitcode, type, semester, credit_points, points_req, enrolment_req, unit_req
+        query=""" MATCH (u:Unit)
+        MATCH (n) -[:REQUIRES]-> (m)
+        WHERE u.major CONTAINS $major AND u.type = "CORE"
+        WITH u.unitcode as unitcode, u.type as type, u.semester as semester, u.major as major, u.level as level, u.credit_points as credit_points, u.points_req as points_req, u.enrolment_req as enrolment_req, COLLECT(m.unitcode) as unit_req
+        RETURN unitcode, type, semester,major, level, credit_points, points_req, enrolment_req, unit_req
+        ORDER BY level
         """
         x = {"major":major}
         results=session.run(query,x)
