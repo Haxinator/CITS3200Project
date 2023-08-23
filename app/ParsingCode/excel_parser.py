@@ -115,4 +115,4 @@ def create_major_pathway(sheet_path: str) -> MajorPathway:
 
 # Testing the function with the provided Excel sheet
 mechanical_engineering_pathway = create_major_pathway(r"C:\Users\syedm\OneDrive\Uni\Year 3\Sem 2\CITS3200\CITS3200Project\app\Mech2024.xlsx")
-print(mechanical_engineering_pathway)
+print(mechanical_engineering_pathway.units)
