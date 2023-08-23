@@ -5,7 +5,7 @@ YIELD node
 RETURN node
 
 //nodes - mech + soft
-LOAD CSV WITH HEADERS FROM 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSJQDscKwJwArti3eXQa9fCMHHKVLbIDjPAe9Ky4I0dDQbg0JHtDg73EE5AzO7PBIYBIlL8XTXa5bXD/pub?gid=2027284511&single=true&output=csv' AS row
+LOAD CSV WITH HEADERS FROM 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRWr8QNW9F6FkXMeNq3ytscAlHhZ-E_yQCyutZuFVtoQvcygdzmSBR3BfsAFZJjDsybIHfyEPY9SIUj/pub?gid=1006418552&single=true&output=csv' AS row
 CALL apoc.create.node(["Unit"], row)
 YIELD node
 RETURN node
