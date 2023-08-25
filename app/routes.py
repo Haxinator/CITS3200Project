@@ -1,5 +1,6 @@
 from flask import render_template, flash, redirect, url_for, request, jsonify
 from neo4j import GraphDatabase
+# from neo4j import __version__ as neo4j_version
 from app import app
 
 # Home page
@@ -34,12 +35,14 @@ def preferences():
     return render_template('preferences.html', title='Preferences', specialization = specialization, mathSpecialist = mathSpecialist, mathMethods = mathMethods, chemistry = chemistry, physics = physics) # Render the preferences page
 
 
-uri= "bolt://3.236.190.97:7687"
+uri= "bolt+s://e5218dc4.databases.neo4j.io"  #"bolt://3.236.190.97:7687" :skull:
 user="neo4j"
-pswd= "ideals-extensions-necks" # "engmajors"
+pswd= "svH9RLz19fQFpDDgjnQCZMO9MF6WEVPRmtpXEaNVQ2o"  #"ideals-extensions-necks" 
 
 # Connect to remote Neo4j driver
+# print("Neo4j Driver Version:", neo4j_version)
 driver=GraphDatabase.driver(uri,auth=(user, pswd))
+driver.verify_connectivity()
 session=driver.session() 
 
 @app.route("/unitInformation/<string:major>", methods=["GET"])
