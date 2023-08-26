@@ -522,8 +522,10 @@ function printInfo(e)
 //mmmm unit info.
 //Creates a the planner based on that info.
 function fetchCourseRequirementsAndBuildPlanner() {
+    let major = specialization;
+
     const xhttp = new XMLHttpRequest();
-    let server = '/unitInformation';
+    let server = '/unitInformation/'.concat(major);
     xhttp.open("GET", server, true);
     xhttp.onload = function (e) {
         response = JSON.parse(xhttp.responseText);
