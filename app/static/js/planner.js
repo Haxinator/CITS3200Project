@@ -3,9 +3,9 @@ var planner;
 //------------------- INSTANCE FUNCTIONS -------------------------//
 
 fetchCourseRequirementsAndBuildPlanner();
-//--------------------SUPPORT FUNCTIONS--------------------------//
-
 makeInfoBar();
+
+//--------------------SUPPORT FUNCTIONS--------------------------//
 
 function updateInfoBar(info){
     getById("infoBar").firstElementChild.innerHTML = info;
@@ -92,6 +92,38 @@ function addCellEvents(item)
     item.addEventListener("click", printInfo);
 }
 
+// --------------- Prerequisite Met Functions ----------------//
+
+//checks if all unit prerequisites met.
+function unitConditionsMet(unitCode, container)
+{
+    canEnrollInPeriod(unitCode, container);
+    prerequisitesMet(unitCode);
+}
+
+//checks if unit prerequisites met
+function unitPreRequisitiesMet(unitCode)
+{
+    let prerequisites = planner.unitInformation.get(unitCode).prerequisites;
+    
+    for(let prerequisite in prerequisites)
+    {
+        //if prerequisite not found, it is not in the planner.
+        //if not in planner, this unit is coming before
+        //its prerequisite, therefore:
+        //the unit prerequisites for this unit have not been met.
+        if(getById(prerequisite) == null)
+        {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+//checks if unit can enroll in a given teaching period
+//@param container is the teaching period
+//@param unitCode is the code of the unit
 function canEnrollInPeriod(unitCode, container)
 {
     let unit = planner.unitInformation.get(unitCode);
@@ -104,11 +136,13 @@ function canEnrollInPeriod(unitCode, container)
       (unitAvaliability == "BOTH" && !semester.includes("NS")));
 }
 
+//get container by period for cleaner code
 function getByPeriod(year, period)
 {
     return document.getElementById("Y" + year + period);
 }
 
+//get the teaching period a unit is offered for cleaner code.
 function getPeriodOffered(id)
 {
     return planner.unitInformation.get(id).semester;
@@ -123,7 +157,6 @@ function Unit(code, creditPoints, type, semester, prerequisites, enrollmentReq, 
     this.creditPoints = creditPoints;
     this.type = type;
     this.semester = semester;
-    this.prerequisites = prerequisites;
     this.prerequisites = prerequisites;
     this.equivalences = []; //equivalent units to this one.
     this.enrollmentRequirements = enrollmentReq;
@@ -168,6 +201,7 @@ function Table()
         }
     }
 
+    //extractNames (unitcodes) from unit info and place into unitNames
     this.extractNames = () =>{
         let i = 0;
 
@@ -224,7 +258,9 @@ function Table()
         {
                 let unitCode = this.unitNames[i];
 
-                if(canEnrollInPeriod(unitCode, container))
+                // if(canEnrollInPeriod(unitCode, container))
+                //check if unit placed in valid teaching period
+                if(unitConditionsMet(unitCode, container))
                 {
                     container.appendChild(this.makeCell(unitCode));
                 }
@@ -297,9 +333,17 @@ function Table()
         this.extractInformation(response);
         this.extractNames();
 
-        while(this.unitNames.length > 0)
+        iterations = 0;
+
+        while(this.unitNames.length > 0 && iterations < 50)
         {
             table.appendChild(this.makeYearContainer());
+        }
+
+        if(iterator > 49)
+        {
+            alert("Error Generating Table. \nInfinite loop detected.\n"
+                    + "Is a unit prerequisite missing?")
         }
 
         //make table then sensor underneath
@@ -343,7 +387,6 @@ function dragleave(e)
 //if the row is full with the unit user is hovering over.
 function drop(e)
 {
-    updateInfoBar("");
     //currentTarget used instead of target to prevent cells being dropped into cells.
     e.target.classList.remove("dragover");
 
