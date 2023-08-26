@@ -30,8 +30,9 @@ getById("ProblemFilter").addEventListener("click", () => {
     {
         item = getById(unit.unitCode);
 
-        if(unit.problems == 1)
+        if(unit.problems.length > 0)
         {
+            //NS is red.
             item.classList.toggle("NS");
         }
     }
@@ -124,6 +125,12 @@ function unitPreRequisitiesMet(unitCode, container)
 {
     let unit = planner.unitInformation.get(unitCode);
     let prerequisites = unit.prerequisites;
+    let prerequisitesMet = true;
+
+    //empty here for cleaner code
+    //if problems still exist they will be added again
+    //if problems are gone, they will be removed from array.
+    unit.problems = [];
 
     for(let prerequisite of prerequisites)
     {
@@ -141,26 +148,31 @@ function unitPreRequisitiesMet(unitCode, container)
             //used to be prerequ.period == container.id
             //extension allows function to be used after planner
             //initalisation.
+            console.log(prerequisiteUnit)
+            console.log("unit period " + prerequisiteUnit.enrollmentPeriod);
+            console.log("contianer period", container.id);
+            console.log(prerequisiteUnit.enrollmentPeriod >= container.id);
+
             if(prerequisiteUnit.enrollmentPeriod >= container.id && 
                 prerequisiteUnit.enrollmentPeriod.length == container.id.length) {
 
                 updateInfoBar(`${prerequisite} must be done before ${unitCode}!`);
                 
-                unit.problems = 1;
+                unit.problems.push(`${prerequisite} must be done before ${unitCode}!`);
 
                 //if prerequisite is in this period or greater.
-                return false;
+                prerequisitesMet = false;
             }
         }
     }
 
-    unit.problems = 0;
-    return true;
+    return prerequisitesMet;
 }
 
 // -------------------- MISC SUPPORT FUNCTIONS --------------//
 
 //enrolls unit into period
+//unit is unit as represented in the DOM.
 function enrollInPeroid(unit, container)
 {
     planner.unitInformation.get(unit.id).enrollmentPeriod = container.id;
@@ -211,7 +223,7 @@ function Unit(code, creditPoints, type, semester, prerequisites, enrollmentReq, 
     this.enrollmentRequirements = enrollmentReq;
     this.pointRequirements = pointReq;
     this.enrollmentPeriod = "None";
-    this.problems = 0;
+    this.problems = [];
 
     this.addPrerequisites = () => {
         return this.prerequisites = prerequisitesList
@@ -451,7 +463,8 @@ function drop(e)
         if(e.currentTarget.childElementCount < 4 && 
             canEnrollInPeriod(id, e.currentTarget))
         {
-            e.target.appendChild(item);
+            // e.target.appendChild(item);
+            enrollInPeroid(item, e.target);
 
         } else {
             if(e.currentTarget.childElementCount > 3)
@@ -499,19 +512,25 @@ function drop(e)
             addCellEvents(targetClone);
             addCellEvents(itemClone);
 
-            //after unit moved, see if prerequisites met.
-            if(unitConditionsMet(targetClone.id, targetClone.parentElement) &&
-            unitConditionsMet(itemClone.id, itemClone.parentElement))
-            {
-                updateInfoBar("");
-            }
-
+            let targetUnit = planner.unitInformation.get(targetClone.id);
+            let itemUnit = planner.unitInformation.get(itemClone.id);
+            
+            //make sure to update unit period
+            targetUnit.enrollmentPeriod = targetClone.parentElement.id
+            itemUnit.enrollmentPeriod = itemClone.parentElement.id
             
     } else {
         updateInfoBar(`${id} only available in ${getPeriodOffered(id)} <br>
                         ${e.target.id} only available in ${getPeriodOffered(e.target.id)}`);
     }
 
+    //check if prerequisites met for all units.
+    for(let unit of planner.unitInformation.values())
+    {
+        item = getById(unit.unitCode);
+
+        unitConditionsMet(item.id, item.parentElement);
+    }
 
     //show item
     item.classList.remove("hide");
@@ -567,8 +586,14 @@ function appendRow(e)
 function printInfo(e)
 {
     let unitCode = e.currentTarget.id;
+    let unit = planner.unitInformation.get(unitCode);
 
-    updateInfoBar(JSON.stringify(planner.unitInformation.get(unitCode)));
+    if(unit.problems.length > 0)
+    {
+        updateInfoBar(unit.problems);
+    } else {
+        updateInfoBar(JSON.stringify(planner.unitInformation.get(unitCode)));
+    }
 }
 
 // --------------------------- XHTTP ---------------------------------//
