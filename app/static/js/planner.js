@@ -5,24 +5,7 @@ var planner;
 fetchCourseRequirementsAndBuildPlanner();
 makeInfoBar();
 
-//--------------------SUPPORT FUNCTIONS--------------------------//
-
-function updateInfoBar(info){
-    getById("infoBar").firstElementChild.innerHTML = info;
-}
-
-function makeInfoBar() {
-    infoBar = document.createElement("div");
-    infoBar.setAttribute("id", "infoBar");
-
-    text = document.createElement("p");
-    text.innerHTML = "Info Bar Hi";
-
-    infoBar.appendChild(text);
-
-    addToRoot(infoBar);
-}
-
+// -------------------- FILTERS ----------------------------- //
 getById("SemesterFilter").addEventListener("click", () => {
     for(let unit of planner.unitInformation.values())
     {
@@ -40,7 +23,27 @@ getById("SemesterFilter").addEventListener("click", () => {
         }
     }
         updateInfoBar("Legend: <br>Blue - S1, Green - S2, Yellow - S1/S2, red - NS");
-})
+});
+
+// ------------------- INFO BAR FUNCTIONS -----------------------//
+
+function updateInfoBar(info){
+    getById("infoBar").firstElementChild.innerHTML = info;
+}
+
+function makeInfoBar() {
+    infoBar = document.createElement("div");
+    infoBar.setAttribute("id", "infoBar");
+
+    text = document.createElement("p");
+    text.innerHTML = "Info Bar Hi";
+
+    infoBar.appendChild(text);
+
+    addToRoot(infoBar);
+}
+
+//--------------------SUPPORT FUNCTIONS--------------------------//
 
 //Dummy functions for testing
 //creates fake units for testing.
@@ -97,28 +100,48 @@ function addCellEvents(item)
 //checks if all unit prerequisites met.
 function unitConditionsMet(unitCode, container)
 {
-    canEnrollInPeriod(unitCode, container);
-    prerequisitesMet(unitCode);
+    correctSemester = canEnrollInPeriod(unitCode, container);
+    correctPrequisites = unitPreRequisitiesMet(unitCode, container);
+
+    return correctSemester && correctPrequisites;
 }
 
 //checks if unit prerequisites met
-function unitPreRequisitiesMet(unitCode)
+function unitPreRequisitiesMet(unitCode, container)
 {
     let prerequisites = planner.unitInformation.get(unitCode).prerequisites;
-    
-    for(let prerequisite in prerequisites)
+
+    for(let prerequisite of prerequisites)
     {
-        //if prerequisite not found, it is not in the planner.
-        //if not in planner, this unit is coming before
-        //its prerequisite, therefore:
-        //the unit prerequisites for this unit have not been met.
-        if(getById(prerequisite) == null)
+        let prerequisiteUnit = planner.unitInformation.get(prerequisite)
+
+        if(planner.unitNames.indexOf(prerequisite) != -1)
         {
+            //if prerequisite in name list then it isn't in planner
             return false;
+
+        } else if (prerequisiteUnit != null){
+
+            //provided unit exists (ATAR units may not exist in plan)
+            if(prerequisiteUnit.enrollmentPeriod == container.id) {
+
+                //if prerequisite is in this period.
+                return false;
+            }
         }
     }
 
     return true;
+}
+
+// -------------------- MISC SUPPORT FUNCTIONS --------------//
+
+//enrolls unit into period
+function enrollInPeroid(unit, container)
+{
+    planner.unitInformation.get(unit.id).enrollmentPeriod = container.id;
+    container.append(unit);
+
 }
 
 //checks if unit can enroll in a given teaching period
@@ -130,8 +153,10 @@ function canEnrollInPeriod(unitCode, container)
     let semester = container.id;
     let unitAvaliability = unit.semester;
 
+    //remove the year from semester
     semester = semester.substring(2,4);
 
+    //if semester matched when unit is offered.
     return (unitAvaliability.includes(semester) ||
       (unitAvaliability == "BOTH" && !semester.includes("NS")));
 }
@@ -161,6 +186,7 @@ function Unit(code, creditPoints, type, semester, prerequisites, enrollmentReq, 
     this.equivalences = []; //equivalent units to this one.
     this.enrollmentRequirements = enrollmentReq;
     this.pointRequirements = pointReq;
+    this.enrollmentPeriod = "None";
 
     this.addPrerequisites = () => {
         return this.prerequisites = prerequisitesList
@@ -196,8 +222,6 @@ function Table()
                                             unitInfo[i].enrolment_req,
                                             unitInfo[i].points_req));
     
-            //only returns 1 unit before failing.
-            // getUnitPrerequisites(unitInformation[i].unitCode);
         }
     }
 
@@ -252,32 +276,29 @@ function Table()
         row.appendChild(head);
         row.appendChild(container);
 
+        console.log(container.id);
+
         //will loop through all units until unit names empty or
         //container is full.
         for(let i = 0; i < this.unitNames.length; i++)
         {
                 let unitCode = this.unitNames[i];
 
-                // if(canEnrollInPeriod(unitCode, container))
                 //check if unit placed in valid teaching period
                 if(unitConditionsMet(unitCode, container))
                 {
-                    container.appendChild(this.makeCell(unitCode));
+                    enrollInPeroid(this.makeCell(unitCode), container)
+                    //-1 as element was removed to get actual index.
+                    i -= 1;
+
+                    if(container.childElementCount > 3)
+                    {
+                        //if container full stop loop.
+                        break;
+                    }
                 }
 
-                if(container.childElementCount > 3)
-                {
-                    break;
-                }
 
-                //problem when i == length.
-                //e.g. if element 4 in length 5 array deleted.
-                //length becomes 4, but last element ignored.
-                //need to reset i to 0 or else loop will end.
-                if(i == this.unitNames.length)
-                {
-                    i = -1;
-                }
         }
 
         container.addEventListener("dragover", dragover);
@@ -333,14 +354,15 @@ function Table()
         this.extractInformation(response);
         this.extractNames();
 
-        iterations = 0;
+        let iterations = 0;
 
         while(this.unitNames.length > 0 && iterations < 50)
         {
             table.appendChild(this.makeYearContainer());
+            iterations++;
         }
 
-        if(iterator > 49)
+        if(iterations > 49)
         {
             alert("Error Generating Table. \nInfinite loop detected.\n"
                     + "Is a unit prerequisite missing?")
@@ -482,8 +504,8 @@ function appendRow(e)
         let table = document.getElementById("table");
 
         //get currently dragged unit.
-        let id = e.dataTransfer.getData('text/plain');
-        let item = document.getElementById(id);
+        let unitCode = e.dataTransfer.getData('text/plain');
+        let unit = getById(unitCode);
 
         table.appendChild(planner.makeYearContainer());
 
@@ -492,15 +514,12 @@ function appendRow(e)
         let NS = document.getElementById("Y" + planner.year +"NS1");
 
         //see what period to enroll unit into
-        if(canEnrollInPeriod(id, semester1)){
-            semester1.appendChild(item);
-
-        } else if (canEnrollInPeriod(id, semester2)) {
-            semester2.appendChild(item);
-
+        if(canEnrollInPeriod(unitCode, semester1)){
+            enrollInPeroid(unit, semester1);
+        } else if (canEnrollInPeriod(unitCode, semester2)) {
+            enrollInPeroid(unit, semester2);
         } else {
-            NS.appendChild(item);
-
+            enrollInPeroid(unit, NS);
         }
 
     } else {
