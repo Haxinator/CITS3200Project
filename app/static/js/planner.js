@@ -500,10 +500,12 @@ function drop(e)
             addCellEvents(itemClone);
 
             //after unit moved, see if prerequisites met.
-            if(unitConditionsMet(id, e.currentTarget))
+            if(unitConditionsMet(targetClone.id, targetClone.parentElement) &&
+            unitConditionsMet(itemClone.id, itemClone.parentElement))
             {
                 updateInfoBar("");
             }
+
             
     } else {
         updateInfoBar(`${id} only available in ${getPeriodOffered(id)} <br>
