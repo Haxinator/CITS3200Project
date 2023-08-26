@@ -25,6 +25,19 @@ getById("SemesterFilter").addEventListener("click", () => {
         updateInfoBar("Legend: <br>Blue - S1, Green - S2, Yellow - S1/S2, red - NS");
 });
 
+getById("ProblemFilter").addEventListener("click", () => {
+    for(let unit of planner.unitInformation.values())
+    {
+        item = getById(unit.unitCode);
+
+        if(unit.problems == 1)
+        {
+            item.classList.toggle("NS");
+        }
+    }
+        updateInfoBar("Legend: red - prerequisite not met");
+});
+
 // ------------------- INFO BAR FUNCTIONS -----------------------//
 
 function updateInfoBar(info){
@@ -109,7 +122,8 @@ function unitConditionsMet(unitCode, container)
 //checks if unit prerequisites met
 function unitPreRequisitiesMet(unitCode, container)
 {
-    let prerequisites = planner.unitInformation.get(unitCode).prerequisites;
+    let unit = planner.unitInformation.get(unitCode);
+    let prerequisites = unit.prerequisites;
 
     for(let prerequisite of prerequisites)
     {
@@ -122,15 +136,25 @@ function unitPreRequisitiesMet(unitCode, container)
 
         } else if (prerequisiteUnit != null){
 
-            //provided unit exists (ATAR units may not exist in plan)
-            if(prerequisiteUnit.enrollmentPeriod == container.id) {
+            //provided the unit exists (ATAR units may not exist in plan)
 
-                //if prerequisite is in this period.
+            //used to be prerequ.period == container.id
+            //extension allows function to be used after planner
+            //initalisation.
+            if(prerequisiteUnit.enrollmentPeriod >= container.id && 
+                prerequisiteUnit.enrollmentPeriod.length == container.id.length) {
+
+                updateInfoBar(`${prerequisite} must be done before ${unitCode}!`);
+                
+                unit.problems = 1;
+
+                //if prerequisite is in this period or greater.
                 return false;
             }
         }
     }
 
+    unit.problems = 0;
     return true;
 }
 
@@ -187,6 +211,7 @@ function Unit(code, creditPoints, type, semester, prerequisites, enrollmentReq, 
     this.enrollmentRequirements = enrollmentReq;
     this.pointRequirements = pointReq;
     this.enrollmentPeriod = "None";
+    this.problems = 0;
 
     this.addPrerequisites = () => {
         return this.prerequisites = prerequisitesList
@@ -371,6 +396,7 @@ function Table()
         //make table then sensor underneath
         addToRoot(table);
         addToRoot(this.makeSensor());
+        updateInfoBar("Welcome to the unit Planner! I'm the Info bar. I'll provide you with helpful info.");
     }
 }
 
@@ -426,6 +452,7 @@ function drop(e)
             canEnrollInPeriod(id, e.currentTarget))
         {
             e.target.appendChild(item);
+
         } else {
             if(e.currentTarget.childElementCount > 3)
             {
@@ -471,10 +498,18 @@ function drop(e)
             //add the event listeners to swapped units.
             addCellEvents(targetClone);
             addCellEvents(itemClone);
+
+            //after unit moved, see if prerequisites met.
+            if(unitConditionsMet(id, e.currentTarget))
+            {
+                updateInfoBar("");
+            }
+            
     } else {
         updateInfoBar(`${id} only available in ${getPeriodOffered(id)} <br>
                         ${e.target.id} only available in ${getPeriodOffered(e.target.id)}`);
     }
+
 
     //show item
     item.classList.remove("hide");
