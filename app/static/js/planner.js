@@ -604,9 +604,24 @@ function printInfo(e)
 //Creates a the planner based on that info.
 function fetchCourseRequirementsAndBuildPlanner() {
     let major = specialization;
+    let bridging = "NONE,"
+
+    //check ATAR prerequisites, if not achieved include bridging unit
+    if(isSpec == "no") {
+        bridging = bridging.concat("MATH1722,")
+    }
+    if(isMeth == "no") {
+        bridging = bridging.concat("MATH1721,")
+    }
+    if(isPhys == "no") {
+        bridging = bridging.concat("PHYS1030,")
+    }
+    if(isChem == "no") {
+        bridging = bridging.concat("CHEM1003,")
+    }
 
     const xhttp = new XMLHttpRequest();
-    let server = '/unitInformation/'.concat(major);
+    let server = '/unitInformation/'.concat(major,"/bridging=",bridging);
     xhttp.open("GET", server, true);
     xhttp.onload = function (e) {
         response = JSON.parse(xhttp.responseText);
