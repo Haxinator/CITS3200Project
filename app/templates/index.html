@@ -1,29 +1,43 @@
 {% extends "base.html" %}
 {% block content %}
-<!-- Include the index-specific CSS file -->
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/index.css') }}">
-
-<div class="container text-justify">
-    <div class="row align-items-start">
-        <div class="col-lg-12 info-box">
-            <h2>Welcome to the University of Western Australia's Course Planning System!</h2>
-
-            <p class="info-line">Embarking on a new academic journey can be exciting, but also a little daunting. Navigating your degree requirements, managing prerequisites, and structuring your course schedule is no small task. That's where we come in.</p>
-
-            <p class="info-line">Introducing UWA's interactive Course Planning System – a tool designed to make planning your degree as smooth and efficient as possible. Whether you're an incoming freshman or a seasoned senior, this system is tailored to assist you in understanding the prerequisites, coordinating your schedule, and ultimately crafting a degree plan that's unique to you.</p>
-
-            <p class="info-line">Use our intuitive interface to explore various courses, understand the prerequisites, sequence them in a logical order, and experiment with different paths. You can visualize your entire academic roadmap, plan ahead, and make informed decisions about your future.</p>
-
-            <p class="info-line">Our system encourages creativity and flexibility, allowing you to play around with various course structures, experiment with different combinations, and see how different units fit together across the years of your degree. Discover the optimal path to fulfilling your academic goals and passions.</p>
-
-            <p class="info-line">The Course Planning System at UWA is more than a tool; it's your academic ally. Dive into the vibrant world of educational possibilities, empower your decisions, and unlock the door to a well-planned academic future.</p>
-
-            <p class="info-line">Ready to begin? Click the button below to take the first step towards designing your degree at the University of Western Australia. We're with you every step of the way.</p>
-
-            <a href="{{ url_for('getStarted') }}" class="btn btn-primary">Get Started</a>
-            <p class="info-line">-The UWA Course Planning Team</p>
-        </div>
+<div class="contentwrapper">
+    <div class="content">
+       <!-- ### START PAGE CONTENT ### -->
+       <div class="column-group flex">
+          <div class="column-three-quarter">
+          </div>
+       </div>
+       <div class="folio-device folio-tabs init has-resize-event border" id="folio-parent_div_0" aria-activedecendant="a_0">
+          <div class="folio-menu-bar">
+             <a class="expand-all">Expand all</a><a class="folio-select" aria-label="Visible section (activate this to change)"><span>Unit Overview</span></a>
+             <div class="folio-links">
+                <ul role="tablist" aria-activedecendant="a_0">
+                   <li><a class="folio-link active" href="#unit-overview" id="a_0" aria-selected="true"><span style="font-size:18.0pt">WHAT IS IT</span></a></li>
+                </ul>
+             </div>
+          </div>
+          <!--NULL unit_tag-->
+          <div class="folio-section active" role="tabpanel" id="unit-overview">
+             <h3 class="folio-header active" tabindex="0" id="folio_h3_0">Unit Overview</h3>
+             <div class="folio-content active" aria-expanded="true">
+                <dl class="">
+                   <!--START unit_content-->
+                   <dd>
+                      <p>Embarking on a new academic journey can be exciting, but also a little daunting. Navigating your degree requirements, managing prerequisites, and structuring your course schedule is no small task. That's where we come in.</p>
+                      <p>Introducing UWA's interactive Course Planning System – a tool designed to make planning your degree as smooth and efficient as possible. Whether you're an incoming freshman or a seasoned senior, this system is tailored to assist you in understanding the prerequisites, coordinating your schedule, and ultimately crafting a degree plan that's unique to you.</p>
+                      <p>Use our intuitive interface to explore various courses, understand the prerequisites, sequence them in a logical order, and experiment with different paths. You can visualize your entire academic roadmap, plan ahead, and make informed decisions about your future.</p>
+                      <p>Our system encourages creativity and flexibility, allowing you to play around with various course structures, experiment with different combinations, and see how different units fit together across the years of your degree. Discover the optimal path to fulfilling your academic goals and passions.</p>
+                      <p>The Course Planning System at UWA is more than a tool; it's your academic ally. Dive into the vibrant world of educational possibilities, empower your decisions, and unlock the door to a well-planned academic future.</p>
+                      <p>Ready to begin? Click the button below to take the first step towards designing your degree at the University of Western Australia. We're with you every step of the way.</p>
+                   </dd>
+                   <!--END unit_content-->
+                   <!--START unit_points-->
+                </dl>
+             </div>
+          </div>
+          <p><a class="button border" href="https://handbooks.uwa.edu.au/search/?type=units&amp;searchtext=#tag-online">Get Started!</a></p>
+       </div>
+       <!-- ### END PAGE CONTENT ### -->
     </div>
-</div>
+ </div>
 {% endblock %}
