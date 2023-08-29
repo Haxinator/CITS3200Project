@@ -1,16 +1,296 @@
-<html>
-<head>
-  {% if title %}
-  <title>{{ title }} - UWA Preferences</title> <!-- Set the page title with optional custom title -->
-  {% else %}
-  <title>UWA Preferences</title> <!-- Set the default page title -->
-  {% endif %}
-  <link rel="icon" href="https://crowdresearch.uwa.edu.au/wp-content/uploads/2015/12/cropped-uwa-crest-512.png"> <!-- Set the favicon -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous"> <!-- Include Bootstrap CSS -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script> <!-- Include Bootstrap JS -->
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/style_alt.css') }}"> <!-- Include custom CSS -->
-</head>
-<body>
-      {% block content %}{% endblock %} <!-- Placeholder for content block -->
+<html id="core-rebrand" lang="en">
+   <head>
+      <script type="text/javascript" src="//heatmaps.monsido.com/v1/heatmaps.js"></script><script type="text/javascript" async="" src="https://www.googletagmanager.com/gtag/js?id=G-RSD660HKM1&amp;cx=c&amp;_slc=1"></script><script type="text/javascript" async="" src="https://www.google-analytics.com/plugins/ua/linkid.js"></script><script type="text/javascript" async="" src="//img.en25.com/i/elqCfg.min.js"></script><script type="text/javascript" async="" src="https://www.googletagmanager.com/gtag/js?id=G-2YDLQ05G5S&amp;l=dataLayer&amp;cx=c"></script><script type="text/javascript" async="" src="https://www.googletagmanager.com/gtag/js?id=G-886292W0J6&amp;l=dataLayer&amp;cx=c"></script><script type="text/javascript" async="" src="https://www.googletagmanager.com/gtag/js?id=G-HDTTNKRLBD&amp;l=dataLayer&amp;cx=c"></script><script type="text/javascript" async="" src="https://www.googletagmanager.com/gtag/js?id=G-3TZVGFFX6H&amp;l=dataLayer&amp;cx=c"></script><script type="text/javascript" async="" src="https://www.googletagmanager.com/gtag/js?id=G-0LVWPD3M3X&amp;l=dataLayer&amp;cx=c"></script><script type="text/javascript" async="" src="https://www.google-analytics.com/analytics.js"></script><script gtm="GTM-N397MQR" type="text/javascript" async="" src="https://www.google-analytics.com/gtm/optimize.js?id=OPT-WXZM5VX"></script><script async="" src="//www.googletagmanager.com/gtm.js?id=GTM-N397MQR"></script>
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <!-- the above compatability tag MUST be first -->
+      <meta name="language" content="en">
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+      <meta id="responsive-viewport" name="viewport" content="width=device-width, target-densitydpi=medium-dpi, initial-scale=1.0,   maximum-scale=2.0">
+      <!-- common libraries -->
+      <link rel="stylesheet" type="text/css" href="https://static.weboffice.uwa.edu.au/visualid/lib/font-awesome/font-awesome.4.latest.css">
+      <script type="text/javascript" src="https://static.weboffice.uwa.edu.au/visualid/lib/jquery/jquery-1.11.latest.js"></script>
+      <!-- core styles -->
+      <link rel="stylesheet" type="text/css" href="https://static.weboffice.uwa.edu.au/visualid/core-rebrand/css/uwacore.css?r6">
+      <!-- <link rel="stylesheet" type="text/css" href="https://static.weboffice.uwa.edu.au/visualid/core-rebrand/css/megamenu.css?r5"> -->
+      <!-- core scripts -->
+      <script type="text/javascript" src="https://static.weboffice.uwa.edu.au/visualid/core-rebrand/js/uwacore.js?r5"></script>
+      <script defer="" type="text/javascript" src="https://static.weboffice.uwa.edu.au/visualid/core-rebrand/js/megamenu.js?r7"></script>
+      <!-- Pre-load devices -->
+      <meta name="uwacore.skip-devices" content="folio;overlay-header;builtin;">
+      <link rel="stylesheet" type="text/css" href="https://static.weboffice.uwa.edu.au/visualid/core-rebrand/devices/styles.php?css=folio;overlay-header;builtin;&amp;site=handbooks.uwa.edu.au">
+      <script type="text/javascript" src="https://static.weboffice.uwa.edu.au/visualid/core-rebrand/devices/scripts.php?js=folio;overlay-header;builtin;&amp;site=handbooks.uwa.edu.au"></script>
+      <!-- metadata settings -->
+      <meta name="uwamenu.searchdomain" content="https://handbooks.uwa.edu.au/">
+      <meta name="google.analytics.id" content="">
+      <meta name="google.tagmanager.id" content="GTM-N397MQR">
+      <link rel="shortcut icon" href="https://handbooks.uwa.edu.au/img/favicon.ico">
+      <!-- <link rel="stylesheet" type="text/css" href="https://handbooks.uwa.edu.au/css/handbooks.css?2023"> -->
+      <!-- Search and sharing metadata -->
+      <meta property="og:site_name" content="UWA Course Structure Guide : The University of Western Australia">
+      <meta property="og:locale" content="en_AU">
+      <meta property="og:image" content="https://handbooks.uwa.edu.au/media/_images/sharing-preview.jpg">
+      <meta property="og:type" content="website">
+      <meta name="description" content="Students learn professional skills to prepare them for the transition to professional engineering employment.">
+      <meta property="og:description" content="Students learn professional skills to prepare them for the transition to professional engineering employment.">
+      <meta property="og:title" content="Welcome to the University of Western Australia's Course Planning System!">
+      <script>
+         window.dataLayer = [{
+             "fsCourseTitle": "UWA Course Structure",
+             "fsCode": "",
+             "fsSchool": "",
+             "fsBoe": "",
+             "fsStudyType": "",
+             "fsDelivery": ""
+         } ]
+      </script>
+      <!-- other items -->
+      <title>UWA Course Structure Guide : The University of Western Australia</title>
+      <meta name="google-site-verification" content="GD9hTyZqtiiFE0n7Ogd8zwxgctNfyljU2JG4TQn3H8w">
+      <title>UWA Course Structure Guide : The Univeristy of Western Australia</title>
+      <link rel="stylesheet" type="text/css" href="https://static.weboffice.uwa.edu.au/visualid/core-rebrand/devices/styles.php?r=3_29&amp;css=images;%20lightbox;%20&amp;site=handbooks.uwa.edu.au" media="all">
+   </head>
+
+
+   <body class="style-version-two show-site-title ua-chrome double-logo" data-new-gr-c-s-check-loaded="14.1121.0" data-gr-ext-installed="" style="transition: margin 300ms ease 0s;">
+    <ol id="uwacore-breadcrumbs">
+        <li><a href="https://www.uwa.edu.au">UWA Home</a>
+        </li>
+        <li><a href="https://www.uwa.edu.au">UWA Home</a>
+        </li>
+        <li><a href="https://handbooks.uwa.edu.au/">UWA Course Structure Guide </a>
+        </li>
+        <li><a href="https://handbooks.uwa.edu.au/coursedetails">Courses</a></li>
+        <li><a href="https://handbooks.uwa.edu.au/coursedetails?code=bh011#:~:text=The%20Bachelor%20of%20Engineering%20(Honours,the%20contemporary%20world%20of%20engineering.">Bachelor of Engineering (Honours) [BH011]</a></li>
+        <li class="current">Uwa Course Structure Guide</li>
+     </ol>
+    
+   <ul id="acessible-links" class="inline-center">
+      <li><a href="#centrecontainer">Skip to main content</a></li>
+   </ul>
+   <h1 id="sitehomelink" style="display: none;"><a href="https://handbooks.uwa.edu.au/">UWA UWA Course Structure Guide </a></h1>
+   <h2 id="pagetitle" style="display: none;">UWA Course Structure Guide </h2>
+   <a id="top"></a>
+   <div id="centrecontainer" class="centrecontainer" role="main">
+      
+        {% block content %}{% endblock %} <!-- Placeholder for content block -->
+   </div>
+   <div id="uwacore-data">
+      <!-- Site title -->
+      <!-- optional breadcrumb trail -->
+      <!-- "this page" link in footer for technical/admin info -->
+      <!-- Menu navigation links. The top level links are also added to the footer -->
+      <div id="uwamenu-navigation">
+         <ul class="links">
+            <li>
+               <a href="https://handbooks.uwa.edu.au/undergraduate">Undergraduate</a>
+               <ul class="links">
+                  <li><a href="https://handbooks.uwa.edu.au/undergraduate/combined">Combined Courses</a></li>
+                  <li><a href="https://handbooks.uwa.edu.au/undergraduate/undergraduate-degree-course-structure">Undergraduate degree course structure</a></li>
+                  <li><a href="https://handbooks.uwa.edu.au/undergraduate/bh005-course-structure">Bachelor of Philosophy (Hons) Course structure</a></li>
+                  <li><a href="https://handbooks.uwa.edu.au/undergraduate/broadening">Broadening requirements</a></li>
+                  <li><a href="https://handbooks.uwa.edu.au/undergraduate/electives">Elective choices</a></li>
+                  <li><a href="https://handbooks.uwa.edu.au/undergraduate/studyplans">Study plan templates</a></li>
+               </ul>
+            </li>
+            <li><a href="https://handbooks.uwa.edu.au/postgraduate">Postgraduate</a></li>
+            <li><a href="https://handbooks.uwa.edu.au/hdr">Higher degree by research</a></li>
+            <li><a href="https://handbooks.uwa.edu.au/majors">Majors</a></li>
+            <li><a href="https://handbooks.uwa.edu.au/units">Units</a></li>
+            <li><a href="https://handbooks.uwa.edu.au/college">College Courses</a></li>
+            <li><a href="https://handbooks.uwa.edu.au/rules">Rules</a></li>
+            <li><a href="https://handbooks.uwa.edu.au/student-procedures">Student procedures</a></li>
+            <li><a href="https://handbooks.uwa.edu.au/university-policies">University Policies</a></li>
+            <li>
+               <a href="https://handbooks.uwa.edu.au/pre-2012">Pre-2012</a>
+               <ul class="links">
+                  <li><a href="https://handbooks.uwa.edu.au/pre-2012/pre-2012-rules">Pre-2012 rules</a></li>
+               </ul>
+            </li>
+            <li><a href="https://handbooks.uwa.edu.au/archived-handbooks">Archived Handbooks</a></li>
+            <li><a href="https://handbooks.uwa.edu.au/contact-us">Contact us</a></li>
+         </ul>
+      </div>
+   </div>
+   <div id="uwaMenu" class="uwaMenu-hidden">
+      <div>
+         <div id="uwaMenuInner">
+            <a class="closeLink" href="#top"><i class="fc fc-close-cross"></i>Close</a>
+            <ul id="uwaMenuTabs" class="local-disabled">
+               <li>
+                  <a class="tab active" href="#uwaMenuGlobal">
+                     Explore UWA
+                     <svg class="tab-corner" height="10" width="12">
+                        <polygon points="-2,-2 14,12 14,-2"></polygon>
+                     </svg>
+                  </a>
+               </li>
+            </ul>
+            <form tabindex="0" action="https://apps.digital.uwa.edu.au/site-search" method="get" name="uwasearch" id="uwaMenuSearch" style="display: block;">
+               <fieldset><input name="site" value="search" type="hidden"><input name="hl" value="en" type="hidden"><input name="thisurl" value="https://handbooks.uwa.edu.au/" type="hidden"><input id="uwaMenuSearchType" name="query" value="search" type="hidden"><input id="uwaMenuSearchWords" value="" placeholder="Search the university" type="text" name="words"><button type="reset" id="uwaMenuSearchClear" alt="Clear"><i class="fc fc-close-cross"></i></button><button id="uwaMenuSearchSubmit" type="submit" alt="Submit"><i class="fa fa-search"></i></button></fieldset>
+            </form>
+            <div class="uwaMenuPanel active" id="uwaMenuGlobal" tabindex="0" data-search-type="search" data-search-placeholder="Search the university">
+               <div id="globalNavTree">
+                  <ul>
+                     <li>
+                        <a id="uwaMenuGlobalStudy" tabindex="0">Study</a>
+                        <ul style="display: none;">
+                           <li><a href="https://www.web.uwa.edu.au/study/future-students">Future Students</a></li>
+                           <li><a href="https://www.uwa.edu.au/seek-wisdom">Seek Wisdom</a></li>
+                           <li><a href="https://www.web.uwa.edu.au/study/research-programs">Research programs</a></li>
+                           <li><a href="https://www.web.uwa.edu.au/study/current-students2">Current Students</a></li>
+                           <li><a href="https://www.web.uwa.edu.au/study/scholarships">Scholarships</a></li>
+                           <li><a href="https://www.web.uwa.edu.au/study/teaching-and-learning">Education at UWA</a></li>
+                           <li><a href="https://www.web.uwa.edu.au/study/research">Research Institutes and Centres</a></li>
+                           <li><a href="https://www.uwa.edu.au/schools/home">Schools</a></li>
+                           <li><a href="https://www.web.uwa.edu.au/study/campuses">Campuses</a></li>
+                        </ul>
+                     </li>
+                     <li>
+                        <a id="uwaMenuGlobalAbout" tabindex="0">About UWA</a>
+                        <ul style="display: none;">
+                           <li><a href="https://www.uwa.edu.au/uwa2030/">UWA 2030</a></li>
+                           <li><a href="https://www.web.uwa.edu.au/university/highlights">Highlights</a></li>
+                           <li><a href="https://www.web.uwa.edu.au/university/governance">Governance</a></li>
+                           <li><a href="https://www.web.uwa.edu.au/university/chancellor">Chancellor</a></li>
+                           <li><a href="https://www.web.uwa.edu.au/university/vice-chancellor">Vice-Chancellor</a></li>
+                           <li><a href="https://www.web.uwa.edu.au/university/executive">Executive</a></li>
+                           <li><a href="https://www.web.uwa.edu.au/university/history">History of the University</a></li>
+                           <li><a href="https://www.uwa.edu.au/schools/home">Schools</a></li>
+                           <li><a href="https://www.web.uwa.edu.au/university/research">Research Institutes and Centres</a></li>
+                           <li><a href="https://www.web.uwa.edu.au/university/campuses">Campuses</a></li>
+                           <li><a href="https://www.web.uwa.edu.au/360-campus-tour/">Campus Virtual Tour</a></li>
+                           <li><a href="https://www.web.uwa.edu.au/university/transport">Transport and parking</a></li>
+                           <li><a href="https://www.web.uwa.edu.au/university/complaints">Complaints</a></li>
+                           <li><a href="https://www.web.uwa.edu.au/university/publications">Official publications</a></li>
+                           <li><a href="https://www.web.uwa.edu.au/university/marketing">Communications and marketing</a></li>
+                           <li><a href="https://www.web.uwa.edu.au/university/filming">Filming and photography</a></li>
+                           <li><a href="https://www.web.uwa.edu.au/university/employment">Working at UWA</a></li>
+                        </ul>
+                     </li>
+                     <li>
+                        <a id="uwaMenuGlobalResearch" tabindex="0">Research</a>
+                        <ul style="display: none;">
+                           <li><a href="https://www.web.uwa.edu.au/research/research">Research at UWA</a></li>
+                           <li><a href="https://www.web.uwa.edu.au/research/programs">Courses and programs</a></li>
+                           <li><a href="https://www.web.uwa.edu.au/research/institutes">Research Institutes and Centres</a></li>
+                           <li><a href="https://www.web.uwa.edu.au/research/news">News</a></li>
+                           <li><a href="https://www.uwa.edu.au/schools/home">Schools</a></li>
+                        </ul>
+                     </li>
+                     <li>
+                        <a id="uwaMenuGlobalCommunity" tabindex="0">Community</a>
+                        <ul style="display: none;">
+                           <li><a href="https://www.web.uwa.edu.au/engage/business">Business and Industry</a></li>
+                           <li><a href="https://www.web.uwa.edu.au/engage/international">International engagement</a></li>
+                           <li><a href="https://www.web.uwa.edu.au/engage/alumni-and-friends">Alumni and Friends</a></li>
+                           <li><a href="https://www.web.uwa.edu.au/engage/community-partnership-program/">Community Partnerships Program</a></li>
+                           <li><a href="https://www.web.uwa.edu.au/engage/events">Events</a></li>
+                           <li><a href="https://www.web.uwa.edu.au/engage/cultural-precinct">Cultural Precinct</a></li>
+                           <li><a href="https://www.web.uwa.edu.au/engage/perthfestival">Perth Festival</a></li>
+                           <li><a href="https://www.web.uwa.edu.au/engage/media">News and media</a></li>
+                           <li><a href="https://www.web.uwa.edu.au/engage/filming">Filming and photography</a></li>
+                           <li><a href="https://www.web.uwa.edu.au/engage/employment">Working at UWA</a></li>
+                           <li><a href="https://www.sport.uwa.edu.au/">UWA Sport</a></li>
+                           <li><a href="https://giving.uwa.edu.au">Giving to UWA</a></li>
+                        </ul>
+                     </li>
+                     <li>
+                        <a id="uwaMenuGlobalContact" tabindex="0">Contact UWA</a>
+                        <ul style="display: none;">
+                           <li><a href="https://www.web.uwa.edu.au/contact">General enquiries</a></li>
+                           <li><a href="https://www.web.uwa.edu.au/contact/uwa-staff-contact-directory">Staff Directory</a></li>
+                           <li><a href="https://www.web.uwa.edu.au/contact/faculties">Schools</a></li>
+                           <li><a href="https://www.web.uwa.edu.au/contact/research">Research Institutes and Centres</a></li>
+                           <li><a href="https://www.web.uwa.edu.au/contact/alumni-and-friends">Alumni and Friends</a></li>
+                           <li><a href="https://www.web.uwa.edu.au/contact/visitors">Visitors Information Centre</a></li>
+                           <li><a href="https://www.web.uwa.edu.au/engage/media">News and media</a></li>
+                           <li><a href="https://www.web.uwa.edu.au/contact/map">Campus map</a></li>
+                           <li><a href="https://www.web.uwa.edu.au/contact/transport-and-parking">Transport and parking</a></li>
+                           <li><a href="https://www.web.uwa.edu.au/contact/list">A-Z list of websites</a></li>
+                        </ul>
+                     </li>
+                  </ul>
+               </div>
+               <!--<div id="uwaMenuGlobalQuickLinks" class="lineLabel"><span>Quick Links</span></div>-->
+               <ul class="quickLinks">
+                  <li><a href="http://www.uwa.edu.au/atoz">A-Z websites<i class="fc fc-flaticon-a-to-z"></i></a></li>
+                  <li><a href="http://www.uwa.edu.au/campus_map">Campus map<i class="fc fc-flaticon-pin-on-map"></i></a></li>
+                  <li><a href="http://www.library.uwa.edu.au/">Library<i class="fc fc-flaticon-book-pile"></i></a></li>
+                  <li><a href="http://www.lms.uwa.edu.au/">LMS<i class="fc fc-flaticon-cubes"></i></a></li>
+                  <li><a href="http://www.it.uwa.edu.au/">IT<i class="fc fc-flaticon-desktop-pc"></i></a></li>
+                  <li><a href="http://uwa.edu.au/webmail">Webmail<i class="fc fc-flaticon-envelope"></i></a></li>
+               </ul>
+            </div>
+         </div>
+      </div>
+   </div>
+   <div id="lightbox-popup" tabindex="0" aria-modal="true" aria-live="assertive" aria-label="Lightbox. Press escape to close, left and right to change item and space bar to toggle information if applicable." style="display: none;">
+      <div class="outer" aria-modal="true" style="max-width: 803px;">
+         <div class="header">
+            <h2>Header Text</h2>
+            <button class="close flat" aria-label="close modal"><i class="fc-close-cross"></i></button>
+         </div>
+         <div class="inner">
+            <ul id="lightbox-overlay" class="no-bullet" role="navigation">
+               <li class="prev"><button class="flat" aria-label="previous image"><i class="fc-angle-left"></i></button></li>
+               <li class="position"></li>
+               <li class="next"><button class="flat" aria-label="next image"><i class="fc-angle-right"></i></button></li>
+               <li class="close"><button class="flat" aria-label="close"><i class="fc-close-cross"></i></button></li>
+            </ul>
+            <button class="flat" id="lightbox-info-open" aria-label="open sidebar"><i class="fa fa-circle"></i><i class="fa fa-circle"></i><i class="fa fa-circle"></i></button>            
+            <div id="lightbox-content"></div>
+            <div id="lightbox-info" role="complementary">
+               <div class="buttons"><button class="flat" id="lightbox-info-close" aria-label="close additional info"><i class="fc-arrow-right"></i></button></div>
+               <div class="content right-col"></div>
+            </div>
+         </div>
+      </div>
+   </div>
+   <div id="overlay-header" class="fade-off">
+      <div class="inner">
+         <div>
+            <div id="overlay-header-logo" class="formal no-seperator uwa-logo-descriptor">
+               <a id="uwa-crest" href="https://handbooks.uwa.edu.au/"><img class="raster light formal" alt="The University of Western Australia" src="//static.weboffice.uwa.edu.au/visualid/core-rebrand/img/uwacrest/uwacrest-white.png"><img class="vector light formal" alt="The University of Western Australia" src="//static.weboffice.uwa.edu.au/visualid/core-rebrand/img/uwacrest/uwacrest-white.svg"><img class="raster dark formal" alt="The University of Western Australia" src="//static.weboffice.uwa.edu.au/visualid/core-rebrand/img/uwacrest/uwacrest-blue.png"><img class="vector dark formal" alt="The University of Western Australia" src="//static.weboffice.uwa.edu.au/visualid/core-rebrand/img/uwacrest/uwacrest-blue.svg"><img class="raster light informal" alt="UWA Perth Western Australia" src="//static.weboffice.uwa.edu.au/visualid/core-rebrand/img/uwacrest/uwacrest-informal-white.png"><img class="vector light informal" alt="UWA Perth Western Australia" src="//static.weboffice.uwa.edu.au/visualid/core-rebrand/img/uwacrest/uwacrest-informal-white.svg"><img class="raster dark informal" alt="UWA Perth Western Australia" src="//static.weboffice.uwa.edu.au/visualid/core-rebrand/img/uwacrest/uwacrest-informal-blue.png"><img class="vector dark informal" alt="UWA Perth Western Australia" src="//static.weboffice.uwa.edu.au/visualid/core-rebrand/img/uwacrest/uwacrest-informal-blue.svg"></a>
+               <a id="uwa-logo-descriptor" class="formal no-seperator" href="https://handbooks.uwa.edu.au/">
+                  <svg xmlns="https://www.w3.org/2000/svg" viewBox="0 0 250 75" width="250" height="75" preserveAspectRatio="xMinYMin meet">
+                     <text style="font-size: 40px;" x="0" y="30">Handbook</text>
+                     <text style="font-size: 40px;" x="0" y="64">2023 </text>
+                  </svg>
+               </a>
+            </div>
+            <ul id="overlay-site-nav">
+               <li><a href="#centrecontainer" class="scroll-top"><i class="fa fa-arrow-up"></i>Back to top</a></li>
+               <li><a href="#uwaMenuGlobal"><i class="fa fa-navicon"></i>Menu</a></li>
+            </ul>
+         </div>
+      </div>
+   </div>
+   <script type="text/javascript" id="">window._monsido=window._monsido||{token:"undefined",statistics:{enabled:!0,documentTracking:{enabled:!0,documentCls:"monsido_download",documentIgnoreCls:"monsido_ignore_download",documentExt:["pdf","docx","xlsx","pptx"]}},heatmap:{enabled:!0}};</script>
+   <script type="text/javascript" id="" src="https://app-script.monsido.com/v2/monsido-script.js"></script><script type="text/javascript" id="">if(sessionStorage.pageViewCount){var pvc=parseInt(sessionStorage.getItem("pageViewCount"))+1;sessionStorage.setItem("pageViewCount",pvc)}else sessionStorage.pageViewCount||sessionStorage.setItem("pageViewCount",1);</script><script type="text/javascript" id="">var _elqQ=_elqQ||[];_elqQ.push(["elqSetSiteId","1802092"]);_elqQ.push(["elqUseFirstPartyCookie","seek.uwa.edu.au"]);_elqQ.push(["elqTrackPageView"]);(function(){var a=document.createElement("script");a.type="text/javascript";a.async=!0;a.src="//img.en25.com/i/elqCfg.min.js";var b=document.getElementsByTagName("script")[0];b.parentNode.insertBefore(a,b)})();</script>
+   <script>
+    window.onload = function() {
+        var link = document.querySelector('a[href="#uwaMenuLocal"]');
+        if(link) {
+            link.href = '#uwaMenuGlobal';
+        }
+
+        var logo = document.getElementById('uwa-logo-descriptor');
+        if(logo) {
+            logo.outerHTML = '<a id="uwa-logo-descriptor" class="formal no-seperator" href="#">' +
+                '<svg xmlns="https://www.w3.org/2000/svg" viewBox="0 0 250 75" width="400" height="80" preserveAspectRatio="xMinYMin meet">' +
+                    '<text style="font-size: 35px; letter-spacing: -2px;" x="0" y="30">UWA Course Structure Guide</text>' +
+                    '<text style="font-size: 30px;" x="0" y="64">2023</text>' +
+                '</svg>' +
+            '</a>';
+        }
+
+        var siteHeader = document.getElementById('site-header');
+        if(siteHeader) {
+            siteHeader.outerHTML = '<div id="site-header" tabindex="0"><div class="inner"><h2><a href="https://handbooks.uwa.edu.au/">UWA Handbook 2023 </a></h2><h1>Welcome to the UWAs BH011 custom Course Unit Plan Creator!</h1></div></div>';
+        }
+    }
+</script>
+
 </body>
 </html>
+
