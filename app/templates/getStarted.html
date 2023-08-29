@@ -51,7 +51,7 @@
             <input type="radio" name="physics" value="no"> No
         </div>
 
-        <button type="submit" class="btn btn-primary" disabled style="opacity:0.5;">Submit</button>
+        <button type="submit" class="button border" disabled style="opacity:0.5;">Submit</button>
     </form>
 </div>
 
@@ -71,7 +71,7 @@
         var mathMethods = document.getElementsByName('mathMethods');
         var chemistry = document.getElementsByName('chemistry');
         var physics = document.getElementsByName('physics');
-        var submitButton = document.querySelector('.btn-primary');
+        var submitButton = document.querySelector('.button.border');
 
         // Check if all fields are filled
         if (specialization.value !== "" && radioIsChecked(mathSpecialist) && radioIsChecked(mathMethods) &&
