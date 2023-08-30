@@ -35,6 +35,9 @@ getById("ProblemFilter").addEventListener("click", () => {
             //NS is red.
             item.classList.toggle("NS");
         }
+
+        //BUG if problem added when problem filter on, problem filter
+        //alternates between problem units.
     }
         updateInfoBar("Legend: red - prerequisite not met");
 });
