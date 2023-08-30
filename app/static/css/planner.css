@@ -1,6 +1,10 @@
-td {
+.unit {
     border: 1px solid black;
+    border-radius: 5px;
     padding: 10px;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    text-align: center;
 
     /* give all cells consistent size*/
     min-width: 100px;
@@ -14,7 +18,7 @@ td:hover{
     border: 1px solid lightblue;
 }
 
-th{
+.heading{
     text-align: center; 
     vertical-align: middle;
 }

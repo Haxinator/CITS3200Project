@@ -34,6 +34,8 @@ getById("ProblemFilter").addEventListener("click", () => {
         {
             //NS is red.
             item.classList.toggle("NS");
+        } else {
+            item.classList.remove("NS");
         }
 
         //BUG if problem added when problem filter on, problem filter
@@ -283,6 +285,7 @@ function Table()
         data.innerHTML = unitCode;
         data.setAttribute("id", unitCode);
         data.setAttribute("draggable", "true");
+        data.classList.add("unit");
         addCellEvents(data);
 
         removeFromArray(this.unitNames, unitCode);
@@ -298,8 +301,8 @@ function Table()
         this.year++;
         head.innerHTML = "Y" + this.year;
         head.setAttribute("colspan", "5");
+        head.classList.add("heading");
         row.appendChild(head);
-        row.setAttribute("class","year");
         
         return row;
     }
@@ -312,6 +315,7 @@ function Table()
         let yearID = "Y" + this.year;
 
         head.innerHTML = semester;
+        head.classList.add("heading");
         container.setAttribute("id", yearID + semester);
         row.appendChild(head);
         row.appendChild(container);
