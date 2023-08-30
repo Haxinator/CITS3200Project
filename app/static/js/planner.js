@@ -6,6 +6,25 @@ fetchCourseRequirementsAndBuildPlanner();
 makeInfoBar();
 
 // -------------------- FILTERS ----------------------------- //
+getById("root").addEventListener("click", (e) =>{
+    console.log(e.target.type);
+
+    //if a unit wasn't clicked
+    if(!e.target.classList.contains("unit") && !e.target.classList.contains("button"))
+    {
+        //removing highlighting and info bar text.
+        updateInfoBar("");
+
+        for(let unit of planner.unitInformation.values())
+        {
+            //overwrite all classes with unit.
+            unitElement = getById(unit.unitCode);
+            unitElement.setAttribute("class", "unit");
+        }
+    }
+    
+})
+
 getById("SemesterFilter").addEventListener("click", () => {
     for(let unit of planner.unitInformation.values())
     {
@@ -55,7 +74,6 @@ function makeInfoBar() {
     infoBar.setAttribute("id", "infoBar");
 
     text = document.createElement("p");
-    text.innerHTML = "Info Bar Hi";
 
     infoBar.appendChild(text);
 
@@ -116,6 +134,24 @@ function addCellEvents(item)
     item.addEventListener("dragstart", dragstart);
     item.addEventListener("dragend", dragend);
     item.addEventListener("click", printInfo);
+}
+
+//formats unit information
+function printUnitInfo(unitCode)
+{
+    let unit = planner.unitInformation.get(unitCode);
+    let str = "";
+
+    str += `Unit: ${unit.unitCode}<br>`;
+    str += `Type: ${unit.type}<br>`;
+    str += `Semester: ${unit.semester}<br>`;
+    str += `Credit Points: ${unit.creditPoints}<br>`;
+    str += `Semester: ${unit.semester}<br>`;
+    str += `Prerequisites: ${unit.prerequisites}<br>`;
+    str += `Point Requirements: ${unit.pointRequirements}<br>`;
+    str += `enrollment Requirements: ${unit.enrollmentRequirements}`;
+
+    return str;
 }
 
 // --------------- Prerequisite Met Functions ----------------//
@@ -424,7 +460,7 @@ function Table()
         //make table then sensor underneath
         addToRoot(table);
         addToRoot(this.makeSensor());
-        updateInfoBar("Welcome to the unit Planner! I'm the Info bar. I'll provide you with helpful info.");
+        updateInfoBar("");
     }
 }
 
@@ -608,7 +644,7 @@ function printInfo(e)
     {
         updateInfoBar(unit.problems);
     } else {
-        updateInfoBar(JSON.stringify(planner.unitInformation.get(unitCode)));
+        updateInfoBar(printUnitInfo(unitCode));
     }
 
     for(let prerequisite of unit.prerequisites)
