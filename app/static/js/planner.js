@@ -64,6 +64,10 @@ function makeInfoBar() {
 
 //--------------------SUPPORT FUNCTIONS--------------------------//
 
+function unitExists(unitCode)
+{
+    return (planner.unitInformation.get(unitCode) != undefined);
+}
 //Dummy functions for testing
 //creates fake units for testing.
 // function makeUnitArray(size)
@@ -297,9 +301,12 @@ function Table()
     this.makeYearRow = () => {
         let row = document.createElement("tr");
         let head = document.createElement("th");
+        //h3 for UWA heading.
+        let heading = document.createElement("h3");
         
         this.year++;
-        head.innerHTML = "Y" + this.year;
+        heading.innerHTML = "Y" + this.year;
+        head.appendChild(heading);
         head.setAttribute("colspan", "5");
         head.classList.add("heading");
         row.appendChild(head);
@@ -312,9 +319,11 @@ function Table()
         let row = document.createElement("tr");
         let container = document.createElement("div");
         let head = document.createElement("th");
+        let heading = document.createElement("h4");
         let yearID = "Y" + this.year;
 
-        head.innerHTML = semester;
+        heading.innerHTML = semester;
+        head.appendChild(heading);
         head.classList.add("heading");
         container.setAttribute("id", yearID + semester);
         row.appendChild(head);
@@ -600,6 +609,17 @@ function printInfo(e)
         updateInfoBar(unit.problems);
     } else {
         updateInfoBar(JSON.stringify(planner.unitInformation.get(unitCode)));
+    }
+
+    for(let prerequisite of unit.prerequisites)
+    {
+        if(unitExists(prerequisite))
+        {
+            unitElement = getById(prerequisite);
+            
+            unitElement.classList.toggle("S2");
+            //it would be nice to add an arrow going from prerequiste to unit.
+        }
     }
 }
 

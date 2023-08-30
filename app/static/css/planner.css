@@ -8,6 +8,17 @@
 
     /* give all cells consistent size*/
     min-width: 100px;
+
+    /* nice shadow */
+    box-shadow: 3px 3px 5px lightblue;
+}
+
+.heading h3{
+    margin: 0px;
+}
+
+.heading h4{
+    margin: 0px;
 }
 
 main {
