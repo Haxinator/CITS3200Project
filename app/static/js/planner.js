@@ -341,7 +341,7 @@ function Table()
         let heading = document.createElement("h3");
         
         this.year++;
-        heading.innerHTML = "Y" + this.year;
+        heading.innerHTML = "Year " + this.year;
         head.appendChild(heading);
         head.setAttribute("colspan", "5");
         head.classList.add("heading");
