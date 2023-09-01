@@ -8,10 +8,19 @@
 
     /* give all cells consistent size*/
     min-width: 100px;
+
+    /* nice shadow */
+    box-shadow: 3px 3px 5px lightblue;
 }
 
-main {
-    padding-bottom: 80px;
+.heading h3{
+    margin: 0px;
+
+.heading h4{
+    margin: 0px;
+    width: 40px;
+    height: 72px;
+}
 }
 
 td:hover{
@@ -85,18 +94,40 @@ h2 {
     background-color: yellow;
 }
 
+
+.sensor h2 {
+    margin: 0px;
+    text-decoration:underline;
+}
+
+
+/* pad left without adding white line */
+/* #infoBar p{
+    padding-left: 10px;
+} */
+
 #infoBar {
     background-color: white;
-    text-align: center;
     margin: auto;
     position: fixed;
-    width: 80%;
+
+    /* Muslim happy :) */
     bottom: 0;
-    bottom: 0;
+    top: 0;
     left: 0;
-    right: 0;
     z-index: 900;
 
-    max-height: 120px;
-    min-height: 50px;
+    /* if info bar empty it will shrink into nothingness */
+    max-height: 60%;
+    max-width: 25%;
+    min-height: 0px;
+    min-width: 0px;
+
+    /* stops text overflow */
+    overflow-wrap: break-word;
+
+    /* modern curved look */
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+    box-shadow: 3px 3px 5px lightgrey;
 }

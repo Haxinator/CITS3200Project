@@ -56,7 +56,7 @@ def send_unit_information(major, bridging):
         WHERE u.major CONTAINS $major OR {unit_conditions}
         OPTIONAL MATCH (u)-[:REQUIRES]->(m)
         WITH u, COLLECT(m.unitcode) as unit_req
-        RETURN u.unitcode as unitcode, u.type as type, u.semester as semester, u.major as major, u.level as level, u.credit_points as credit_points, u.points_req as points_req, u.enrolment_req as enrolment_req, unit_req
+        RETURN u.unitcode as unitcode, u.unitname as unitname, u.type as type, u.semester as semester, u.major as major, u.level as level, u.credit_points as credit_points, u.points_req as points_req, u.enrolment_req as enrolment_req, unit_req, u.incompatible_units as incompatibilities, u.corequisites as corequisites
         ORDER BY level
         """
         x = {"major":major} 
@@ -69,7 +69,7 @@ def send_unit_information(major, bridging):
         WHERE u.major CONTAINS $major AND u.type = "CORE" OR {unit_conditions}
         OPTIONAL MATCH (u)-[:REQUIRES]->(m)
         WITH u, COLLECT(m.unitcode) as unit_req
-        RETURN u.unitcode as unitcode, u.type as type, u.semester as semester, u.major as major, u.level as level, u.credit_points as credit_points, u.points_req as points_req, u.enrolment_req as enrolment_req, unit_req
+        RETURN u.unitcode as unitcode, u.unitname as unitname, u.type as type, u.semester as semester, u.major as major, u.level as level, u.credit_points as credit_points, u.points_req as points_req, u.enrolment_req as enrolment_req, unit_req, u.incompatible_units as incompatibilities, u.corequisites as corequisites
         ORDER BY level
         """
         x = {"major":major}
@@ -77,14 +77,17 @@ def send_unit_information(major, bridging):
         data=results.data()
         return(jsonify(data))
 
-@app.route("/display", methods=["GET"])
-def display_node():
-    query="""
-    match (n) 
-    where n.type = "CORE"
-    return n.unitcode as unitcode, n.type as type, n.semester as semester, n.credit_points as credit_points
+@app.route("/option_units=<string:major>", methods=["GET"])
+def get_option_units(major):
+    query=f""" MATCH (u)
+    WHERE u.major CONTAINS $major AND u.type CONTAINS "GROUP"
+    OPTIONAL MATCH (u)-[:REQUIRES]->(m)
+    WITH u, COLLECT(m.unitcode) as unit_req
+    RETURN u.unitcode as unitcode, u.unitname as unitname, u.type as type, u.semester as semester, u.major as major, u.level as level, u.credit_points as credit_points, u.points_req as points_req, u.enrolment_req as enrolment_req, unit_req, u.incompatible_units as incompatibilities
+    ORDER BY level
     """
-    results=session.run(query)
+    x = {"major":major}
+    results=session.run(query,x)
     data=results.data()
     return(jsonify(data))
 

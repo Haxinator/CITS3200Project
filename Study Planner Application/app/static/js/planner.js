@@ -6,7 +6,25 @@ fetchCourseRequirementsAndBuildPlanner();
 makeInfoBar();
 
 // -------------------- FILTERS ----------------------------- //
+//get entire page if clicked on remove highlight and info bar.
+getById("root").parentElement.parentElement.addEventListener("click", (e) =>{
+
+    //if a unit wasn't clicked
+    if(!e.target.classList.contains("unit") && !e.target.classList.contains("button"))
+    {
+        //removing highlighting and info bar text.
+        updateInfoBar("");
+
+        clearHighlighting();
+    }
+    
+})
+
 getById("SemesterFilter").addEventListener("click", () => {
+
+    //clear last previous filters()
+    clearHighlighting();
+
     for(let unit of planner.unitInformation.values())
     {
         item = getById(unit.unitCode);
@@ -26,6 +44,9 @@ getById("SemesterFilter").addEventListener("click", () => {
 });
 
 getById("ProblemFilter").addEventListener("click", () => {
+
+    clearHighlighting();
+
     for(let unit of planner.unitInformation.values())
     {
         item = getById(unit.unitCode);
@@ -44,6 +65,46 @@ getById("ProblemFilter").addEventListener("click", () => {
         updateInfoBar("Legend: red - prerequisite not met");
 });
 
+getById("corequisiteFilter").addEventListener("click", () =>
+{
+    clearHighlighting();
+
+    for(let unit of planner.unitInformation.values())
+    {
+        item = getById(unit.unitCode);
+
+        if(unit.corequisites.length > 0)
+        {
+            //NS is red.
+            item.classList.toggle("S1");
+        } else {
+            item.classList.remove("S1");
+        }
+    }
+
+    updateInfoBar("Legend: Blue - Unit has Corequisites");
+});
+
+getById("prequisiteFilter").addEventListener("click", () =>
+{
+    clearHighlighting();
+
+    for(let unit of planner.unitInformation.values())
+    {
+        item = getById(unit.unitCode);
+
+        if(unit.prerequisites.length > 0)
+        {
+            //NS is red.
+            item.classList.toggle("S1S2");
+        } else {
+            item.classList.remove("S1S2");
+        }
+    }
+
+    updateInfoBar("Legend: Yellow - Unit has Prequisites");
+});
+
 // ------------------- INFO BAR FUNCTIONS -----------------------//
 
 function updateInfoBar(info){
@@ -55,7 +116,6 @@ function makeInfoBar() {
     infoBar.setAttribute("id", "infoBar");
 
     text = document.createElement("p");
-    text.innerHTML = "Info Bar Hi";
 
     infoBar.appendChild(text);
 
@@ -64,6 +124,10 @@ function makeInfoBar() {
 
 //--------------------SUPPORT FUNCTIONS--------------------------//
 
+function unitExists(unitCode)
+{
+    return (planner.unitInformation.get(unitCode) != undefined);
+}
 //Dummy functions for testing
 //creates fake units for testing.
 // function makeUnitArray(size)
@@ -114,15 +178,229 @@ function addCellEvents(item)
     item.addEventListener("click", printInfo);
 }
 
+//clears all highlighting
+function clearHighlighting()
+{
+    for(let unit of planner.unitInformation.values())
+    {
+        //overwrite all classes with unit.
+        unitElement = getById(unit.unitCode);
+        unitElement.setAttribute("class", "unit");
+    }
+}
+
+//@param label is the label (or name of unit information)
+//@param info is the unit information
+// formatInfo("Unit", unit.name)
+// `Unit: "${unit.name}"<br>`
+function formatInfo(label, info)
+{
+    return `<span style="font-weight: bold;">${label}</span>: "${info}"<br>`;
+}
+
+//formats unit information
+function printUnitInfo(unitCode)
+{
+    let unit = planner.unitInformation.get(unitCode);
+    let str = "";
+
+    // str += `<span style="font-weight: bolder;text-decoration: underline;">${unit.name}</span><br>`;
+    str += `<h5>${unit.name}</h5>`;
+    str += formatInfo("Unit Code", unit.unitCode);
+    str += formatInfo("Type", unit.type);
+    str += formatInfo("Semester", unit.semester);
+    str += formatInfo("Credit Points", unit.creditPoints);
+    str += formatInfo("Prerequisites", unit.prerequisites);
+    str += formatInfo("Corequisites", unit.corequisites); //previously or concurrently.
+    str += formatInfo("Point Requirements", unit.pointRequirements);
+    str += formatInfo("Enrollment Requirements", unit.enrollmentRequirements);
+
+    return str;
+}
+
 // --------------- Prerequisite Met Functions ----------------//
 
 //checks if all unit prerequisites met.
 function unitConditionsMet(unitCode, container)
 {
+    //empty here for cleaner code
+    //if problems still exist they will be added again
+    //if problems are gone, they will be removed from array.
+    planner.unitInformation.get(unitCode).problems = [];
+
+    //instead of container ID can be used, which would be cleaner.
     correctSemester = canEnrollInPeriod(unitCode, container);
     correctPrequisites = unitPreRequisitiesMet(unitCode, container);
+    correctCorequisites = corequisitesMet(unitCode, container);
+    correctPoints = pointRequirementsMet(unitCode, container);
 
-    return correctSemester && correctPrequisites;
+    return correctSemester && correctPrequisites && correctCorequisites && correctPoints;
+}
+
+function unitType(unitCode, identifier)
+{
+    if(identifier === "P" && unitCode.substring(0,4) === "CITS")
+    {
+        return true;
+    }
+
+    return false;
+}
+
+//it works I think?
+//checks if unit has met its point requirements.
+//both the overall points and core unit points.
+function pointRequirementsMet(unitCode, container)
+{
+    let unit = planner.unitInformation.get(unitCode);
+    let pointCount = 0;
+    let CoreUnitCount = 0;
+
+    console.log(container.id);
+    console.log("points needed " + unit.pointRequirements);
+
+    //if no point requirements, then requirements met.
+    if(unit.pointRequirements.length == 0)
+    {
+        return true;
+    }
+
+    //I cri.
+    //IT WORKSS
+    //BUG container isn't the container of the current unit for some reason.
+    for(let otherUnit of planner.unitInformation.values())
+    {
+        let otherUnitCode = otherUnit.unitCode;
+
+        // console.log(otherUnit.enrollmentPeriod);
+        // console.log(container.id);
+
+        //if in planner and before current enrollment period
+        if(planner.unitNames.indexOf(otherUnitCode) == -1 &&
+            otherUnit.enrollmentPeriod < container.id)
+        {
+
+            //pass last letter in, if it has unit point requirements
+            if(unitType(otherUnitCode, unit.pointRequirements[0].slice(-1)))
+            {
+                CoreUnitCount += parseInt(otherUnit.creditPoints);
+            }
+
+            pointCount += parseInt(otherUnit.creditPoints);
+
+
+            //add credit points to count depending on type
+            // switch(otherUnit.type){
+            //     case "CORE":
+            //         CoreUnitCount += parseInt(otherUnit.creditPoints);
+            //     default:
+            //         pointCount += parseInt(otherUnit.creditPoints);
+            // }
+        }
+    }
+
+    console.log(CoreUnitCount);
+    console.log(pointCount);
+
+    // check if char is alpha (different upp and lower)
+    // then first index is core units.
+    // I have become death. Destroyer of JScode clarity.
+    if(unit.pointRequirements[0].slice(-1).toLowerCase() != unit.pointRequirements[0].slice(-1).toUpperCase())
+    {
+        if(parseInt(unit.pointRequirements[0].substring(0,unit.pointRequirements[0].length-1)) > CoreUnitCount)
+        {
+            unit.problems.push(`${unitCode} requires ${unit.pointRequirements[0]} core unit credit points!`);
+            updateInfoBar(`${unitCode} requires ${unit.pointRequirements[0]} core unit credit points!`);
+
+            return false;
+        }
+
+        if(unit.pointRequirements.length > 1 && unit.pointRequirements[1] > pointCount)
+        {
+            unit.problems.push(`${unitCode} requires ${unit.pointRequirements[1]} credit points!`);
+            updateInfoBar(`${unitCode} requires ${unit.pointRequirements[1]} credit points!`);
+                
+            return false;
+        }
+    } else {
+        //otherwise first index is the point point.
+        if(unit.pointRequirements[0] > pointCount)
+        {
+            unit.problems.push(`${unitCode} requires ${unit.pointRequirements[0]} credit points!`);
+            updateInfoBar(`${unitCode} requires ${unit.pointRequirements[0]} credit points!`);
+                
+            return false;
+        }
+    }
+
+    //check if point requirements met
+    // switch(unit.pointRequirements.length)
+    // {
+    //     //core unit points
+    //     case 2:
+    //         if(unit.pointRequirements[0] > CoreUnitCount)
+    //         {
+    //             unit.problems.push(`${unitCode} requires ${unit.pointRequirements[0]} core unit credit points!`);
+    //             updateInfoBar(`${unitCode} requires ${unit.pointRequirements[0]} core unit credit points!`);
+                
+    //             return false;
+    //         }
+    //         if(unit.pointRequirements[1] > pointCount)
+    //         {
+    //             unit.problems.push(`${unitCode} requires ${unit.pointRequirements[1]} credit points!`);
+    //             updateInfoBar(`${unitCode} requires ${unit.pointRequirements[1]} credit points!`);
+
+    //             return false;
+    //         }
+    //         break;
+    //     //all points
+    //     default:
+    //         if(unit.pointRequirements[0] > pointCount)
+    //         {
+    //             unit.problems.push(`${unitCode} requires ${unit.pointRequirements[0]} credit points!`);
+    //             updateInfoBar(`${unitCode} requires ${unit.pointRequirements[0]} credit points!`);
+                
+    //             return false;
+    //         }
+    // }
+
+    return true;
+}
+
+//checks if corequisites for a given unit were met.
+//almost exactly the same as checking if prerequisites were met.
+//Haven't done indepth testing.
+//I hope this works. _/\_
+function corequisitesMet(unitCode, container)
+{
+    let unit = planner.unitInformation.get(unitCode);
+    let corequisites = unit.corequisites;
+    let corequisitesMet = true;
+
+    for(let corequisite of corequisites)
+    {
+        let corequisiteUnit = planner.unitInformation.get(corequisite);
+
+        if(planner.unitNames.indexOf(corequisite) != -1)
+        {
+            //if corequisite in name list then it isn't in planner
+            return false;
+
+        } else if(corequisiteUnit != null)
+        {
+            if(corequisiteUnit.enrollmentPeriod > container.id && 
+                corequisiteUnit.enrollmentPeriod.length == container.id.length)
+                {
+                    updateInfoBar(`${corequisite} must be done concurrently or prior to commencing ${unitCode}!`);
+                    
+                    unit.problems.push(`${corequisite} must be done concurrently or prior to commencing ${unitCode}`);
+                    
+                    corequisitesMet = false;
+                }
+        }
+    }
+
+    return corequisitesMet;
 }
 
 //checks if unit prerequisites met
@@ -131,11 +409,6 @@ function unitPreRequisitiesMet(unitCode, container)
     let unit = planner.unitInformation.get(unitCode);
     let prerequisites = unit.prerequisites;
     let prerequisitesMet = true;
-
-    //empty here for cleaner code
-    //if problems still exist they will be added again
-    //if problems are gone, they will be removed from array.
-    unit.problems = [];
 
     for(let prerequisite of prerequisites)
     {
@@ -153,10 +426,10 @@ function unitPreRequisitiesMet(unitCode, container)
             //used to be prerequ.period == container.id
             //extension allows function to be used after planner
             //initalisation.
-            console.log(prerequisiteUnit)
-            console.log("unit period " + prerequisiteUnit.enrollmentPeriod);
-            console.log("contianer period", container.id);
-            console.log(prerequisiteUnit.enrollmentPeriod >= container.id);
+            // console.log(prerequisiteUnit)
+            // console.log("unit period " + prerequisiteUnit.enrollmentPeriod);
+            // console.log("contianer period", container.id);
+            // console.log(prerequisiteUnit.enrollmentPeriod >= container.id);
 
             if(prerequisiteUnit.enrollmentPeriod >= container.id && 
                 prerequisiteUnit.enrollmentPeriod.length == container.id.length) {
@@ -217,8 +490,9 @@ function getPeriodOffered(id)
 //------------------- PROTOTYPES ----------------------------------//
 
 //unit prototype
-function Unit(code, creditPoints, type, semester, prerequisites, enrollmentReq, pointReq)
+function Unit(name, code, creditPoints, type, semester, prerequisites, enrollmentReq, pointReq, corequisites)
 {
+    this.name = name;
     this.unitCode = code;
     this.creditPoints = creditPoints;
     this.type = type;
@@ -226,8 +500,11 @@ function Unit(code, creditPoints, type, semester, prerequisites, enrollmentReq, 
     this.prerequisites = prerequisites;
     this.equivalences = []; //equivalent units to this one.
     this.enrollmentRequirements = enrollmentReq;
-    this.pointRequirements = pointReq;
+    //split points, because they're a string. This makes me a bit sad. I'm sorry.
+    this.pointRequirements = pointReq == null ? [] : pointReq.split(";");
     this.enrollmentPeriod = "None";
+    //split coreqs, as coreqs are a string. This makes me a bit sad. I'm sorry.
+    this.corequisites = corequisites == null ? [] :corequisites.split(";");
     this.problems = [];
 
     this.addPrerequisites = () => {
@@ -247,6 +524,8 @@ function Table()
     this.hasNSUnits = false;
 
     this.extractInformation = (unitInfo) => {
+        console.log(unitInfo);
+
         for(let i in unitInfo)
         {
             //if it has NS units
@@ -255,14 +534,17 @@ function Table()
                 this.hasNSUnits = true;
             }
 
+
             this.unitInformation.set(unitInfo[i].unitcode,
-                                        new Unit(unitInfo[i].unitcode,
+                                        new Unit(unitInfo[i].unitname,
+                                            unitInfo[i].unitcode,
                                             unitInfo[i].credit_points,
                                             unitInfo[i].type,
                                             unitInfo[i].semester,
                                             unitInfo[i].unit_req,
                                             unitInfo[i].enrolment_req,
-                                            unitInfo[i].points_req));
+                                            unitInfo[i].points_req,
+                                            unitInfo[i].corequisites));
     
         }
     }
@@ -297,9 +579,12 @@ function Table()
     this.makeYearRow = () => {
         let row = document.createElement("tr");
         let head = document.createElement("th");
+        //h3 for UWA heading.
+        let heading = document.createElement("h3");
         
         this.year++;
-        head.innerHTML = "Y" + this.year;
+        heading.innerHTML = "Year " + this.year;
+        head.appendChild(heading);
         head.setAttribute("colspan", "5");
         head.classList.add("heading");
         row.appendChild(head);
@@ -312,9 +597,11 @@ function Table()
         let row = document.createElement("tr");
         let container = document.createElement("div");
         let head = document.createElement("th");
+        let heading = document.createElement("h4");
         let yearID = "Y" + this.year;
 
-        head.innerHTML = semester;
+        heading.innerHTML = semester;
+        head.appendChild(heading);
         head.classList.add("heading");
         container.setAttribute("id", yearID + semester);
         row.appendChild(head);
@@ -400,13 +687,14 @@ function Table()
 
         let iterations = 0;
 
-        while(this.unitNames.length > 0 && iterations < 50)
+        while(this.unitNames.length > 0 && iterations < 10)
         {
             table.appendChild(this.makeYearContainer());
             iterations++;
         }
 
-        if(iterations > 49)
+        //unit plan should not exceed 10 years.
+        if(iterations > 9)
         {
             alert("Error Generating Table. \nInfinite loop detected.\n"
                     + "Is a unit prerequisite missing?")
@@ -415,7 +703,7 @@ function Table()
         //make table then sensor underneath
         addToRoot(table);
         addToRoot(this.makeSensor());
-        updateInfoBar("Welcome to the unit Planner! I'm the Info bar. I'll provide you with helpful info.");
+        updateInfoBar("");
     }
 }
 
@@ -599,7 +887,34 @@ function printInfo(e)
     {
         updateInfoBar(unit.problems);
     } else {
-        updateInfoBar(JSON.stringify(planner.unitInformation.get(unitCode)));
+        updateInfoBar(printUnitInfo(unitCode));
+    }
+
+    clearHighlighting();
+
+    //highlight prerequisites
+    for(let prerequisite of unit.prerequisites)
+    {
+        if(unitExists(prerequisite))
+        {
+            unitElement = getById(prerequisite);
+            
+            unitElement.classList.toggle("S2");
+            //it would be nice to add an arrow going from prerequiste to unit.
+        }
+    }
+
+    //highlight COREQUISITES!!! WOOOO
+    for(let corequisite of unit.corequisites)
+    {
+        if(unitExists(corequisite))
+        {
+            unitElement = getById(corequisite);
+            
+            //lol s1.
+            unitElement.classList.toggle("S1");
+            //it would be nice to add an arrow going from prerequiste to unit.
+        }
     }
 }
 
@@ -635,6 +950,20 @@ function fetchCourseRequirementsAndBuildPlanner() {
         planner = new Table();
 
         planner.makeTable(response);
+    }
+    xhttp.send();
+}
+
+//retrieve option units
+function get_option_units() {
+    let major = specialization;
+
+    const xhttp = new XMLHttpRequest();
+    let server = '/option_units='.concat(major);
+    xhttp.open("GET", server, true);
+    xhttp.onload = function (e) {
+        response = JSON.parse(xhttp.responseText);
+        console.log(this.response)
     }
     xhttp.send();
 }
@@ -698,6 +1027,8 @@ function get_children() {
     }
     xhttp.send();
 }
+
+
 
 //disable buttons if chosen unit field is empty
 // const inputField = document.getElementById('chosen_unit');
