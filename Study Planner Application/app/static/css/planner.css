@@ -1,6 +1,10 @@
-td {
+.unit {
     border: 1px solid black;
+    border-radius: 5px;
     padding: 10px;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    text-align: center;
 
     /* give all cells consistent size*/
     min-width: 100px;
@@ -14,19 +18,24 @@ td:hover{
     border: 1px solid lightblue;
 }
 
+.heading{
+    text-align: center; 
+    vertical-align: middle;
+}
+
 /* stop moving table! */
 
 div tr div {
     border: 1px dashed white;
-    min-width: 485px;
-    max-width: 485px;
+    min-width: 495px;
+    max-width: 495px;
     min-height: 65px;
 }
 
 table div{
-    max-width: 500px;
+    /* max-height: 193px;
+    max-width: 500px; */
     min-height: 180px;
-    max-height: 193px;
 }
 
 /* gives more space to drop units*/

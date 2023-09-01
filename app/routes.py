@@ -1,5 +1,6 @@
 from flask import render_template, flash, redirect, url_for, request, jsonify
 from neo4j import GraphDatabase
+# from neo4j import __version__ as neo4j_version
 from app import app
 
 # Home page
@@ -34,25 +35,47 @@ def preferences():
     return render_template('preferences.html', title='Preferences', specialization = specialization, mathSpecialist = mathSpecialist, mathMethods = mathMethods, chemistry = chemistry, physics = physics) # Render the preferences page
 
 
+uri= "bolt+s://e5218dc4.databases.neo4j.io"  #"bolt://3.236.190.97:7687" :skull:
+user="neo4j"
+pswd= "svH9RLz19fQFpDDgjnQCZMO9MF6WEVPRmtpXEaNVQ2o"  #"ideals-extensions-necks" 
 
 # Connect to remote Neo4j driver
-driver=GraphDatabase.driver(uri="bolt://3.236.190.97:7687",auth=("neo4j", "ideals-extensions-necks"))
+# print("Neo4j Driver Version:", neo4j_version)
+driver=GraphDatabase.driver(uri,auth=(user, pswd))
+driver.verify_connectivity()
 session=driver.session() 
 
-@app.route("/unitInformation", methods=["GET"])
-def display_node():
-    query=""" MATCH (n) -[:REQUIRES]-> (m)
+@app.route("/unitInformation/<string:major>/bridging=<string:bridging>", methods=["GET"])
+def send_unit_information(major, bridging):
+    units = bridging.split(",") 
+    unit_conditions = " OR ".join([f"u.unitcode = '{unit}'" for unit in units])
 
-    WHERE n.type = "CORE"
-
-    WITH n.unitcode as unitcode, n.type as type, n.semester as semester, n.credit_points as credit_points, n.points_req as points_req, n.enrolment_req as enrolment_req, COLLECT(m.unitcode) as unit_req
-
-    RETURN unitcode, type, semester, credit_points, points_req, enrolment_req, unit_req
-
-    """
-    results=session.run(query)
-    data=results.data()
-    return(jsonify(data))
+    # if major does not have option units (soft)
+    if(major == "SP-ESOFT"):
+        query=f""" MATCH (u)
+        WHERE u.major CONTAINS $major OR {unit_conditions}
+        OPTIONAL MATCH (u)-[:REQUIRES]->(m)
+        WITH u, COLLECT(m.unitcode) as unit_req
+        RETURN u.unitcode as unitcode, u.type as type, u.semester as semester, u.major as major, u.level as level, u.credit_points as credit_points, u.points_req as points_req, u.enrolment_req as enrolment_req, unit_req
+        ORDER BY level
+        """
+        x = {"major":major} 
+        results=session.run(query,x)
+        data=results.data()
+        return(jsonify(data))
+    # if major does have option units (mech)
+    else:
+        query=f""" MATCH (u)
+        WHERE u.major CONTAINS $major AND u.type = "CORE" OR {unit_conditions}
+        OPTIONAL MATCH (u)-[:REQUIRES]->(m)
+        WITH u, COLLECT(m.unitcode) as unit_req
+        RETURN u.unitcode as unitcode, u.type as type, u.semester as semester, u.major as major, u.level as level, u.credit_points as credit_points, u.points_req as points_req, u.enrolment_req as enrolment_req, unit_req
+        ORDER BY level
+        """
+        x = {"major":major}
+        results=session.run(query,x)
+        data=results.data()
+        return(jsonify(data))
 
 @app.route("/display", methods=["GET"])
 def display_node():

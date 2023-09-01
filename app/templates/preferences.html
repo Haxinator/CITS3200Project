@@ -9,10 +9,11 @@
     
 
     <main id = "root">
-        <h1>Planner v.11</h1>  
-        <h3>Units placed into correct semester. Info bar. Semester Filter. Try clicking on a unit. Edited display handle. Too much to list.</h3>
+        <h1>Planner v.14</h1>  
+        <h3>Units correctly ordered based on unit prerequisites (and semester too)</h3>
 
         <button id="SemesterFilter">Semesters Offered</button>
+        <button id="ProblemFilter">Problems</button>
         <!-- <button onclick="display_all()">Generate nodes</button> -->
         <!-- <div id="nodes"></div> -->
         <br>
@@ -27,13 +28,14 @@
         <h6 id="child_head"></h6>
         <div id="child_units"></div> -->
     </main>
-    
-    <script type="text/javascript" src="{{ url_for('static', filename='js/planner.js') }}"></script>
         
     <script>
         // Access the variable in JavaScript
         var specialization = "{{ specialization }}";
-        var isSpec = "{{mathSpecialist}}"
+        var isSpec = "{{ mathSpecialist }}"
+        var isMeth = "{{ mathMethods }}"
+        var isPhys = "{{ physics }}"
+        var isChem = "{{ chemistry }}"
 
 
         // Now you can use the specialization variable in your JavaScript code
@@ -48,4 +50,5 @@
 
         
     </script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/planner.js') }}"></script>
 {% endblock %}
