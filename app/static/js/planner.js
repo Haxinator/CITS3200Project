@@ -695,6 +695,20 @@ function fetchCourseRequirementsAndBuildPlanner() {
     xhttp.send();
 }
 
+//retrieve option units
+function get_option_units() {
+    let major = specialization;
+
+    const xhttp = new XMLHttpRequest();
+    let server = '/option_units='.concat(major);
+    xhttp.open("GET", server, true);
+    xhttp.onload = function (e) {
+        response = JSON.parse(xhttp.responseText);
+        console.log(this.response)
+    }
+    xhttp.send();
+}
+
 function display_all() {
     const xhttp = new XMLHttpRequest();
     let server = '/display';
@@ -754,6 +768,8 @@ function get_children() {
     }
     xhttp.send();
 }
+
+
 
 //disable buttons if chosen unit field is empty
 // const inputField = document.getElementById('chosen_unit');
