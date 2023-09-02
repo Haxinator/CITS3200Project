@@ -7,7 +7,6 @@ makeInfoBar();
 
 // -------------------- FILTERS ----------------------------- //
 getById("root").addEventListener("click", (e) =>{
-    console.log(e.target.type);
 
     //if a unit wasn't clicked
     if(!e.target.classList.contains("unit") && !e.target.classList.contains("button"))
@@ -15,17 +14,16 @@ getById("root").addEventListener("click", (e) =>{
         //removing highlighting and info bar text.
         updateInfoBar("");
 
-        for(let unit of planner.unitInformation.values())
-        {
-            //overwrite all classes with unit.
-            unitElement = getById(unit.unitCode);
-            unitElement.setAttribute("class", "unit");
-        }
+        clearHighlighting();
     }
     
 })
 
 getById("SemesterFilter").addEventListener("click", () => {
+
+    //clear last previous filters()
+    clearHighlighting();
+
     for(let unit of planner.unitInformation.values())
     {
         item = getById(unit.unitCode);
@@ -45,6 +43,9 @@ getById("SemesterFilter").addEventListener("click", () => {
 });
 
 getById("ProblemFilter").addEventListener("click", () => {
+
+    clearHighlighting();
+
     for(let unit of planner.unitInformation.values())
     {
         item = getById(unit.unitCode);
@@ -136,20 +137,41 @@ function addCellEvents(item)
     item.addEventListener("click", printInfo);
 }
 
+//clears all highlighting
+function clearHighlighting()
+{
+    for(let unit of planner.unitInformation.values())
+    {
+        //overwrite all classes with unit.
+        unitElement = getById(unit.unitCode);
+        unitElement.setAttribute("class", "unit");
+    }
+}
+
+//@param label is the label (or name of unit information)
+//@param info is the unit information
+// formatInfo("Unit", unit.name)
+// `Unit: "${unit.name}"<br>`
+function formatInfo(label, info)
+{
+    return `<span style="font-weight: bold;">${label}</span>: "${info}"<br>`;
+}
+
 //formats unit information
 function printUnitInfo(unitCode)
 {
     let unit = planner.unitInformation.get(unitCode);
     let str = "";
 
-    str += `Unit: ${unit.unitCode}<br>`;
-    str += `Type: ${unit.type}<br>`;
-    str += `Semester: ${unit.semester}<br>`;
-    str += `Credit Points: ${unit.creditPoints}<br>`;
-    str += `Semester: ${unit.semester}<br>`;
-    str += `Prerequisites: ${unit.prerequisites}<br>`;
-    str += `Point Requirements: ${unit.pointRequirements}<br>`;
-    str += `enrollment Requirements: ${unit.enrollmentRequirements}`;
+    // str += `<span style="font-weight: bolder;text-decoration: underline;">${unit.name}</span><br>`;
+    str += `<h5>${unit.name}</h5>`;
+    str += formatInfo("Unit Code", unit.unitCode);
+    str += formatInfo("Type", unit.type);
+    str += formatInfo("Semester", unit.semester);
+    str += formatInfo("Credit Points", unit.creditPoints);
+    str += formatInfo("Prerequisites", unit.prerequisites);
+    str += formatInfo("Point Requirements", unit.pointRequirements);
+    str += formatInfo("Enrollment Requirements", unit.enrollmentRequirements);
 
     return str;
 }
@@ -257,8 +279,9 @@ function getPeriodOffered(id)
 //------------------- PROTOTYPES ----------------------------------//
 
 //unit prototype
-function Unit(code, creditPoints, type, semester, prerequisites, enrollmentReq, pointReq)
+function Unit(name, code, creditPoints, type, semester, prerequisites, enrollmentReq, pointReq)
 {
+    this.name = name;
     this.unitCode = code;
     this.creditPoints = creditPoints;
     this.type = type;
@@ -287,6 +310,8 @@ function Table()
     this.hasNSUnits = false;
 
     this.extractInformation = (unitInfo) => {
+        console.log(unitInfo);
+
         for(let i in unitInfo)
         {
             //if it has NS units
@@ -295,8 +320,10 @@ function Table()
                 this.hasNSUnits = true;
             }
 
+
             this.unitInformation.set(unitInfo[i].unitcode,
-                                        new Unit(unitInfo[i].unitcode,
+                                        new Unit(unitInfo[i].unitname,
+                                            unitInfo[i].unitcode,
                                             unitInfo[i].credit_points,
                                             unitInfo[i].type,
                                             unitInfo[i].semester,
@@ -646,6 +673,8 @@ function printInfo(e)
     } else {
         updateInfoBar(printUnitInfo(unitCode));
     }
+
+    clearHighlighting();
 
     for(let prerequisite of unit.prerequisites)
     {

@@ -92,18 +92,20 @@ h2 {
     background-color: yellow;
 }
 
+
+.sensor h2 {
+    margin: 0px;
+    text-decoration:underline;
+}
+
+
 /* pad left without adding white line */
 /* #infoBar p{
     padding-left: 10px;
 } */
 
-.sensor h2 {
-    margin: 0px;
-}
-
 #infoBar {
     background-color: white;
-    /* text-align: center; */
     margin: auto;
     position: fixed;
 
@@ -121,4 +123,9 @@ h2 {
 
     /* stops text overflow */
     overflow-wrap: break-word;
+
+    /* modern curved look */
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+    box-shadow: 3px 3px 5px lightgrey;
 }
