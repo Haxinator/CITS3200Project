@@ -741,34 +741,6 @@ function getUnitPrerequisites(unit) {
     xhttp.send();
 }
 
-//retrieve the requirements of chosen unit 
-function get_prereqs() {
-    chosen_unit = document.getElementById("chosen_unit").value;
-    
-    const xhttp = new XMLHttpRequest();
-    let server = '/prereqs/'.concat(chosen_unit);
-    xhttp.open("GET", server, true);
-    xhttp.onload = function (e) {
-        document.getElementById('prereqs_head').innerHTML = "This unit requires the following:"
-        document.getElementById('prereqs').innerHTML = xhttp.responseText;
-    }
-    xhttp.send();
-}
-
-//retrieve units that require chosen unit
-function get_children() {
-    chosen_unit = document.getElementById("chosen_unit").value;
-
-    const xhttp = new XMLHttpRequest();
-    let server = '/child_units/'.concat(chosen_unit);
-    xhttp.open("GET", server, true);
-    xhttp.onload = function (e) {
-        document.getElementById('child_head').innerHTML = "This unit is a requirement for the following:"
-        document.getElementById('child_units').innerHTML = xhttp.responseText;
-    }
-    xhttp.send();
-}
-
 
 
 //disable buttons if chosen unit field is empty

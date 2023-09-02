@@ -16,17 +16,19 @@
         <button id="ProblemFilter" class="button">Problems</button>
         <!-- <button onclick="display_all()">Generate nodes</button> -->
         <!-- <div id="nodes"></div> -->
+        <div id="wordtree_basic" style="width: 900px; height: 500px;"></div>
         <br>
-        <!-- <label>chosen unit:</label>
-        <input type="text" id="chosen_unit"> -->
-        <!-- <button id="prereqs_btn" onclick="display_unit(); get_prereqs()">Check Pre-requisites</button>
+        <label>chosen unit:</label>
+        <input type="text" id="chosen_unit">
+        <!-- <button id="prereqs_btn" onclick="display_unit(); get_prereqs()">Check Pre-requisites</button> -->
         <button id="child_btn" onclick="display_unit(); get_children()">Check Children</button>
+        <!-- <button id="vis_btn" onclick="drawUnitPaths()">Visualize</button> -->
         <br>
         <h6 id="unitchosen"></h6>
         <h6 id="prereqs_head"></h6>
         <div id="prereqs"></div>
         <h6 id="child_head"></h6>
-        <div id="child_units"></div> -->
+        <div id="child_units"></div>
     </main>
         
     <script>
@@ -50,5 +52,7 @@
 
         
     </script>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script type="text/javascript" src="{{ url_for('static', filename='js/planner.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/treeview.js') }}"></script>
 {% endblock %}
