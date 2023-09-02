@@ -64,6 +64,46 @@ getById("ProblemFilter").addEventListener("click", () => {
         updateInfoBar("Legend: red - prerequisite not met");
 });
 
+getById("corequisiteFilter").addEventListener("click", () =>
+{
+    clearHighlighting();
+
+    for(let unit of planner.unitInformation.values())
+    {
+        item = getById(unit.unitCode);
+
+        if(unit.corequisites.length > 0)
+        {
+            //NS is red.
+            item.classList.toggle("S1");
+        } else {
+            item.classList.remove("S1");
+        }
+    }
+
+    updateInfoBar("Legend: Blue - Unit has Corequisites");
+});
+
+getById("prequisiteFilter").addEventListener("click", () =>
+{
+    clearHighlighting();
+
+    for(let unit of planner.unitInformation.values())
+    {
+        item = getById(unit.unitCode);
+
+        if(unit.prerequisites.length > 0)
+        {
+            //NS is red.
+            item.classList.toggle("S1S2");
+        } else {
+            item.classList.remove("S1S2");
+        }
+    }
+
+    updateInfoBar("Legend: Yellow - Unit has Prequisites");
+});
+
 // ------------------- INFO BAR FUNCTIONS -----------------------//
 
 function updateInfoBar(info){
@@ -170,6 +210,7 @@ function printUnitInfo(unitCode)
     str += formatInfo("Semester", unit.semester);
     str += formatInfo("Credit Points", unit.creditPoints);
     str += formatInfo("Prerequisites", unit.prerequisites);
+    str += formatInfo("Corequisites", unit.corequisites); //previously or concurrently.
     str += formatInfo("Point Requirements", unit.pointRequirements);
     str += formatInfo("Enrollment Requirements", unit.enrollmentRequirements);
 
@@ -279,7 +320,7 @@ function getPeriodOffered(id)
 //------------------- PROTOTYPES ----------------------------------//
 
 //unit prototype
-function Unit(name, code, creditPoints, type, semester, prerequisites, enrollmentReq, pointReq)
+function Unit(name, code, creditPoints, type, semester, prerequisites, enrollmentReq, pointReq, corequisites)
 {
     this.name = name;
     this.unitCode = code;
@@ -291,6 +332,8 @@ function Unit(name, code, creditPoints, type, semester, prerequisites, enrollmen
     this.enrollmentRequirements = enrollmentReq;
     this.pointRequirements = pointReq;
     this.enrollmentPeriod = "None";
+    //split coreqs, as coreqs are a string. This makes me a bit sad. I'm sorry.
+    this.corequisites = corequisites == null ? [] :corequisites.split(";");
     this.problems = [];
 
     this.addPrerequisites = () => {
@@ -329,7 +372,8 @@ function Table()
                                             unitInfo[i].semester,
                                             unitInfo[i].unit_req,
                                             unitInfo[i].enrolment_req,
-                                            unitInfo[i].points_req));
+                                            unitInfo[i].points_req,
+                                            unitInfo[i].corequisites));
     
         }
     }
@@ -676,6 +720,7 @@ function printInfo(e)
 
     clearHighlighting();
 
+    //highlight prerequisites
     for(let prerequisite of unit.prerequisites)
     {
         if(unitExists(prerequisite))
@@ -683,6 +728,19 @@ function printInfo(e)
             unitElement = getById(prerequisite);
             
             unitElement.classList.toggle("S2");
+            //it would be nice to add an arrow going from prerequiste to unit.
+        }
+    }
+
+    //highlight COREQUISITES!!! WOOOO
+    for(let corequisite of unit.corequisites)
+    {
+        if(unitExists(corequisite))
+        {
+            unitElement = getById(corequisite);
+            
+            //lol s1.
+            unitElement.classList.toggle("S1");
             //it would be nice to add an arrow going from prerequiste to unit.
         }
     }

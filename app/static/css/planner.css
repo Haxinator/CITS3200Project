@@ -15,10 +15,12 @@
 
 .heading h3{
     margin: 0px;
-}
 
 .heading h4{
     margin: 0px;
+    width: 40px;
+    height: 72px;
+}
 }
 
 td:hover{
