@@ -6,7 +6,8 @@ fetchCourseRequirementsAndBuildPlanner();
 makeInfoBar();
 
 // -------------------- FILTERS ----------------------------- //
-getById("root").addEventListener("click", (e) =>{
+//get entire page if clicked on remove highlight and info bar.
+getById("root").parentElement.parentElement.addEventListener("click", (e) =>{
 
     //if a unit wasn't clicked
     if(!e.target.classList.contains("unit") && !e.target.classList.contains("button"))
@@ -222,10 +223,117 @@ function printUnitInfo(unitCode)
 //checks if all unit prerequisites met.
 function unitConditionsMet(unitCode, container)
 {
+    //empty here for cleaner code
+    //if problems still exist they will be added again
+    //if problems are gone, they will be removed from array.
+    planner.unitInformation.get(unitCode).problems = [];
+
+    //instead of container ID can be used, which would be cleaner.
     correctSemester = canEnrollInPeriod(unitCode, container);
     correctPrequisites = unitPreRequisitiesMet(unitCode, container);
+    correctCorequisites = corequisitesMet(unitCode, container);
+    correctPoints = pointRequirementsMet(unitCode, container);
 
-    return correctSemester && correctPrequisites;
+    return correctSemester && correctPrequisites && correctCorequisites && correctPoints;
+}
+
+//it works I think?
+//checks if unit has met its point requirements.
+//both the overall points and core unit points.
+function pointRequirementsMet(unitCode, container)
+{
+    let unit = planner.unitInformation.get(unitCode);
+    let pointCount = 0;
+    let CoreUnitCount = 0;
+
+    console.log("points needed " + unit.pointRequirements);
+
+    if(unit.pointRequirements.length == 0)
+    {
+        return true;
+    }
+
+    //INCORRECT
+    //COUNT FOR EACH UNIT BEFORE THIS ONE!!
+    //current just counts the credit points of ALL units.
+    //this function only current works when table is initalised.
+    //won't work otherwise.
+    for(let otherUnit of planner.unitInformation.values())
+    {
+        let otherUnitCode = otherUnit.unitCode;
+
+        //if unit in planner
+        if(planner.unitNames.indexOf(otherUnitCode) == -1)
+        {
+            //add credit points to count depending on type
+            switch(otherUnit.type){
+                case "CORE":
+                    CoreUnitCount += parseInt(otherUnit.creditPoints);
+                default:
+                    pointCount += parseInt(otherUnit.creditPoints);
+            }
+        }
+    }
+
+    console.log(CoreUnitCount);
+    console.log(pointCount);
+
+    //check if point requirements met
+    switch(unit.pointRequirements.length)
+    {
+        case 2:
+            if(unit.pointRequirements[1] > CoreUnitCount)
+            {
+                unit.problems.push(`${unitCode} requires ${unit.pointRequirements[1]} core unit credit points!`);
+
+                return false;
+            }
+        default:
+            if(unit.pointRequirements[0] > pointCount)
+            {
+                unit.problems.push(`${unitCode} requires ${unit.pointRequirements[0]} credit points!`);
+                
+                return false;
+            }
+    }
+
+    return true;
+}
+
+//checks if corequisites for a given unit were met.
+//almost exactly the same as checking if prerequisites were met.
+//Haven't done indepth testing.
+//I hope this works. _/\_
+function corequisitesMet(unitCode, container)
+{
+    let unit = planner.unitInformation.get(unitCode);
+    let corequisites = unit.corequisites;
+    let corequisitesMet = true;
+
+    for(let corequisite of corequisites)
+    {
+        let corequisiteUnit = planner.unitInformation.get(corequisite);
+
+        if(planner.unitNames.indexOf(corequisite) != -1)
+        {
+            //if corequisite in name list then it isn't in planner
+            return false;
+
+        } else if(corequisiteUnit != null)
+        {
+            if(corequisiteUnit.enrollmentPeriod > container.id && 
+                corequisiteUnit.enrollmentPeriod.length == container.id.length)
+                {
+                    updateInfoBar(`${corequisite} must be done concurrently or prior to commencing ${unitCode}!`);
+                    
+                    unit.problems.push(`${corequisite} must be done concurrently or prior to commencing ${unitCode}`);
+                    
+                    corequisitesMet = false;
+                }
+        }
+    }
+
+    return corequisitesMet;
 }
 
 //checks if unit prerequisites met
@@ -234,11 +342,6 @@ function unitPreRequisitiesMet(unitCode, container)
     let unit = planner.unitInformation.get(unitCode);
     let prerequisites = unit.prerequisites;
     let prerequisitesMet = true;
-
-    //empty here for cleaner code
-    //if problems still exist they will be added again
-    //if problems are gone, they will be removed from array.
-    unit.problems = [];
 
     for(let prerequisite of prerequisites)
     {
@@ -256,10 +359,10 @@ function unitPreRequisitiesMet(unitCode, container)
             //used to be prerequ.period == container.id
             //extension allows function to be used after planner
             //initalisation.
-            console.log(prerequisiteUnit)
-            console.log("unit period " + prerequisiteUnit.enrollmentPeriod);
-            console.log("contianer period", container.id);
-            console.log(prerequisiteUnit.enrollmentPeriod >= container.id);
+            // console.log(prerequisiteUnit)
+            // console.log("unit period " + prerequisiteUnit.enrollmentPeriod);
+            // console.log("contianer period", container.id);
+            // console.log(prerequisiteUnit.enrollmentPeriod >= container.id);
 
             if(prerequisiteUnit.enrollmentPeriod >= container.id && 
                 prerequisiteUnit.enrollmentPeriod.length == container.id.length) {
@@ -330,7 +433,8 @@ function Unit(name, code, creditPoints, type, semester, prerequisites, enrollmen
     this.prerequisites = prerequisites;
     this.equivalences = []; //equivalent units to this one.
     this.enrollmentRequirements = enrollmentReq;
-    this.pointRequirements = pointReq;
+    //split points, because they're a string. This makes me a bit sad. I'm sorry.
+    this.pointRequirements = pointReq == null ? [] : pointReq.split(";");
     this.enrollmentPeriod = "None";
     //split coreqs, as coreqs are a string. This makes me a bit sad. I'm sorry.
     this.corequisites = corequisites == null ? [] :corequisites.split(";");
