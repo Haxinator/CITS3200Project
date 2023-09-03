@@ -14,8 +14,8 @@ function drawUnitPaths(array, display_type) {
     let data = google.visualization.arrayToDataTable(array);
 
     let options = {
-        Width: 495,
-        height: 495,
+        width: 600,
+        height: 295,
         maxFontSize: 20,
         wordtree: {
             format: 'implicit',
@@ -58,6 +58,10 @@ function getBranches(branches, type) {
 //retrieve the requirements of chosen unit 
 function get_prereqs() {
     chosen_unit = document.getElementById("chosen_unit").value;
+
+    //clear 
+    document.getElementById("err_msg_treeview").innerHTML = "";
+    document.getElementById('unit_tree').innerHTML = "";
     
     const xhttp = new XMLHttpRequest();
     let server = '/prereqs/'.concat(chosen_unit);
@@ -67,8 +71,12 @@ function get_prereqs() {
         response = JSON.parse(xhttp.responseText);
         console.log(xhttp.responseText);
         unitpaths = getBranches(response, "prereq");
-        drawUnitPaths(unitpaths, 'prefix');
-        //document.getElementById('prereqs').innerHTML = unitpaths.map(str => `["${str}"]`);
+        if (unitpaths.length != 0) {
+            drawUnitPaths(unitpaths, 'prefix');
+        }
+        else {
+            document.getElementById("err_msg_treeview").innerHTML = "This unit has no unit prerequisites :)";
+        }
     }
     xhttp.send();
 }
@@ -77,6 +85,10 @@ function get_prereqs() {
 function get_children() {
     chosen_unit = document.getElementById("chosen_unit").value;
 
+    //clear 
+    document.getElementById("err_msg_treeview").innerHTML = "";
+    document.getElementById('unit_tree').innerHTML = "";
+
     const xhttp = new XMLHttpRequest();
     let server = '/child_units/'.concat(chosen_unit);
     xhttp.open("GET", server, true);
@@ -84,8 +96,24 @@ function get_children() {
         //document.getElementById('child_head').innerHTML = "This unit is a requirement for the following:"
         response = JSON.parse(xhttp.responseText);
         unitpaths = getBranches(response, "child");
-        drawUnitPaths(unitpaths, 'suffix');
-        // document.getElementById('child_units').innerHTML = unitpaths.map(str => `["${str}"]`);
+        console.log(unitpaths);
+        if (unitpaths.length != 0) {
+            drawUnitPaths(unitpaths, 'suffix');
+        }
+        else {
+            document.getElementById("err_msg_treeview").innerHTML = "This unit has no child units :)";
+        }
     }
     xhttp.send();
+}
+
+//adds units on the dropdown menu selection 
+function addUnitOptions(json_response) {
+    let dropdown = document.getElementById("chosen_unit");
+    for (let j in json_response) {
+        let option = document.createElement("option");
+        option.setAttribute("value", json_response[j].unitcode);
+        option.innerHTML = json_response[j].unitname.concat(" (", json_response[j].unitcode, ")");
+        dropdown.appendChild(option);
+    }
 }

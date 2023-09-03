@@ -4,6 +4,7 @@ var planner;
 
 fetchCourseRequirementsAndBuildPlanner();
 makeInfoBar();
+//get_option_units();
 
 // -------------------- FILTERS ----------------------------- //
 //get entire page if clicked on remove highlight and info bar.
@@ -950,6 +951,7 @@ function fetchCourseRequirementsAndBuildPlanner() {
         planner = new Table();
 
         planner.makeTable(response);
+        addUnitOptions(response);
     }
     xhttp.send();
 }
@@ -963,23 +965,24 @@ function get_option_units() {
     xhttp.open("GET", server, true);
     xhttp.onload = function (e) {
         response = JSON.parse(xhttp.responseText);
-        console.log(this.response)
+        console.log(xhttp.responseText);
+        //addUnitOptions(response);
     }
     xhttp.send();
 }
 
-function display_all() {
-    const xhttp = new XMLHttpRequest();
-    let server = '/display';
-    xhttp.open("GET", server, true);
-    xhttp.onload = function (e) {
+// function display_all() {
+//     const xhttp = new XMLHttpRequest();
+//     let server = '/display';
+//     xhttp.open("GET", server, true);
+//     xhttp.onload = function (e) {
 
-        document.getElementById("nodes").innerHTML = this.response;
+//         document.getElementById("nodes").innerHTML = this.response;
 
-        alert("I worked!! TvT");
-    }
-    xhttp.send();
-}
+//         alert("I worked!! TvT");
+//     }
+//     xhttp.send();
+// }
 
 
 // function display_unit() {
@@ -1017,3 +1020,5 @@ function getUnitPrerequisites(unit) {
 //         childBtn.disabled = false;
 //     }
 // });
+
+

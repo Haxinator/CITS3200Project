@@ -2,7 +2,8 @@
 {% block content %}
 
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/planner.css') }}">
-    
+    <!-- Include Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     
     
     <h1>Welcome to the {{ specialization }} program!</h1>
@@ -21,14 +22,19 @@
     </main>
 
     <div id="treeview">
-        <h3>Need to see how important the unit is?</h3>
-        <p>Type a unit down below and see how many units depend on the unit you entered.</p>
-        <label>Chosen unit:</label>
-        <select type="text" id="chosen_unit"></select>
+        <h3>Need to see the importance of the unit?</h3>
+        <p>Select a unit and see dependencies on it. Once the tree is created, you can click on a unit if you wish to narrow down the pathways :D</p>
+        <select class="form-control" id="chosen_unit">
+            <option value="">Select a unit to visualize</option>
+        </select>
+        <br>
         <button id="prereqs_btn" onclick="get_prereqs()" class="button">Check Pre-requisites</button>
         <button id="child_btn" onclick="get_children()" class="button">Check Child Units</button>
         <!-- <button id="vis_btn" onclick="drawUnitPaths()">Visualize</button> -->
-        <div id="unit_tree"></div>
+        <div id="tree_display">
+            <div id="err_msg_treeview"></div>
+            <div id="unit_tree"></div>
+        </div>
         <!-- <h6 id="unitchosen"></h6>
         <h6 id="prereqs_head"></h6>
         <div id="prereqs"></div>
