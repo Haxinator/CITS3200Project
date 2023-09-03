@@ -61,7 +61,6 @@ function get_prereqs() {
 
     //clear 
     document.getElementById("err_msg_treeview").innerHTML = "";
-    document.getElementById('unit_tree').innerHTML = "";
     
     const xhttp = new XMLHttpRequest();
     let server = '/prereqs/'.concat(chosen_unit);
@@ -75,6 +74,7 @@ function get_prereqs() {
             drawUnitPaths(unitpaths, 'prefix');
         }
         else {
+            document.getElementById('unit_tree').innerHTML = "";
             document.getElementById("err_msg_treeview").innerHTML = "This unit has no unit prerequisites :)";
         }
     }
@@ -87,7 +87,6 @@ function get_children() {
 
     //clear 
     document.getElementById("err_msg_treeview").innerHTML = "";
-    document.getElementById('unit_tree').innerHTML = "";
 
     const xhttp = new XMLHttpRequest();
     let server = '/child_units/'.concat(chosen_unit);
@@ -101,6 +100,7 @@ function get_children() {
             drawUnitPaths(unitpaths, 'suffix');
         }
         else {
+            document.getElementById('unit_tree').innerHTML = "";
             document.getElementById("err_msg_treeview").innerHTML = "This unit has no child units :)";
         }
     }
