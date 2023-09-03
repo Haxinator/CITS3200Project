@@ -237,6 +237,16 @@ function unitConditionsMet(unitCode, container)
     return correctSemester && correctPrequisites && correctCorequisites && correctPoints;
 }
 
+function unitType(unitCode, identifier)
+{
+    if(identifier === "P" && unitCode.substring(0,4) === "CITS")
+    {
+        return true;
+    }
+
+    return false;
+}
+
 //it works I think?
 //checks if unit has met its point requirements.
 //both the overall points and core unit points.
@@ -246,56 +256,113 @@ function pointRequirementsMet(unitCode, container)
     let pointCount = 0;
     let CoreUnitCount = 0;
 
+    console.log(container.id);
     console.log("points needed " + unit.pointRequirements);
 
+    //if no point requirements, then requirements met.
     if(unit.pointRequirements.length == 0)
     {
         return true;
     }
 
-    //INCORRECT
-    //COUNT FOR EACH UNIT BEFORE THIS ONE!!
-    //current just counts the credit points of ALL units.
-    //this function only current works when table is initalised.
-    //won't work otherwise.
+    //I cri.
+    //IT WORKSS
+    //BUG container isn't the container of the current unit for some reason.
     for(let otherUnit of planner.unitInformation.values())
     {
         let otherUnitCode = otherUnit.unitCode;
 
-        //if unit in planner
-        if(planner.unitNames.indexOf(otherUnitCode) == -1)
+        // console.log(otherUnit.enrollmentPeriod);
+        // console.log(container.id);
+
+        //if in planner and before current enrollment period
+        if(planner.unitNames.indexOf(otherUnitCode) == -1 &&
+            otherUnit.enrollmentPeriod < container.id)
         {
-            //add credit points to count depending on type
-            switch(otherUnit.type){
-                case "CORE":
-                    CoreUnitCount += parseInt(otherUnit.creditPoints);
-                default:
-                    pointCount += parseInt(otherUnit.creditPoints);
+
+            //pass last letter in, if it has unit point requirements
+            if(unitType(otherUnitCode, unit.pointRequirements[0].slice(-1)))
+            {
+                CoreUnitCount += parseInt(otherUnit.creditPoints);
             }
+
+            pointCount += parseInt(otherUnit.creditPoints);
+
+
+            //add credit points to count depending on type
+            // switch(otherUnit.type){
+            //     case "CORE":
+            //         CoreUnitCount += parseInt(otherUnit.creditPoints);
+            //     default:
+            //         pointCount += parseInt(otherUnit.creditPoints);
+            // }
         }
     }
 
     console.log(CoreUnitCount);
     console.log(pointCount);
 
-    //check if point requirements met
-    switch(unit.pointRequirements.length)
+    // check if char is alpha (different upp and lower)
+    // then first index is core units.
+    // I have become death. Destroyer of JScode clarity.
+    if(unit.pointRequirements[0].slice(-1).toLowerCase() != unit.pointRequirements[0].slice(-1).toUpperCase())
     {
-        case 2:
-            if(unit.pointRequirements[1] > CoreUnitCount)
-            {
-                unit.problems.push(`${unitCode} requires ${unit.pointRequirements[1]} core unit credit points!`);
+        if(parseInt(unit.pointRequirements[0].substring(0,unit.pointRequirements[0].length-1)) > CoreUnitCount)
+        {
+            unit.problems.push(`${unitCode} requires ${unit.pointRequirements[0]} core unit credit points!`);
+            updateInfoBar(`${unitCode} requires ${unit.pointRequirements[0]} core unit credit points!`);
 
-                return false;
-            }
-        default:
-            if(unit.pointRequirements[0] > pointCount)
-            {
-                unit.problems.push(`${unitCode} requires ${unit.pointRequirements[0]} credit points!`);
+            return false;
+        }
+
+        if(unit.pointRequirements.length > 1 && unit.pointRequirements[1] > pointCount)
+        {
+            unit.problems.push(`${unitCode} requires ${unit.pointRequirements[1]} credit points!`);
+            updateInfoBar(`${unitCode} requires ${unit.pointRequirements[1]} credit points!`);
                 
-                return false;
-            }
+            return false;
+        }
+    } else {
+        //otherwise first index is the point point.
+        if(unit.pointRequirements[0] > pointCount)
+        {
+            unit.problems.push(`${unitCode} requires ${unit.pointRequirements[0]} credit points!`);
+            updateInfoBar(`${unitCode} requires ${unit.pointRequirements[0]} credit points!`);
+                
+            return false;
+        }
     }
+
+    //check if point requirements met
+    // switch(unit.pointRequirements.length)
+    // {
+    //     //core unit points
+    //     case 2:
+    //         if(unit.pointRequirements[0] > CoreUnitCount)
+    //         {
+    //             unit.problems.push(`${unitCode} requires ${unit.pointRequirements[0]} core unit credit points!`);
+    //             updateInfoBar(`${unitCode} requires ${unit.pointRequirements[0]} core unit credit points!`);
+                
+    //             return false;
+    //         }
+    //         if(unit.pointRequirements[1] > pointCount)
+    //         {
+    //             unit.problems.push(`${unitCode} requires ${unit.pointRequirements[1]} credit points!`);
+    //             updateInfoBar(`${unitCode} requires ${unit.pointRequirements[1]} credit points!`);
+
+    //             return false;
+    //         }
+    //         break;
+    //     //all points
+    //     default:
+    //         if(unit.pointRequirements[0] > pointCount)
+    //         {
+    //             unit.problems.push(`${unitCode} requires ${unit.pointRequirements[0]} credit points!`);
+    //             updateInfoBar(`${unitCode} requires ${unit.pointRequirements[0]} credit points!`);
+                
+    //             return false;
+    //         }
+    // }
 
     return true;
 }
@@ -620,13 +687,14 @@ function Table()
 
         let iterations = 0;
 
-        while(this.unitNames.length > 0 && iterations < 50)
+        while(this.unitNames.length > 0 && iterations < 10)
         {
             table.appendChild(this.makeYearContainer());
             iterations++;
         }
 
-        if(iterations > 49)
+        //unit plan should not exceed 10 years.
+        if(iterations > 9)
         {
             alert("Error Generating Table. \nInfinite loop detected.\n"
                     + "Is a unit prerequisite missing?")
