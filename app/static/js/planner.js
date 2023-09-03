@@ -914,10 +914,10 @@ function display_all() {
 }
 
 
-function display_unit() {
-    chosen_unit = document.getElementById("chosen_unit").value;
-    document.getElementById("unitchosen").innerHTML = chosen_unit;
-}
+// function display_unit() {
+//     chosen_unit = document.getElementById("chosen_unit").value;
+//     document.getElementById("unitchosen").innerHTML = chosen_unit;
+// }
 
 //retrieve the requirements of given unit
 function getUnitPrerequisites(unit) {

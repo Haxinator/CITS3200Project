@@ -18,20 +18,23 @@
         <button id="prequisiteFilter" class="button">Units with Prequisites</button>
         <!-- <button onclick="display_all()">Generate nodes</button> -->
         <!-- <div id="nodes"></div> -->
-        <div id="wordtree_basic" style="width: 900px; height: 500px;"></div>
-        <br>
-        <label>chosen unit:</label>
-        <input type="text" id="chosen_unit">
-        <!-- <button id="prereqs_btn" onclick="display_unit(); get_prereqs()">Check Pre-requisites</button> -->
-        <button id="child_btn" onclick="display_unit(); get_children()">Check Children</button>
+    </main>
+
+    <div id="treeview">
+        <h3>Need to see how important the unit is?</h3>
+        <p>Type a unit down below and see how many units depend on the unit you entered.</p>
+        <label>Chosen unit:</label>
+        <select type="text" id="chosen_unit"></select>
+        <button id="prereqs_btn" onclick="get_prereqs()" class="button">Check Pre-requisites</button>
+        <button id="child_btn" onclick="get_children()" class="button">Check Child Units</button>
         <!-- <button id="vis_btn" onclick="drawUnitPaths()">Visualize</button> -->
-        <br>
-        <h6 id="unitchosen"></h6>
+        <div id="unit_tree"></div>
+        <!-- <h6 id="unitchosen"></h6>
         <h6 id="prereqs_head"></h6>
         <div id="prereqs"></div>
         <h6 id="child_head"></h6>
-        <div id="child_units"></div>
-    </main>
+        <div id="child_units"></div> -->
+    </div>
         
     <script>
         // Access the variable in JavaScript
