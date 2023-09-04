@@ -214,6 +214,7 @@ function printUnitInfo(unitCode)
     str += formatInfo("Corequisites", unit.corequisites); //previously or concurrently.
     str += formatInfo("Point Requirements", unit.pointRequirements);
     str += formatInfo("Enrollment Requirements", unit.enrollmentRequirements);
+    str += "Legend: <br> green - prerequisite,<br> blue - corequisite, <br>yellow - unit is prerequisite for"
 
     return str;
 }
@@ -237,6 +238,9 @@ function unitConditionsMet(unitCode, container)
     return correctSemester && correctPrequisites && correctCorequisites && correctPoints;
 }
 
+//determines if unit belongs to the type identifier given
+//@param unit code is the unit code.
+//@param identifier is the unit type identifier.
 function unitType(unitCode, identifier)
 {
     if(identifier === "P" && unitCode.substring(0,4) === "CITS")
@@ -892,6 +896,9 @@ function printInfo(e)
 
     clearHighlighting();
 
+    //highlight unit selected
+    e.currentTarget.classList.add("grey");
+
     //highlight prerequisites
     for(let prerequisite of unit.prerequisites)
     {
@@ -914,6 +921,18 @@ function printInfo(e)
             //lol s1.
             unitElement.classList.toggle("S1");
             //it would be nice to add an arrow going from prerequiste to unit.
+        }
+    }
+
+    //highlight all units where this unit is a prerequisite
+    for(let otherUnit of planner.unitInformation.values())
+    {
+        let otherUnitCode = otherUnit.unitCode;
+
+        //highlight if unit clicked on is required for this unit.
+        if(otherUnit.prerequisites.includes(unitCode))
+        {
+            getById(otherUnitCode).classList.add("S1S2");
         }
     }
 }

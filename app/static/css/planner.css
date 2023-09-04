@@ -78,6 +78,7 @@ h2 {
     text-align: center;
 }
 
+/* NEED TO CHANGE TO NAME OF COLOUR FOR CLEANER CODE */
 .NS{
     background-color: tomato;
 }
@@ -92,6 +93,10 @@ h2 {
 
 .S1S2 {
     background-color: yellow;
+}
+
+.grey {
+    background-color: lightgray;
 }
 
 
