@@ -30,7 +30,7 @@ function drawUnitPaths(array, display_type) {
 
 // helper function
 function getBranches(branches, type) {
-    let paths = []
+    let paths = [['unit_sequences']]
     for (let p in branches) {
         if (type == "prereq") {
             console.log(branches[p].prerequisites);
@@ -70,7 +70,8 @@ function get_prereqs() {
         response = JSON.parse(xhttp.responseText);
         console.log(xhttp.responseText);
         unitpaths = getBranches(response, "prereq");
-        if (unitpaths.length != 0) {
+        if (unitpaths.length != 1) {
+            console.log(unitpaths);
             drawUnitPaths(unitpaths, 'prefix');
         }
         else {
@@ -96,7 +97,7 @@ function get_children() {
         response = JSON.parse(xhttp.responseText);
         unitpaths = getBranches(response, "child");
         console.log(unitpaths);
-        if (unitpaths.length != 0) {
+        if (unitpaths.length != 1) {
             drawUnitPaths(unitpaths, 'suffix');
         }
         else {
