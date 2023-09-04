@@ -105,6 +105,25 @@ getById("prequisiteFilter").addEventListener("click", () =>
     updateInfoBar("Legend: Yellow - Unit has Prequisites");
 });
 
+getById("pointRequirementsFilter").addEventListener("click", () =>
+{
+    clearHighlighting();
+
+    for(let unit of planner.unitInformation.values())
+    {
+        item = getById(unit.unitCode);
+
+        if(unit.pointRequirements.length > 0)
+        {
+            item.classList.toggle("S1S2");
+        } else {
+            item.classList.remove("S1S2");
+        }
+    }
+
+    updateInfoBar("Legend: Yellow - Unit has point requirements");
+});
+
 // ------------------- INFO BAR FUNCTIONS -----------------------//
 
 function updateInfoBar(info){
