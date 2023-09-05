@@ -136,3 +136,18 @@ h2 {
     border-bottom-right-radius: 5px;
     box-shadow: 3px 3px 5px lightgrey;
 }
+
+/* treeview css */
+#treeview {
+    text-align: center;
+    margin: auto;
+    width: 60%;
+}
+
+#unit_tree text {
+    font-family: "UWA Regular", "UWA", Georgia, serif;
+}
+
+#tree_display {
+    padding: 5%;
+}

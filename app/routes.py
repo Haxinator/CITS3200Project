@@ -83,7 +83,7 @@ def get_option_units(major):
     WHERE u.major CONTAINS $major AND u.type CONTAINS "GROUP"
     OPTIONAL MATCH (u)-[:REQUIRES]->(m)
     WITH u, COLLECT(m.unitcode) as unit_req
-    RETURN u.unitcode as unitcode, u.unitname as unitname, u.type as type, u.semester as semester, u.major as major, u.level as level, u.credit_points as credit_points, u.points_req as points_req, u.enrolment_req as enrolment_req, unit_req, u.incompatible_units as incompatibilities
+    RETURN u.unitcode as unitcode, u.unitname as unitname, u.type as type, u.semester as semester, u.major as major, u.level as level, u.credit_points as credit_points, u.points_req as points_req, u.enrolment_req as enrolment_req, unit_req, u.incompatible_units as incompatibilities, u.corequisites as corequisites
     ORDER BY level
     """
     x = {"major":major}

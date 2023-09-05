@@ -4,6 +4,7 @@ var planner;
 
 fetchCourseRequirementsAndBuildPlanner();
 makeInfoBar();
+//get_option_units();
 
 // -------------------- FILTERS ----------------------------- //
 //get entire page if clicked on remove highlight and info bar.
@@ -988,6 +989,7 @@ function fetchCourseRequirementsAndBuildPlanner() {
         planner = new Table();
 
         planner.makeTable(response);
+        addUnitOptions(response);
     }
     xhttp.send();
 }
@@ -1001,29 +1003,30 @@ function get_option_units() {
     xhttp.open("GET", server, true);
     xhttp.onload = function (e) {
         response = JSON.parse(xhttp.responseText);
-        console.log(this.response)
+        console.log(xhttp.responseText);
+        //addUnitOptions(response);
     }
     xhttp.send();
 }
 
-function display_all() {
-    const xhttp = new XMLHttpRequest();
-    let server = '/display';
-    xhttp.open("GET", server, true);
-    xhttp.onload = function (e) {
+// function display_all() {
+//     const xhttp = new XMLHttpRequest();
+//     let server = '/display';
+//     xhttp.open("GET", server, true);
+//     xhttp.onload = function (e) {
 
-        document.getElementById("nodes").innerHTML = this.response;
+//         document.getElementById("nodes").innerHTML = this.response;
 
-        alert("I worked!! TvT");
-    }
-    xhttp.send();
-}
+//         alert("I worked!! TvT");
+//     }
+//     xhttp.send();
+// }
 
 
-function display_unit() {
-    chosen_unit = document.getElementById("chosen_unit").value;
-    document.getElementById("unitchosen").innerHTML = chosen_unit;
-}
+// function display_unit() {
+//     chosen_unit = document.getElementById("chosen_unit").value;
+//     document.getElementById("unitchosen").innerHTML = chosen_unit;
+// }
 
 //retrieve the requirements of given unit
 function getUnitPrerequisites(unit) {
@@ -1034,34 +1037,6 @@ function getUnitPrerequisites(unit) {
     xhttp.onload = function (e) {
         prerequisites = JSON.parse(xhttp.responseText);
         console.log(prerequisites);
-    }
-    xhttp.send();
-}
-
-//retrieve the requirements of chosen unit 
-function get_prereqs() {
-    chosen_unit = document.getElementById("chosen_unit").value;
-    
-    const xhttp = new XMLHttpRequest();
-    let server = '/prereqs/'.concat(chosen_unit);
-    xhttp.open("GET", server, true);
-    xhttp.onload = function (e) {
-        document.getElementById('prereqs_head').innerHTML = "This unit requires the following:"
-        document.getElementById('prereqs').innerHTML = xhttp.responseText;
-    }
-    xhttp.send();
-}
-
-//retrieve units that require chosen unit
-function get_children() {
-    chosen_unit = document.getElementById("chosen_unit").value;
-
-    const xhttp = new XMLHttpRequest();
-    let server = '/child_units/'.concat(chosen_unit);
-    xhttp.open("GET", server, true);
-    xhttp.onload = function (e) {
-        document.getElementById('child_head').innerHTML = "This unit is a requirement for the following:"
-        document.getElementById('child_units').innerHTML = xhttp.responseText;
     }
     xhttp.send();
 }
@@ -1083,3 +1058,5 @@ function get_children() {
 //         childBtn.disabled = false;
 //     }
 // });
+
+
