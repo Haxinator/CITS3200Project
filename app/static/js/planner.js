@@ -7,6 +7,29 @@ makeInfoBar();
 //get_option_units();
 
 // -------------------- FILTERS ----------------------------- //
+
+//given a unit object highlights unit if it has a problem
+function highlightIfUnitHasProblems(unit)
+{
+    let unitElement = getById(unit.unitCode);
+
+    if(hasProblems(unit.unitCode))
+    {
+        //NS is red.
+        unitElement.classList.add("NS");
+    } else {
+        unitElement.classList.remove("NS");
+    }
+}
+
+function hasProblems(unitCode)
+{
+    let unit = planner.unitInformation.get(unitCode);
+
+    return (unit.problems.length > 0);
+}
+
+//change highlighting with zebra strips if unit has problems.
 //get entire page if clicked on remove highlight and info bar.
 getById("root").parentElement.parentElement.addEventListener("click", (e) =>{
 
@@ -17,6 +40,12 @@ getById("root").parentElement.parentElement.addEventListener("click", (e) =>{
         updateInfoBar("");
 
         clearHighlighting();
+
+        //then highlight problems again.
+        // for(let unit of planner.unitInformation.values())
+        // {
+        //     highlightIfUnitHasProblems(unit);
+        // }
     }
     
 })
@@ -44,27 +73,27 @@ getById("SemesterFilter").addEventListener("click", () => {
         updateInfoBar("Legend: <br>Blue - S1, Green - S2, Yellow - S1/S2, red - NS");
 });
 
-getById("ProblemFilter").addEventListener("click", () => {
+// getById("ProblemFilter").addEventListener("click", () => {
 
-    clearHighlighting();
+//     clearHighlighting();
 
-    for(let unit of planner.unitInformation.values())
-    {
-        item = getById(unit.unitCode);
+//     for(let unit of planner.unitInformation.values())
+//     {
+//         item = getById(unit.unitCode);
 
-        if(unit.problems.length > 0)
-        {
-            //NS is red.
-            item.classList.toggle("NS");
-        } else {
-            item.classList.remove("NS");
-        }
+//         if(unit.problems.length > 0)
+//         {
+//             //NS is red.
+//             item.classList.toggle("NS");
+//         } else {
+//             item.classList.remove("NS");
+//         }
 
-        //BUG if problem added when problem filter on, problem filter
-        //alternates between problem units.
-    }
-        updateInfoBar("Legend: red - prerequisite not met");
-});
+//         //BUG if problem added when problem filter on, problem filter
+//         //alternates between problem units.
+//     }
+//         updateInfoBar("Legend: red - prerequisite not met");
+// });
 
 getById("corequisiteFilter").addEventListener("click", () =>
 {
@@ -206,6 +235,11 @@ function clearHighlighting()
         //overwrite all classes with unit.
         unitElement = getById(unit.unitCode);
         unitElement.setAttribute("class", "unit");
+
+        if(unit.problems.length > 0)
+        {
+            unitElement.classList.add("NS");
+        }
     }
 }
 
@@ -247,13 +281,20 @@ function unitConditionsMet(unitCode, container)
     //empty here for cleaner code
     //if problems still exist they will be added again
     //if problems are gone, they will be removed from array.
-    planner.unitInformation.get(unitCode).problems = [];
+    let unit = planner.unitInformation.get(unitCode);
+    unit.problems = [];
 
     //instead of container ID can be used, which would be cleaner.
     correctSemester = canEnrollInPeriod(unitCode, container);
     correctPrequisites = unitPreRequisitiesMet(unitCode, container);
     correctCorequisites = corequisitesMet(unitCode, container);
     correctPoints = pointRequirementsMet(unitCode, container);
+
+    //colour red if problem found.
+    if(planner.unitNames.indexOf(unitCode) == -1 )
+    {
+        highlightIfUnitHasProblems(unit);
+    }
 
     return correctSemester && correctPrequisites && correctCorequisites && correctPoints;
 }
@@ -291,13 +332,9 @@ function pointRequirementsMet(unitCode, container)
 
     //I cri.
     //IT WORKSS
-    //BUG container isn't the container of the current unit for some reason.
     for(let otherUnit of planner.unitInformation.values())
     {
         let otherUnitCode = otherUnit.unitCode;
-
-        // console.log(otherUnit.enrollmentPeriod);
-        // console.log(container.id);
 
         //if in planner and before current enrollment period
         if(planner.unitNames.indexOf(otherUnitCode) == -1 &&
@@ -312,19 +349,8 @@ function pointRequirementsMet(unitCode, container)
 
             pointCount += parseInt(otherUnit.creditPoints);
 
-
-            //add credit points to count depending on type
-            // switch(otherUnit.type){
-            //     case "CORE":
-            //         CoreUnitCount += parseInt(otherUnit.creditPoints);
-            //     default:
-            //         pointCount += parseInt(otherUnit.creditPoints);
-            // }
         }
     }
-
-    console.log(CoreUnitCount);
-    console.log(pointCount);
 
     // check if char is alpha (different upp and lower)
     // then first index is core units.
@@ -356,37 +382,6 @@ function pointRequirementsMet(unitCode, container)
             return false;
         }
     }
-
-    //check if point requirements met
-    // switch(unit.pointRequirements.length)
-    // {
-    //     //core unit points
-    //     case 2:
-    //         if(unit.pointRequirements[0] > CoreUnitCount)
-    //         {
-    //             unit.problems.push(`${unitCode} requires ${unit.pointRequirements[0]} core unit credit points!`);
-    //             updateInfoBar(`${unitCode} requires ${unit.pointRequirements[0]} core unit credit points!`);
-                
-    //             return false;
-    //         }
-    //         if(unit.pointRequirements[1] > pointCount)
-    //         {
-    //             unit.problems.push(`${unitCode} requires ${unit.pointRequirements[1]} credit points!`);
-    //             updateInfoBar(`${unitCode} requires ${unit.pointRequirements[1]} credit points!`);
-
-    //             return false;
-    //         }
-    //         break;
-    //     //all points
-    //     default:
-    //         if(unit.pointRequirements[0] > pointCount)
-    //         {
-    //             unit.problems.push(`${unitCode} requires ${unit.pointRequirements[0]} credit points!`);
-    //             updateInfoBar(`${unitCode} requires ${unit.pointRequirements[0]} credit points!`);
-                
-    //             return false;
-    //         }
-    // }
 
     return true;
 }
@@ -444,16 +439,6 @@ function unitPreRequisitiesMet(unitCode, container)
             return false;
 
         } else if (prerequisiteUnit != null){
-
-            //provided the unit exists (ATAR units may not exist in plan)
-
-            //used to be prerequ.period == container.id
-            //extension allows function to be used after planner
-            //initalisation.
-            // console.log(prerequisiteUnit)
-            // console.log("unit period " + prerequisiteUnit.enrollmentPeriod);
-            // console.log("contianer period", container.id);
-            // console.log(prerequisiteUnit.enrollmentPeriod >= container.id);
 
             if(prerequisiteUnit.enrollmentPeriod >= container.id && 
                 prerequisiteUnit.enrollmentPeriod.length == container.id.length) {
@@ -843,12 +828,20 @@ function drop(e)
                         ${e.target.id} only available in ${getPeriodOffered(e.target.id)}`);
     }
 
+    let conditionMet = true;
     //check if prerequisites met for all units.
     for(let unit of planner.unitInformation.values())
     {
         item = getById(unit.unitCode);
 
-        unitConditionsMet(item.id, item.parentElement);
+        if(!unitConditionsMet(item.id, item.parentElement)){
+            conditionMet = false;
+        }
+    }
+    //clear info bar if prerequisites met.
+    if(conditionMet)
+    {
+        updateInfoBar("");
     }
 
     //show item
@@ -907,7 +900,7 @@ function printInfo(e)
     let unitCode = e.currentTarget.id;
     let unit = planner.unitInformation.get(unitCode);
 
-    if(unit.problems.length > 0)
+    if(hasProblems(unitCode))
     {
         updateInfoBar(unit.problems);
     } else {
@@ -924,9 +917,14 @@ function printInfo(e)
     {
         if(unitExists(prerequisite))
         {
-            unitElement = getById(prerequisite);
+            let unitElement = getById(prerequisite);
             
-            unitElement.classList.toggle("S2");
+            if(hasProblems(prerequisite))
+            {
+                unitElement.classList.add("redGreenStripe");
+            } else {
+                unitElement.classList.add("S2");
+            }
             //it would be nice to add an arrow going from prerequiste to unit.
         }
     }
@@ -936,10 +934,15 @@ function printInfo(e)
     {
         if(unitExists(corequisite))
         {
-            unitElement = getById(corequisite);
+            let unitElement = getById(corequisite);
             
             //lol s1.
-            unitElement.classList.toggle("S1");
+            if(hasProblems(corequisite))
+            {
+                unitElement.classList.add("redBlueStripe");
+            } else {
+                unitElement.classList.add("S1");
+            }
             //it would be nice to add an arrow going from prerequiste to unit.
         }
     }
@@ -952,7 +955,14 @@ function printInfo(e)
         //highlight if unit clicked on is required for this unit.
         if(otherUnit.prerequisites.includes(unitCode))
         {
-            getById(otherUnitCode).classList.add("S1S2");
+            let unitElement = getById(otherUnitCode);
+            
+            if(hasProblems(otherUnitCode))
+            {
+                unitElement.classList.add("redYellowStripe");
+            } else {
+                unitElement.classList.add("S1S2");
+            }
         }
     }
 }
