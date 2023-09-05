@@ -956,7 +956,7 @@ function printInfo(e)
         if(otherUnit.prerequisites.includes(unitCode))
         {
             let unitElement = getById(otherUnitCode);
-            
+
             if(hasProblems(otherUnitCode))
             {
                 unitElement.classList.add("redYellowStripe");
