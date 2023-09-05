@@ -8,8 +8,12 @@
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/getStartedStyle.css') }}">
 
 <div class="container text-center">
-    <h1 class="display-4 mb-4">Masters of Professional Engineering</h1>
-    <p class="lead">Please select your specialization:</p>
+    <h1 class="display-4 mb-4">Bachelors of Professional Engineering (Honours)</h1>
+    <div class="feature-box"><p>To be eligible for admission to the Bachelor of Professional Engineering (Honours) - BH011 program, candidates must meet the following prerequisites:
+        <p>(1) A scaled score above 50% in ATAR Mathematics Methods.</p>
+        <p>(2) Completion of at least one of the following ATAR subjects: Mathematics Specialists, Chemistry, or Physics.</p>
+            <p>In the event that a candidate has not completed all three of the specified ATAR subjects, they will be required to enroll in a bridging unit for each uncompleted subject. These bridging units will be counted as broadening units in their course structure.</p> </p></div>
+    <h3 class="lead">Please select your specialization:</h3>
 
     <form action="{{ url_for('preferences') }}" method="post" id="specialization-form">
         <div class="form-group">
@@ -31,12 +35,6 @@
             <label>Did you take Mathematics Specialist ATAR in high school and did you achieve a scaled score of >50%?</label><br>
             <input type="radio" name="mathSpecialist" value="yes" required> Yes
             <input type="radio" name="mathSpecialist" value="no"> No
-        </div>
-
-        <div class="form-group">
-            <label>Did you take Mathematics Methods ATAR in high school and did you achieve a scaled score of >50%?</label><br>
-            <input type="radio" name="mathMethods" value="yes" required> Yes
-            <input type="radio" name="mathMethods" value="no"> No
         </div>
 
         <div class="form-group">
@@ -62,19 +60,42 @@
 
         // Event listener for changes in the form
         document.getElementById('specialization-form').addEventListener('change', validateForm);
+
+        // Event listener for form submission
+        document.getElementById('specialization-form').addEventListener('submit', function(event) {
+            var mathSpecialist = document.getElementsByName('mathSpecialist');
+            var chemistry = document.getElementsByName('chemistry');
+            var physics = document.getElementsByName('physics');
+            
+            if (!radioIsChecked(mathSpecialist, 'yes') && !radioIsChecked(chemistry, 'yes') && !radioIsChecked(physics, 'yes')) {
+                event.preventDefault();
+                
+                var errorDiv = document.createElement('div');
+                errorDiv.setAttribute('id', 'error-message');
+                errorDiv.setAttribute('class', 'alert alert-danger');
+                errorDiv.innerHTML = 'Unfortunately, you cannot enroll in the Bachelor of Engineering Honours since you have not completed the core requirement. You must complete at least one of Maths Specialist, Chemistry, or Physics.';
+                
+                var submitButton = document.querySelector('.button.border');
+                var existingErrorDiv = document.getElementById('error-message');
+                if (existingErrorDiv) {
+                    submitButton.parentNode.replaceChild(errorDiv, existingErrorDiv);
+                } else {
+                    submitButton.parentNode.insertBefore(errorDiv, submitButton);
+                }
+            }
+        });
     });
 
     function validateForm() {
         // Retrieve form elements
         var specialization = document.getElementById('specialization');
         var mathSpecialist = document.getElementsByName('mathSpecialist');
-        var mathMethods = document.getElementsByName('mathMethods');
         var chemistry = document.getElementsByName('chemistry');
         var physics = document.getElementsByName('physics');
         var submitButton = document.querySelector('.button.border');
 
         // Check if all fields are filled
-        if (specialization.value !== "" && radioIsChecked(mathSpecialist) && radioIsChecked(mathMethods) &&
+        if (specialization.value !== "" && radioIsChecked(mathSpecialist) &&
             radioIsChecked(chemistry) && radioIsChecked(physics)) {
             submitButton.disabled = false;
             submitButton.style.opacity = "1";
@@ -85,14 +106,15 @@
     }
 
     // Function to check if any radio button in a group is checked
-    function radioIsChecked(radioGroup) {
+    function radioIsChecked(radioGroup, value = null) {
         for (var i = 0; i < radioGroup.length; i++) {
-            if (radioGroup[i].checked) {
+            if (radioGroup[i].checked && (value === null || radioGroup[i].value === value)) {
                 return true;
             }
         }
         return false;
     }
 </script>
+
 
 {% endblock %}
