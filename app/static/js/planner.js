@@ -214,7 +214,7 @@ function clearHighlighting()
 // `Unit: "${unit.name}"<br>`
 function formatInfo(label, info)
 {
-    return `<span style="font-weight: bold;">${label}</span>: "${info}"<br>`;
+    return `<span style="font-weight: bold;">${label}</span>: ${info}<br>`;
 }
 
 //formats unit information
