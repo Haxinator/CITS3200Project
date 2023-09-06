@@ -7,3 +7,11 @@
     background-color: #f9f9f9;
     height: 50px;
 }
+
+.btn-group-toggle .btn {
+    background-color: lightgray;
+}
+.btn-group-toggle .btn.active {
+    background-color: rgb(50, 50, 228);
+    color: white;
+}
