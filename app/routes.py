@@ -24,7 +24,6 @@ def preferences():
     specialization = request.form['specialization']
     #prints out unit code SP-ECHEM
     mathSpecialist = request.form['mathSpecialist']
-    mathMethods = request.form['mathMethods']
     chemistry = request.form['chemistry']
     physics = request.form['physics']
     print(specialization)
@@ -32,7 +31,7 @@ def preferences():
 
     # Do something with the form data (e.g., save to the database)
 
-    return render_template('preferences.html', title='Preferences', specialization = specialization, mathSpecialist = mathSpecialist, mathMethods = mathMethods, chemistry = chemistry, physics = physics) # Render the preferences page
+    return render_template('preferences.html', title='Preferences', specialization = specialization, mathSpecialist = mathSpecialist, chemistry = chemistry, physics = physics) # Render the preferences page
 
 
 uri= "bolt+s://e5218dc4.databases.neo4j.io"  #"bolt://3.236.190.97:7687" :skull:
@@ -42,7 +41,7 @@ pswd= "svH9RLz19fQFpDDgjnQCZMO9MF6WEVPRmtpXEaNVQ2o"  #"ideals-extensions-necks"
 # Connect to remote Neo4j driver
 # print("Neo4j Driver Version:", neo4j_version)
 driver=GraphDatabase.driver(uri,auth=(user, pswd))
-driver.verify_connectivity()
+# driver.verify_connectivity()
 session=driver.session() 
 
 @app.route("/unitInformation/<string:major>/bridging=<string:bridging>", methods=["GET"])
