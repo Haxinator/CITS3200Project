@@ -1,6 +1,6 @@
 import { removeFromArray, enrollInPeroid, addToRoot, updateInfoBar } from "./support.js";
 import { unitConditionsMet } from "./preprequisites.js";
-import { addCellEvents, addContainerEvents, addSensorEvents } from "./events.js";
+import { addUnitEvents, addContainerEvents, addSensorEvents } from "./events.js";
 
 
 //------------------- PROTOTYPES ----------------------------------//
@@ -36,9 +36,12 @@ export class Table {
     constructor() {
         this.year = 0; //may improve somehow.
         this.numberOfUnits = 0; //Number of units in the planner
+        this.creditPointsRequired = 192;
+        this.maxBroadening = 24;
         this.unitInformation = new Map();
         this.unitNames = [];
         this.hasNSUnits = false;
+        this.nextID = 0;
 
         this.extractInformation = (unitInfo) => {
             console.log(unitInfo);
@@ -75,19 +78,55 @@ export class Table {
         };
 
         //makes a cell which represent a unit.
-        this.makeCell = (unitCode) => {
+        this.makeCell = (innerHTML) => {
             let data = document.createElement("td");
-
-            data.innerHTML = unitCode;
-            data.setAttribute("id", unitCode);
+            
+            data.innerHTML = innerHTML;
             data.setAttribute("draggable", "true");
             data.classList.add("unit");
-            addCellEvents(data);
-
-            removeFromArray(this.unitNames, unitCode);
 
             return data;
         };
+
+        this.makeUnit = (unitCode) => {
+            let unit = this.makeCell(unitCode);
+
+            unit.setAttribute("id", unitCode);
+            removeFromArray(this.unitNames, unitCode);
+            addUnitEvents(unit);
+
+            return unit;
+        }
+
+        this.makeBroadening = () => {
+            let broadening = this.makeCell("Broadening");
+            let code = "B" + this.nextID;
+
+            broadening.setAttribute("id", code);
+            addUnitEvents(broadening);
+
+            this.unitInformation.set(code,
+                new Unit("broadening", code, 6, "broadening","BOTH", [],[],"",""));
+
+            this.nextID++;
+
+            return broadening;
+        }
+
+        this.makeElective = () => {
+            let elective = this.makeCell("Elective");
+            let code = "E"+this.nextID
+
+            elective.setAttribute("id", code);
+            addUnitEvents(elective);
+
+            this.unitInformation.set(code,
+                new Unit("elective", code, 6, "elective","BOTH", [],[],"",""));
+                
+            this.nextID++;
+
+            return elective;
+        }
 
         //makes a year row.
         this.makeYearRow = () => {
@@ -130,7 +169,7 @@ export class Table {
 
                 //check if unit placed in valid teaching period
                 if (unitConditionsMet(unitCode, container)) {
-                    enrollInPeroid(this.makeCell(unitCode), container);
+                    enrollInPeroid(this.makeUnit(unitCode), container);
                     //-1 as element was removed to get actual index.
                     i -= 1;
 
@@ -139,8 +178,20 @@ export class Table {
                         break;
                     }
                 }
+            }
 
+            //while semester has less than 4 units
+            while(container.childElementCount < 4 && this.creditPointsRequired > 0 &&
+                    !container.id.includes("NS")) {
 
+                // if max broadening hasn't been met
+                if(this.maxBroadening > 0)
+                {
+                    this.maxBroadening -= 6;
+                    enrollInPeroid(this.makeBroadening(), container);
+                } else {
+                    enrollInPeroid(this.makeElective(), container);
+                }
             }
 
             addContainerEvents(container);

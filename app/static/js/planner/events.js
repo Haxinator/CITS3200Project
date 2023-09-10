@@ -4,7 +4,7 @@ import { planner } from "./planner.js";
 
 
 //to add events to unit cells.
-export function addCellEvents(item)
+export function addUnitEvents(item)
 {
     item.addEventListener("dragstart", dragstart);
     item.addEventListener("dragend", dragend);
@@ -212,8 +212,8 @@ function drop(e)
             itemClone.classList.remove("hide");
 
             //add the event listeners to swapped units.
-            addCellEvents(targetClone);
-            addCellEvents(itemClone);
+            addUnitEvents(targetClone);
+            addUnitEvents(itemClone);
 
             let targetUnit = planner.unitInformation.get(targetClone.id);
             let itemUnit = planner.unitInformation.get(itemClone.id);

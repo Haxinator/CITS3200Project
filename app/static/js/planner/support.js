@@ -39,7 +39,12 @@ export function getById(id)
 //unit is unit as represented in the DOM.
 export function enrollInPeroid(unit, container)
 {
-    planner.unitInformation.get(unit.id).enrollmentPeriod = container.id;
+    let unitInfo = planner.unitInformation.get(unit.id);
+
+    //subtract from creditPointsRequired
+    planner.creditPointsRequired -= unitInfo.creditPoints;
+    unitInfo.enrollmentPeriod = container.id;
+
     container.append(unit);
 
 }

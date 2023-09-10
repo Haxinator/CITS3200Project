@@ -33,7 +33,7 @@ getById("SemesterFilter").addEventListener("click", () => {
 
     for(let unit of planner.unitInformation.values())
     {
-        item = getById(unit.unitCode);
+        let item = getById(unit.unitCode);
 
         if(unit.semester == "S1")
         {
@@ -55,7 +55,7 @@ getById("corequisiteFilter").addEventListener("click", () =>
 
     for(let unit of planner.unitInformation.values())
     {
-        item = getById(unit.unitCode);
+        let item = getById(unit.unitCode);
 
         if(unit.corequisites.length > 0)
         {
@@ -75,7 +75,7 @@ getById("prequisiteFilter").addEventListener("click", () =>
 
     for(let unit of planner.unitInformation.values())
     {
-        item = getById(unit.unitCode);
+        let item = getById(unit.unitCode);
 
         if(unit.prerequisites.length > 0)
         {
@@ -95,7 +95,7 @@ getById("pointRequirementsFilter").addEventListener("click", () =>
 
     for(let unit of planner.unitInformation.values())
     {
-        item = getById(unit.unitCode);
+        let item = getById(unit.unitCode);
 
         if(unit.pointRequirements.length > 0)
         {
@@ -130,20 +130,25 @@ function makeInfoBar() {
 //Creates a the planner based on that info.
 function fetchCourseRequirementsAndBuildPlanner() {
     let major = specialization;
-    let bridging = "NONE,"
+    let bridging = "NONE,";
+    let bridgingCount = 0;
 
     //check ATAR prerequisites, if not achieved include bridging unit
     if(isSpec == "no") {
-        bridging = bridging.concat("MATH1722,")
+        bridging = bridging.concat("MATH1722,");
+        bridgingCount++;
     }
     if(isMeth == "no") {
-        bridging = bridging.concat("MATH1721,")
+        bridging = bridging.concat("MATH1721,");
+        bridgingCount++;
     }
     if(isPhys == "no") {
-        bridging = bridging.concat("PHYS1030,")
+        bridging = bridging.concat("PHYS1030,");
+        bridgingCount++;
     }
     if(isChem == "no") {
-        bridging = bridging.concat("CHEM1003,")
+        bridging = bridging.concat("CHEM1003,");
+        bridgingCount++;
     }
 
     const xhttp = new XMLHttpRequest();
@@ -152,6 +157,7 @@ function fetchCourseRequirementsAndBuildPlanner() {
     xhttp.onload = function (e) {
         let response = JSON.parse(xhttp.responseText);
         planner = new Table();
+        planner.maxBroadening -= (6*bridgingCount);
 
         planner.makeTable(response);
         addUnitOptions(response);
