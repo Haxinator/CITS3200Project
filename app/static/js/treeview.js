@@ -7,6 +7,22 @@
 //     return seq
 // }
 
+get_option_units();
+
+//retrieve option units
+function get_option_units() {
+    let major = specialization;
+
+    const xhttp = new XMLHttpRequest();
+    let server = '/option_units='.concat(major);
+    xhttp.open("GET", server, true);
+    xhttp.onload = function (e) {
+        response = JSON.parse(xhttp.responseText);
+        addUnitOptions(response);
+    }
+    xhttp.send();
+}
+
 //make trEEEEEEEEEEEEEEEEEE 
 google.charts.load('current', {packages:['wordtree']});
 

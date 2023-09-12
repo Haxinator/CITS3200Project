@@ -7,7 +7,6 @@ export var planner;
 
 fetchCourseRequirementsAndBuildPlanner();
 makeInfoBar();
-//get_option_units();
 
 // -------------------- FILTERS ----------------------------- //
 
@@ -161,21 +160,6 @@ function fetchCourseRequirementsAndBuildPlanner() {
 
         planner.makeTable(response);
         addUnitOptions(response);
-    }
-    xhttp.send();
-}
-
-//retrieve option units
-function get_option_units() {
-    let major = specialization;
-
-    const xhttp = new XMLHttpRequest();
-    let server = '/option_units='.concat(major);
-    xhttp.open("GET", server, true);
-    xhttp.onload = function (e) {
-        response = JSON.parse(xhttp.responseText);
-        console.log(xhttp.responseText);
-        //addUnitOptions(response);
     }
     xhttp.send();
 }
