@@ -91,29 +91,29 @@ def get_option_units(major):
     data=results.data()
     return(jsonify(data))
 
-@app.route("/prereqs/<string:chosen_unit>", methods=["GET"])
-def get_prereq_units(chosen_unit):
+@app.route("/prereqs/<string:major>/<string:chosen_unit>", methods=["GET"])
+def get_prereq_units(chosen_unit, major):
     query="""
     MATCH (u:Unit {unitcode: $chosen_unit})
     CALL apoc.path.expandConfig(u, {relationshipFilter: "REQUIRES>", minLevel: 1, maxLevel: 5})
     YIELD path
-    RETURN [node IN nodes(path) | node.unitcode] AS prerequisites
+    RETURN [node IN nodes(path) WHERE (node.major CONTAINS $major) OR (node.major IS NULL) | node.unitcode] AS prerequisites
     """
-    x = {"chosen_unit":chosen_unit}
+    x = {"chosen_unit":chosen_unit, "major":major}
     results=session.run(query,x)
     data = results.data()
     return(jsonify(data))
     
 
-@app.route("/child_units/<string:chosen_unit>", methods=["GET"])
-def get_child_units(chosen_unit):
+@app.route("/child_units/<string:major>/<string:chosen_unit>", methods=["GET"])
+def get_child_units(chosen_unit, major):
     query="""
     MATCH (u:Unit {unitcode: $chosen_unit})
-    CALL apoc.path.expandConfig(u, {relationshipFilter: "<REQUIRES", minLevel: 1, maxLevel: 5, uniqueness: "NODE_GLOBAL"})
+    CALL apoc.path.expandConfig(u, {relationshipFilter: "<REQUIRES", minLevel: 1, maxLevel: 5})
     YIELD path
-    RETURN [node IN nodes(path) | node.unitcode] AS child_units
+    RETURN [node IN nodes(path) WHERE (node.major CONTAINS $major) OR (node.major IS NULL) | node.unitcode] AS child_units
     """
-    x = {"chosen_unit":chosen_unit}
+    x = {"chosen_unit":chosen_unit, "major":major}
     results=session.run(query,x)
     data=results.data()
     return(jsonify(data))
