@@ -49,70 +49,53 @@ def send_unit_information(major, bridging):
     units = bridging.split(",") 
     unit_conditions = " OR ".join([f"u.unitcode = '{unit}'" for unit in units])
 
-    # if major does not have option units (soft)
-    if(major == "SP-ESOFT"):
-        query=f""" MATCH (u)
-        WHERE u.major CONTAINS $major OR {unit_conditions}
-        OPTIONAL MATCH (u)-[:REQUIRES]->(m)
-        WITH u, COLLECT(m.unitcode) as unit_req
-        RETURN u.unitcode as unitcode, u.unitname as unitname, u.type as type, u.semester as semester, u.major as major, u.level as level, u.credit_points as credit_points, u.points_req as points_req, u.enrolment_req as enrolment_req, unit_req, u.incompatible_units as incompatibilities, u.corequisites as corequisites
-        ORDER BY level
-        """
-        x = {"major":major} 
-        results=session.run(query,x)
-        data=results.data()
-        return(jsonify(data))
-    # if major does have option units (mech)
-    else:
-        query=f""" MATCH (u)
-        WHERE u.major CONTAINS $major AND u.type = "CORE" OR {unit_conditions}
-        OPTIONAL MATCH (u)-[:REQUIRES]->(m)
-        WITH u, COLLECT(m.unitcode) as unit_req
-        RETURN u.unitcode as unitcode, u.unitname as unitname, u.type as type, u.semester as semester, u.major as major, u.level as level, u.credit_points as credit_points, u.points_req as points_req, u.enrolment_req as enrolment_req, unit_req, u.incompatible_units as incompatibilities, u.corequisites as corequisites
-        ORDER BY level
-        """
-        x = {"major":major}
-        results=session.run(query,x)
-        data=results.data()
-        return(jsonify(data))
+    query=f""" MATCH (u)
+    WHERE u.type CONTAINS "CORE_{major}" OR {unit_conditions}
+    OPTIONAL MATCH (u)-[:REQUIRES]->(m)
+    WITH u, COLLECT(m.unitcode) as unit_req
+    RETURN u.unitcode as unitcode, u.unitname as unitname, u.type as type, u.semester as semester, u.major as major, u.level as level, u.credit_points as credit_points, u.points_req as points_req, u.enrolment_req as enrolment_req, unit_req, u.incompatible_units as incompatibilities, u.corequisites as corequisites
+    ORDER BY level
+    """ 
+    results=session.run(query)
+    data=results.data()
+    return(jsonify(data))
 
 @app.route("/option_units=<string:major>", methods=["GET"])
 def get_option_units(major):
     query=f""" MATCH (u)
-    WHERE u.major CONTAINS $major AND u.type CONTAINS "GROUP"
+    WHERE u.major CONTAINS '{major}' AND u.type CONTAINS "GROUP_A_{major}" OR u.type CONTAINS "GROUP_B_{major}"
     OPTIONAL MATCH (u)-[:REQUIRES]->(m)
     WITH u, COLLECT(m.unitcode) as unit_req
     RETURN u.unitcode as unitcode, u.unitname as unitname, u.type as type, u.semester as semester, u.major as major, u.level as level, u.credit_points as credit_points, u.points_req as points_req, u.enrolment_req as enrolment_req, unit_req, u.incompatible_units as incompatibilities, u.corequisites as corequisites
     ORDER BY level
     """
-    x = {"major":major}
-    results=session.run(query,x)
+    results=session.run(query)
     data=results.data()
     return(jsonify(data))
 
-@app.route("/prereqs/<string:chosen_unit>", methods=["GET"])
-def get_prereq_units(chosen_unit):
+@app.route("/prereqs/<string:major>/<string:chosen_unit>", methods=["GET"])
+def get_prereq_units(chosen_unit, major):
     query="""
     MATCH (u:Unit {unitcode: $chosen_unit})
     CALL apoc.path.expandConfig(u, {relationshipFilter: "REQUIRES>", minLevel: 1, maxLevel: 5})
     YIELD path
-    RETURN [node IN nodes(path) | node.unitcode] AS prerequisites
+    RETURN [node IN nodes(path) WHERE (node.major CONTAINS $major) OR (node.major IS NULL) | node.unitcode] AS prerequisites
     """
-    x = {"chosen_unit":chosen_unit}
+    x = {"chosen_unit":chosen_unit, "major":major}
     results=session.run(query,x)
     data = results.data()
     return(jsonify(data))
     
 
-@app.route("/child_units/<string:chosen_unit>", methods=["GET"])
-def get_child_units(chosen_unit):
+@app.route("/child_units/<string:major>/<string:chosen_unit>", methods=["GET"])
+def get_child_units(chosen_unit, major):
     query="""
     MATCH (u:Unit {unitcode: $chosen_unit})
-    CALL apoc.path.expandConfig(u, {relationshipFilter: "<REQUIRES", minLevel: 1, maxLevel: 5, uniqueness: "NODE_GLOBAL"})
+    CALL apoc.path.expandConfig(u, {relationshipFilter: "<REQUIRES", minLevel: 1, maxLevel: 5})
     YIELD path
-    RETURN [node IN nodes(path) | node.unitcode] AS child_units
+    RETURN [node IN nodes(path) WHERE (node.major CONTAINS $major) OR (node.major IS NULL) | node.unitcode] AS child_units
     """
-    x = {"chosen_unit":chosen_unit}
+    x = {"chosen_unit":chosen_unit, "major":major}
     results=session.run(query,x)
     data=results.data()
     return(jsonify(data))
