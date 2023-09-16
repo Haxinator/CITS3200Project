@@ -71,25 +71,26 @@ export function unitExists(unitCode)
     return (planner.unitInformation.get(unitCode) != undefined);
 }
 
+//true if alphabetical character.
+//false otherwise.
+export function isAlpha(char)
+{
+    //if lower case different to uppercase, it is a character.
+    return char.toLowerCase() != char.toUpperCase();
+}
+
 //given a unit object highlights unit if it has a problem
 export function highlightIfUnitHasProblems(unit)
 {
     let unitElement = getById(unit.unitCode);
 
-    if(hasProblems(unit.unitCode))
+    if(unit.hasProblems())
     {
         //NS is red.
         unitElement.classList.add("NS");
     } else {
         unitElement.classList.remove("NS");
     }
-}
-
-export function hasProblems(unitCode)
-{
-    let unit = planner.unitInformation.get(unitCode);
-
-    return (unit.problems.length > 0);
 }
 
 

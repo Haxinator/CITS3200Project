@@ -1,5 +1,5 @@
 import {canEnrollInPeriod, unitConditionsMet} from "./preprequisites.js";
-import { updateInfoBar, getPeriodOffered, getById, getByPeriod, enrollInPeroid, hasProblems, clearHighlighting, unitExists } from "./support.js";
+import { updateInfoBar, getPeriodOffered, getById, getByPeriod, enrollInPeroid, clearHighlighting, unitExists } from "./support.js";
 import { planner } from "./planner.js";
 
 
@@ -48,7 +48,7 @@ function printInfo(e)
     let unitCode = e.currentTarget.id;
     let unit = planner.unitInformation.get(unitCode);
 
-    if(hasProblems(unitCode))
+    if(unit.hasProblems())
     {
         updateInfoBar(unit.problems);
     } else {
@@ -63,11 +63,13 @@ function printInfo(e)
     //highlight prerequisites
     for(let prerequisite of unit.prerequisites)
     {
+        let prerequisiteUnit = planner.unitInformation.get(prerequisite);
+
         if(unitExists(prerequisite))
         {
             let unitElement = getById(prerequisite);
             
-            if(hasProblems(prerequisite))
+            if(prerequisiteUnit.hasProblems())
             {
                 unitElement.classList.add("redGreenStripe");
             } else {
@@ -80,12 +82,13 @@ function printInfo(e)
     //highlight COREQUISITES!!! WOOOO
     for(let corequisite of unit.corequisites)
     {
+        let corequisiteUnit = planner.unitInformation.get(corequisite);
+
         if(unitExists(corequisite))
         {
             let unitElement = getById(corequisite);
             
-            //lol s1.
-            if(hasProblems(corequisite))
+            if(corequisiteUnit.hasProblems())
             {
                 unitElement.classList.add("redBlueStripe");
             } else {
@@ -98,14 +101,12 @@ function printInfo(e)
     //highlight all units where this unit is a prerequisite
     for(let otherUnit of planner.unitInformation.values())
     {
-        let otherUnitCode = otherUnit.unitCode;
-
         //highlight if unit clicked on is required for this unit.
         if(otherUnit.prerequisites.includes(unitCode))
         {
-            let unitElement = getById(otherUnitCode);
+            let unitElement = getById(otherUnit.unitCode);
 
-            if(hasProblems(otherUnitCode))
+            if(otherUnit.hasProblems())
             {
                 unitElement.classList.add("redYellowStripe");
             } else {

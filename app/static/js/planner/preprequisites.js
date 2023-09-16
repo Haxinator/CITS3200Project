@@ -1,5 +1,5 @@
 import { planner } from "./planner.js";
-import { updateInfoBar, highlightIfUnitHasProblems } from "./support.js";
+import { updateInfoBar, highlightIfUnitHasProblems, isAlpha } from "./support.js";
 
 // --------------- Prerequisite Met Functions ----------------//
 
@@ -48,6 +48,8 @@ export function pointRequirementsMet(unitCode, container)
     let unit = planner.unitInformation.get(unitCode);
     let pointCount = 0;
     let CoreUnitCount = 0;
+    let corePointsRequired = unit.pointRequirements[0];
+    let extraPointsRequired = unit.pointRequirements[1];
 
     // console.log(container.id);
     // console.log("points needed " + unit.pointRequirements);
@@ -57,6 +59,8 @@ export function pointRequirementsMet(unitCode, container)
     {
         return true;
     }
+
+    let typeIdentifier = corePointsRequired.slice(-1);
 
     //I cri.
     //IT WORKSS
@@ -70,7 +74,7 @@ export function pointRequirementsMet(unitCode, container)
         {
 
             //pass last letter in, if it has unit point requirements
-            if(unitType(otherUnitCode, unit.pointRequirements[0].slice(-1)))
+            if(unitType(otherUnitCode, typeIdentifier))
             {
                 CoreUnitCount += parseInt(otherUnit.creditPoints);
             }
@@ -82,30 +86,30 @@ export function pointRequirementsMet(unitCode, container)
 
     // check if char is alpha (different upp and lower)
     // then first index is core units.
-    // I have become death. Destroyer of JScode clarity.
-    if(unit.pointRequirements[0].slice(-1).toLowerCase() != unit.pointRequirements[0].slice(-1).toUpperCase())
+    //get last char and check if alphabetical character.
+    if(isAlpha(typeIdentifier))
     {
-        if(parseInt(unit.pointRequirements[0].substring(0,unit.pointRequirements[0].length-1)) > CoreUnitCount)
+        if(parseInt(corePointsRequired.substring(0, corePointsRequired.length-1)) > CoreUnitCount)
         {
-            unit.problems.push(`${unitCode} requires ${unit.pointRequirements[0]} core unit credit points!`);
-            updateInfoBar(`${unitCode} requires ${unit.pointRequirements[0]} core unit credit points!`);
+            unit.problems.push(`${unitCode} requires ${corePointsRequired} core unit credit points!`);
+            updateInfoBar(`${unitCode} requires ${corePointsRequired} core unit credit points!`);
 
             return false;
         }
 
-        if(unit.pointRequirements.length > 1 && unit.pointRequirements[1] > pointCount)
+        if(unit.pointRequirements.length > 1 && extraPointsRequired > pointCount)
         {
-            unit.problems.push(`${unitCode} requires ${unit.pointRequirements[1]} credit points!`);
-            updateInfoBar(`${unitCode} requires ${unit.pointRequirements[1]} credit points!`);
+            unit.problems.push(`${unitCode} requires ${extraPointsRequired} credit points!`);
+            updateInfoBar(`${unitCode} requires ${extraPointsRequired} credit points!`);
                 
             return false;
         }
     } else {
         //otherwise first index is the point point.
-        if(unit.pointRequirements[0] > pointCount)
+        if(corePointsRequired > pointCount)
         {
-            unit.problems.push(`${unitCode} requires ${unit.pointRequirements[0]} credit points!`);
-            updateInfoBar(`${unitCode} requires ${unit.pointRequirements[0]} credit points!`);
+            unit.problems.push(`${unitCode} requires ${corePointsRequired} credit points!`);
+            updateInfoBar(`${unitCode} requires ${corePointsRequired} credit points!`);
                 
             return false;
         }

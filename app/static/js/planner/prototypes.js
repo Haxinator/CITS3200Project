@@ -28,6 +28,12 @@ export class Unit {
         };
         this.isEnrolled = () => { return this.enrollmentPeriod != "None"; };
     }
+
+    // if unit has problems returns true,
+    // false otherwise.
+    hasProblems() {
+        return this.problems.length > 0;
+    }
 }
 
 //Table prototype contains all the functions necessary for making
@@ -42,223 +48,230 @@ export class Table {
         this.unitNames = [];
         this.hasNSUnits = false;
         this.nextID = 0;
+    }
 
-        this.extractInformation = (unitInfo) => {
-            console.log(unitInfo);
+    // extracts unit information from database response.
+    // adds it to unitInformation field.
+    extractInformation(unitInfo) {
+        console.log(unitInfo);
 
-            for (let i in unitInfo) {
-                //if it has NS units
-                if (unitInfo[i].semester == "NS") {
-                    this.hasNSUnits = true;
-                }
-
-
-                this.unitInformation.set(unitInfo[i].unitcode,
-                    new Unit(unitInfo[i].unitname,
-                        unitInfo[i].unitcode,
-                        unitInfo[i].credit_points,
-                        unitInfo[i].type,
-                        unitInfo[i].semester,
-                        unitInfo[i].unit_req,
-                        unitInfo[i].enrolment_req,
-                        unitInfo[i].points_req,
-                        unitInfo[i].corequisites));
-
+        for (let i in unitInfo) {
+            //if it has NS units
+            if (unitInfo[i].semester == "NS") {
+                this.hasNSUnits = true;
             }
-        };
 
-        //extractNames (unitcodes) from unit info and place into unitNames
-        this.extractNames = () => {
-            let i = 0;
 
-            for (let unit of this.unitInformation.values()) {
-                this.unitNames[i] = unit.unitCode;
-                i++;
-            }
-        };
+            this.unitInformation.set(unitInfo[i].unitcode,
+                new Unit(unitInfo[i].unitname,
+                    unitInfo[i].unitcode,
+                    unitInfo[i].credit_points,
+                    unitInfo[i].type,
+                    unitInfo[i].semester,
+                    unitInfo[i].unit_req,
+                    unitInfo[i].enrolment_req,
+                    unitInfo[i].points_req,
+                    unitInfo[i].corequisites));
 
-        //makes a cell which represent a unit.
-        this.makeCell = (innerHTML) => {
-            let data = document.createElement("td");
+        }
+    }
+
+    //extractNames gets all the names of the units from unit info and places them into unitNames
+    extractNames() {
+        let i = 0;
+
+        for (let unit of this.unitInformation.values()) {
+            this.unitNames[i] = unit.unitCode;
+            i++;
+        }
+    }
+
+    //makes a cell which represent a unit.
+    makeCell(innerHTML) {
+        let data = document.createElement("td");
+        
+        data.innerHTML = innerHTML;
+        data.setAttribute("draggable", "true");
+        data.classList.add("unit");
+
+        return data;
+    };
+
+    // makes a unit cell
+    makeUnit(unitCode) {
+        let unit = this.makeCell(unitCode);
+
+        unit.setAttribute("id", unitCode);
+        removeFromArray(this.unitNames, unitCode);
+        addUnitEvents(unit);
+
+        return unit;
+    }
+
+    // makes a broadening unit cell
+    makeBroadening() {
+        let broadening = this.makeCell("Broadening");
+        let code = "B" + this.nextID;
+
+        broadening.setAttribute("id", code);
+        addUnitEvents(broadening);
+
+        this.unitInformation.set(code,
+            new Unit("broadening", code, 6, "broadening","BOTH", [],[],null,null));
+
+        this.nextID++;
+
+        return broadening;
+    }
+
+    // makes an elective unit cell
+    makeElective() {
+        let elective = this.makeCell("Elective");
+        let code = "E"+this.nextID
+
+        elective.setAttribute("id", code);
+        addUnitEvents(elective);
+
+        this.unitInformation.set(code,
+            new Unit("elective", code, 6, "elective","BOTH", [],[],null,null));
             
-            data.innerHTML = innerHTML;
-            data.setAttribute("draggable", "true");
-            data.classList.add("unit");
+        this.nextID++;
 
-            return data;
-        };
+        return elective;
+    }
 
-        this.makeUnit = (unitCode) => {
-            let unit = this.makeCell(unitCode);
+    //makes a year row.
+    makeYearRow() {
+        let row = document.createElement("tr");
+        let head = document.createElement("th");
+        //h3 for UWA heading.
+        let heading = document.createElement("h3");
 
-            unit.setAttribute("id", unitCode);
-            removeFromArray(this.unitNames, unitCode);
-            addUnitEvents(unit);
+        this.year++;
+        heading.innerHTML = "Year " + this.year;
+        head.appendChild(heading);
+        head.setAttribute("colspan", "5");
+        head.classList.add("heading");
+        row.appendChild(head);
 
-            return unit;
-        }
+        return row;
+    }
 
-        this.makeBroadening = () => {
-            let broadening = this.makeCell("Broadening");
-            let code = "B" + this.nextID;
+    //makes a row
+    makeRow(semester) {
+        let row = document.createElement("tr");
+        let container = document.createElement("div");
+        let head = document.createElement("th");
+        let heading = document.createElement("h4");
+        let yearID = "Y" + this.year;
 
-            broadening.setAttribute("id", code);
-            addUnitEvents(broadening);
+        heading.innerHTML = semester;
+        head.appendChild(heading);
+        head.classList.add("heading");
+        container.setAttribute("id", yearID + semester);
+        row.appendChild(head);
+        row.appendChild(container);
 
-            this.unitInformation.set(code,
-                new Unit("broadening", code, 6, "broadening","BOTH", [],[],"",""));
+        // console.log(container.id);
 
-            this.nextID++;
+        //will loop through all units until unit names empty or
+        //container is full.
+        for (let i = 0; i < this.unitNames.length; i++) {
+            let unitCode = this.unitNames[i];
 
-            return broadening;
-        }
+            //check if unit placed in valid teaching period
+            if (unitConditionsMet(unitCode, container)) {
+                enrollInPeroid(this.makeUnit(unitCode), container);
+                //-1 as element was removed to get actual index.
+                i -= 1;
 
-        this.makeElective = () => {
-            let elective = this.makeCell("Elective");
-            let code = "E"+this.nextID
-
-            elective.setAttribute("id", code);
-            addUnitEvents(elective);
-
-            this.unitInformation.set(code,
-                new Unit("elective", code, 6, "elective","BOTH", [],[],"",""));
-                
-            this.nextID++;
-
-            return elective;
-        }
-
-        //makes a year row.
-        this.makeYearRow = () => {
-            let row = document.createElement("tr");
-            let head = document.createElement("th");
-            //h3 for UWA heading.
-            let heading = document.createElement("h3");
-
-            this.year++;
-            heading.innerHTML = "Year " + this.year;
-            head.appendChild(heading);
-            head.setAttribute("colspan", "5");
-            head.classList.add("heading");
-            row.appendChild(head);
-
-            return row;
-        };
-
-        //makes a row
-        this.makeRow = (semester) => {
-            let row = document.createElement("tr");
-            let container = document.createElement("div");
-            let head = document.createElement("th");
-            let heading = document.createElement("h4");
-            let yearID = "Y" + this.year;
-
-            heading.innerHTML = semester;
-            head.appendChild(heading);
-            head.classList.add("heading");
-            container.setAttribute("id", yearID + semester);
-            row.appendChild(head);
-            row.appendChild(container);
-
-            // console.log(container.id);
-
-            //will loop through all units until unit names empty or
-            //container is full.
-            for (let i = 0; i < this.unitNames.length; i++) {
-                let unitCode = this.unitNames[i];
-
-                //check if unit placed in valid teaching period
-                if (unitConditionsMet(unitCode, container)) {
-                    enrollInPeroid(this.makeUnit(unitCode), container);
-                    //-1 as element was removed to get actual index.
-                    i -= 1;
-
-                    if (container.childElementCount > 3) {
-                        //if container full stop loop.
-                        break;
-                    }
+                if (container.childElementCount > 3) {
+                    //if container full stop loop.
+                    break;
                 }
             }
+        }
 
-            //while semester has less than 4 units
-            while(container.childElementCount < 4 && this.creditPointsRequired > 0 &&
-                    !container.id.includes("NS")) {
+        //while semester has less than 4 units
+        while(container.childElementCount < 4 && this.creditPointsRequired > 0 &&
+                !container.id.includes("NS")) {
 
-                // if max broadening hasn't been met
-                if(this.maxBroadening > 0)
-                {
-                    this.maxBroadening -= 6;
-                    enrollInPeroid(this.makeBroadening(), container);
-                } else {
-                    enrollInPeroid(this.makeElective(), container);
-                }
-            }
-
-            addContainerEvents(container);
-
-            return row;
-        };
-
-        this.makeYearContainer = () => {
-            let container = document.createElement("div");
-
-            container.appendChild(this.makeYearRow());
-            if (this.hasNSUnits) {
-                container.appendChild(this.makeRow("S1"));
-                container.appendChild(this.makeRow("NS1"));
-                container.appendChild(this.makeRow("S2"));
-                container.appendChild(this.makeRow("NS2"));
+            // if max broadening hasn't been met
+            if(this.maxBroadening > 0)
+            {
+                this.maxBroadening -= 6;
+                enrollInPeroid(this.makeBroadening(), container);
             } else {
-                container.appendChild(this.makeRow("S1"));
-                container.appendChild(this.makeRow("S2"));
+                enrollInPeroid(this.makeElective(), container);
             }
+        }
+
+        addContainerEvents(container);
+
+        return row;
+    }
+
+    makeYearContainer() {
+        let container = document.createElement("div");
+
+        container.appendChild(this.makeYearRow());
+        if (this.hasNSUnits) {
+            container.appendChild(this.makeRow("S1"));
+            container.appendChild(this.makeRow("NS1"));
+            container.appendChild(this.makeRow("S2"));
+            container.appendChild(this.makeRow("NS2"));
+        } else {
+            container.appendChild(this.makeRow("S1"));
+            container.appendChild(this.makeRow("S2"));
+        }
 
 
-            container.setAttribute("id", "Y" + this.year);
+        container.setAttribute("id", "Y" + this.year);
 
-            return container;
-        };
+        return container;
+    }
 
-        //makes a sensor
-        this.makeSensor = () => {
-            let sensor = document.createElement("div");
-            let text = document.createElement("h2");
-            sensor.setAttribute("class", "sensor");
+    //makes a sensor
+    //the thing you drag units over to append a new row to the planner.
+    makeSensor() {
+        let sensor = document.createElement("div");
+        let text = document.createElement("h2");
+        sensor.setAttribute("class", "sensor");
 
-            addSensorEvents(sensor);
+        addSensorEvents(sensor);
 
-            text.innerHTML = "drag a unit here to add a row!";
-            sensor.appendChild(text);
+        text.innerHTML = "drag a unit here to add a row!";
+        sensor.appendChild(text);
 
-            return sensor;
-        };
+        return sensor;
+    }
 
-        //makes the actual table.
-        this.makeTable = (response) => {
-            let table = document.createElement("table");
+    //The core function that ties all the above methods together.
+    //It creates the planner.
+    makeTable(response) {
+        let table = document.createElement("table");
 
-            table.setAttribute("id", "table");
+        table.setAttribute("id", "table");
 
-            this.extractInformation(response);
-            this.extractNames();
+        this.extractInformation(response);
+        this.extractNames();
 
-            let iterations = 0;
+        let iterations = 0;
 
-            while (this.unitNames.length > 0 && iterations < 10) {
-                table.appendChild(this.makeYearContainer());
-                iterations++;
-            }
+        while (this.unitNames.length > 0 && iterations < 10) {
+            table.appendChild(this.makeYearContainer());
+            iterations++;
+        }
 
-            //unit plan should not exceed 10 years.
-            if (iterations > 9) {
-                alert("Error Generating Table. \nInfinite loop detected.\n"
-                    + "Is a unit prerequisite missing?");
-            }
+        //unit plan should not exceed 10 years.
+        if (iterations > 9) {
+            alert("Error Generating Table. \nInfinite loop detected.\n"
+                + "Is a unit prerequisite missing?");
+        }
 
-            //make table then sensor underneath
-            addToRoot(table);
-            addToRoot(this.makeSensor());
-            updateInfoBar("");
-        };
+        //make table then sensor underneath
+        addToRoot(table);
+        addToRoot(this.makeSensor());
+        updateInfoBar("");
     }
 }
