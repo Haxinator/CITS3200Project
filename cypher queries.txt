@@ -1,3 +1,16 @@
+//load majors
+LOAD CSV WITH HEADERS FROM 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRyHZgzU-R8wb5cbQB2PaH-mFWkIlmlFzL4HQNFgnyW4VZ1g7lbQ8IEL80j_beFAajNoM7xUivpgMRu/pub?gid=0&single=true&output=csv' AS row
+CALL apoc.create.node(["Major"], row)
+YIELD node
+RETURN node
+
+//major rel
+LOAD CSV WITH HEADERS FROM 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTiBLvtK4sV6Kf0g79SCJI0twfYQI0GRv8mJxUJQNBjOqXuuqj2rGRMnYYufLEpzMpKne4mY59kgfgO/pub?gid=0&single=true&output=csv' AS row
+MATCH (child:Unit {unitcode: row.unit}), (parent:Major {major: row.major})
+CALL apoc.create.relationship(child, row.relationship, {}, parent)
+YIELD rel
+RETURN rel
+
 //nodes - just mech
 LOAD CSV WITH HEADERS FROM 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQnRbOQw37eU9L86N0u4BJmu88lOxLWR0UxqP0NM_YpzHvwAZTz_BYGDXG414KV4_9Z5itTUHWmzVvb/pub?gid=145100429&single=true&output=csv' AS row
 CALL apoc.create.node(["Unit"], row)

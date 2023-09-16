@@ -10,15 +10,31 @@
     
 
     <main id = "root">
-        <h1>Planner v.18</h1>  
-        <h3>Whats new? More filters. Forward prerequisites Visualised. Point requirements checked.</h3>
+        <div class= "boxed" style="border: none;">
+            <div class="feature-box" style="padding: 0 20px;">
+                <h3 style="text-align: center;">How to Utilize This Feature?</h3>
+                <p>Welcome to your custom course study planner - a tool designed to be user-friendly, intuitive, and engaging. Here's a quick guide to help you navigate:</p>
+                <p>Displayed below are the unit numbers corresponding to all the units in your selected course. You can click on any unit number to view detailed information including its name, semester offerings, prerequisites, corequisites, and dependent units.</p>
+                <p>Additionally, you have access to several helpful functionalities through the buttons below:
+                    <ul>
+                        <li><strong>Semester Offered</strong>: This function highlights units based on their semester offerings. Units are color-coded as follows: blue (Semester 1), green (Semester 2), yellow (both semesters), and red (non-standard period offerings).</li>
+                        <li><strong>Units with Corequisites</strong>: Activating this will highlight units that have corequisites, helping you identify units that should be taken concurrently.</li>
+                        <li><strong>Units with Prerequisites</strong>: Use this function to identify units with prerequisites, assisting in planning your course progression logically and avoiding scheduling conflicts.</li>
+                        <li><strong>Units with Point Requirements</strong>: This highlights units with specific point requirements, which could be course points or skill points, like programming proficiency. For more details, please consult with a course advisor.</li>
+                    </ul>
+                </p>
+                <p>Furthermore, at the bottom of the page, you'll find a section titled "Need to see the importance of a unit?". Utilizing the dropdown menu in this section allows you to select a unit and visualize a tree structure showcasing the interconnected relationships between units. This feature highlights the significance of the selected unit in your course planning by displaying all the units that require it, as well as its prerequisites, offering a comprehensive view of how this unit influences future studies.</p>
+                <p>The table below is interactive, allowing you to customize your course structure freely. If you wish to extend your course duration, simply drag a unit below the final year displayed to add another year. Once you are satisfied with your course structure, use the 'Print' button to export your plan as a PDF. Happy planning!</p>
+            </div>
+         </div>
+         <hr>
 
         <button id="SemesterFilter" class="button">Semesters Offered</button>
         <!-- <button id="ProblemFilter" class="button">Problems</button> -->
         <button id="corequisiteFilter" class="button">Units with Corequisites</button>
         <button id="prequisiteFilter" class="button">Units with Prequisites</button>
         <button id="pointRequirementsFilter" class="button">Units with Point Requirements</button>
-        <!-- <button onclick="display_all()">Generate nodes</button> -->
+        <!-- <button onclick="get_option_units()">aaaa</button> -->
         <!-- <div id="nodes"></div> -->
     </main>
 

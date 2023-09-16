@@ -7,6 +7,22 @@
 //     return seq
 // }
 
+get_option_units();
+
+//retrieve option units
+function get_option_units() {
+    let major = specialization;
+
+    const xhttp = new XMLHttpRequest();
+    let server = '/option_units='.concat(major);
+    xhttp.open("GET", server, true);
+    xhttp.onload = function (e) {
+        response = JSON.parse(xhttp.responseText);
+        addUnitOptions(response);
+    }
+    xhttp.send();
+}
+
 //make trEEEEEEEEEEEEEEEEEE 
 google.charts.load('current', {packages:['wordtree']});
 
@@ -44,6 +60,7 @@ function getBranches(branches, type) {
             paths.push([seq]);
         }
         if (type == "child") {
+            console.log(branches[p].child_units);
             childUnits = branches[p].child_units;
             //let seq = childUnits;
             //if (childUnits.length != 1) {
@@ -58,12 +75,13 @@ function getBranches(branches, type) {
 //retrieve the requirements of chosen unit 
 function get_prereqs() {
     chosen_unit = document.getElementById("chosen_unit").value;
+    let major = specialization;
 
     //clear 
     document.getElementById("err_msg_treeview").innerHTML = "";
     
     const xhttp = new XMLHttpRequest();
-    let server = '/prereqs/'.concat(chosen_unit);
+    let server = '/prereqs/'.concat(major, "/", chosen_unit);
     xhttp.open("GET", server, true);
     xhttp.onload = function (e) {
         //document.getElementById('prereqs_head').innerHTML = "This unit requires the following:"
@@ -85,12 +103,13 @@ function get_prereqs() {
 //retrieve units that require chosen unit
 function get_children() {
     chosen_unit = document.getElementById("chosen_unit").value;
+    let major = specialization;
 
     //clear 
     document.getElementById("err_msg_treeview").innerHTML = "";
 
     const xhttp = new XMLHttpRequest();
-    let server = '/child_units/'.concat(chosen_unit);
+    let server = '/child_units/'.concat(major, "/", chosen_unit);
     xhttp.open("GET", server, true);
     xhttp.onload = function (e) {
         //document.getElementById('child_head').innerHTML = "This unit is a requirement for the following:"
