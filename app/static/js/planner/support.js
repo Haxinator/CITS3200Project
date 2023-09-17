@@ -1,4 +1,4 @@
-import { planner } from "./planner.js";
+import { planner } from "./main.js";
 
 //adds given element to main
 export function addToRoot(element)

@@ -1,5 +1,5 @@
 import {addToRoot, getById, updateInfoBar, clearHighlighting} from "./support.js";
-import {Table} from "./prototypes.js";
+import {Table} from "./classes.js";
 
 export var planner;
 

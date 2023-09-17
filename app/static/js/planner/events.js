@@ -1,6 +1,6 @@
-import {canEnrollInPeriod, unitConditionsMet} from "./preprequisites.js";
+import {canEnrollInPeriod, unitConditionsMet} from "./checks.js";
 import { updateInfoBar, getPeriodOffered, getById, getByPeriod, enrollInPeroid, clearHighlighting, unitExists } from "./support.js";
-import { planner } from "./planner.js";
+import { planner } from "./main.js";
 
 
 //to add events to unit cells.

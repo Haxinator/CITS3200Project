@@ -1,4 +1,4 @@
-import { planner } from "./planner.js";
+import { planner } from "./main.js";
 import { updateInfoBar, highlightIfUnitHasProblems, isAlpha, inDOM, getLastCharacter } from "./support.js";
 
 // --------------- Prerequisite Met Functions ----------------//
@@ -83,9 +83,8 @@ export function pointRequirementsMet(unitCode, container)
         }
     }
 
-    // check if char is alpha (different upp and lower)
-    // then first index is core units.
-    //get last char and check if alphabetical character.
+    // check if last char is alpha (different upp and lower)
+    // if so then first index is core units.
     if(isAlpha(typeIdentifier))
     {
         // compare core point requirement to coreUnitCount.

@@ -1,5 +1,5 @@
 import { enrollInPeroid, addToRoot, updateInfoBar, allUnitsNotAdded } from "./support.js";
-import { unitConditionsMet } from "./preprequisites.js";
+import { unitConditionsMet } from "./checks.js";
 import { addUnitEvents, addContainerEvents, addSensorEvents } from "./events.js";
 
 
