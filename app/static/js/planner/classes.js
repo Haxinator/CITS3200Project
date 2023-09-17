@@ -68,7 +68,7 @@ export class Table {
         this.year = 0; //may improve somehow.
         this.numberOfUnits = 0; //Number of units in the planner
         this.creditPointsRequired = 192;
-        this.maxBroadening = 24;
+        this.maxBroadening = 24; // credit points
         this.unitInformation = new Map();
         this.hasNSUnits = false;
         this.nextID = 0;
@@ -195,7 +195,7 @@ export class Table {
                 this.maxBroadening -= 6;
                 enrollInPeroid(this.makeDummyUnit("B","Broadening"), container);
             } else {
-                enrollInPeroid(this.makeElective("E", "Elective"), container);
+                enrollInPeroid(this.makeDummyUnit("E", "Elective"), container);
             }
         }
 

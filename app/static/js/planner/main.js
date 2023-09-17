@@ -20,6 +20,8 @@ export var planner;
 //------------------- INSTANCE FUNCTIONS -------------------------//
 
 fetchCourseRequirementsAndBuildPlanner();
+fetchOptionUnits();
+fetchOptionUnitCombinations();
 makeInfoBar();
 
 // -------------------- FILTERS ----------------------------- //
@@ -137,6 +139,40 @@ function makeInfoBar() {
 
 // --------------------------- XHTTP ---------------------------------//
 
+
+//get option units
+//PLAN
+//list all option units, when user selects one, look at combinations to view possible next unit
+//combinations.
+function fetchOptionUnits() {
+    let major = specialization;
+    const xhttp = new XMLHttpRequest();
+    let url = `/option_units=${major}`;
+
+    xhttp.open('GET', url, true);
+    xhttp.onload = (e) => {
+        let response = JSON.parse(xhttp.responseText);
+        console.log(response);
+    }
+    xhttp.send();
+
+}
+
+//get option unit combinations.
+//MY PLAN
+function fetchOptionUnitCombinations() {
+    let major = specialization;
+    const xhttp = new XMLHttpRequest();
+    let url = `/option_combos=${major}`;
+
+    xhttp.open('GET', url, true);
+    xhttp.onload = (e) => {
+        let response = JSON.parse(xhttp.responseText);
+        console.log(response);
+    }
+    xhttp.send();
+}
+
 //LOL MY FUNCTIO NOW!
 //Sends request to 4j for some awesome unit info.
 //mmmm unit info.
@@ -144,15 +180,11 @@ function makeInfoBar() {
 function fetchCourseRequirementsAndBuildPlanner() {
     let major = specialization;
     let bridging = "NONE,";
-    let bridgingCount = 0;
+    let bridgingCount = 1; //always at least one broadening unit
 
     //check ATAR prerequisites, if not achieved include bridging unit
     if(isSpec == "no") {
         bridging = bridging.concat("MATH1722,");
-        bridgingCount++;
-    }
-    if(isMeth == "no") {
-        bridging = bridging.concat("MATH1721,");
         bridgingCount++;
     }
     if(isPhys == "no") {
