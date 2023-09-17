@@ -88,10 +88,19 @@ def get_option_combos(major):
         results = session.run(query)
         options = results.single()['options']
 
-        # Get all possible combinations of the list's elements
-        combinations = list(itertools.combinations(options, 3))
-        # Convert each combination from a tuple to a list
-        combinations = [list(combination) for combination in combinations]
+        # one 12-point unit + one 6-point 
+        combos_1 = []
+        if ("GENG4411" in options) and ("GENG4412" in options):
+            combos_1 = [["GENG4411", "GENG4412", unit] for unit in options if (unit != "GENG4411") and (unit != "GENG4412")]
+
+        # three 6-point units
+        exclude = ["GENG4411", "GENG4412"]
+        filtered_options = [x for x in options if x not in exclude]
+        combos_2 = list(itertools.combinations(filtered_options, 3))
+        combos_2 = [list(combination) for combination in combos_2]
+
+        # combine two types of combinations
+        combinations = combos_1 + combos_2
         return jsonify(combinations)
 
 @app.route("/prereqs/<string:major>/<string:chosen_unit>", methods=["GET"])

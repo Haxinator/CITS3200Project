@@ -7,8 +7,13 @@
 //     return seq
 // }
 
-get_option_units();
+if (specialization == "SP-EMECH") {
+    get_option_units();
+    get_option_combos();
+}
 
+
+//--------------------------Placeholder for now because these don't work on other js files hELP---------------------------
 //retrieve option units
 function get_option_units() {
     let major = specialization;
@@ -22,6 +27,20 @@ function get_option_units() {
     }
     xhttp.send();
 }
+
+function get_option_combos() {
+    let major = specialization;
+    let server = '/option_combos='.concat(major);
+
+    const xhttp = new XMLHttpRequest();
+    xhttp.open("GET", server, true);
+    xhttp.onload = function (e) {
+        console.log(xhttp.responseText);
+        //let response = JSON.parse(xhttp.responseText);
+    }
+    xhttp.send();
+}
+//--------------------------------------------------------------------------------------------------------------------------
 
 //make trEEEEEEEEEEEEEEEEEE 
 google.charts.load('current', {packages:['wordtree']});
