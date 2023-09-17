@@ -1,3 +1,28 @@
+/*
+ * This file contains all the classes used for the planner.
+ * It has two classes Unit and Table:
+ *      o Unit stores the information for a unit.
+ *      o Table creates the planner and stores information about the major. 
+ * 
+ * The main function of table is makeTable, which uses all of its methods to create the planner.
+ * majority of the functions in the table support it in it's ability to create the planner.
+ * 
+ * Unit's functions provide a clear way of checking unit information:
+ *      o isEnrolled returns true if the unit has been enrolled in the planner,
+ *          which means it's been added to the table (but not necessarily the DOM).
+ *      o hasProblems returns true if the number of problems is greater than 0.
+ *          a problem is a unit requirement that hasn't been met.
+ * 
+ * Functions from support.js are used to aid in coding, and to make code cleaner and easier to read.
+ * Functions from events.js adds the event listeners to the relevant DOM elements.
+ * The Function from checks.js checks if all the unit requirements were met. This is important
+ * when we want to enroll a unit into a particular semester.
+ * 
+ * If you are unsure what anything does, please message Josh.
+ * 
+*/
+
+
 import { enrollInPeroid, addToRoot, updateInfoBar, allUnitsNotAdded } from "./support.js";
 import { unitConditionsMet } from "./checks.js";
 import { addUnitEvents, addContainerEvents, addSensorEvents } from "./events.js";
@@ -23,13 +48,11 @@ export class Unit {
         this.corequisites = corequisites == null ? [] : corequisites.split(";");
         this.problems = [];
     }
-
-    addPrerequisites() {
-            return this.prerequisites = prerequisitesList;
-        }
     
     //true if user is enrolled, false otherwise.
-    isEnrolled() { return this.enrollmentPeriod != null; }
+    isEnrolled() { 
+        return this.enrollmentPeriod != null; 
+    }
 
     // if unit has problems returns true,
     // false otherwise.
@@ -93,42 +116,25 @@ export class Table {
         let unit = this.makeCell(unitCode);
 
         unit.setAttribute("id", unitCode);
-        // removeFromArray(this.unitNames, unitCode);
         addUnitEvents(unit);
 
         return unit;
     }
 
-    // makes a broadening unit cell
-    makeBroadening() {
-        let broadening = this.makeCell("Broadening");
-        let code = "B" + this.nextID;
+    // creates a dummy unit, for electives and broadening.
+    makeDummyUnit(id, innerHTML) {
+        let unit = this.makeCell(innerHTML);
+        let code = id + this.nextID;
 
-        broadening.setAttribute("id", code);
-        addUnitEvents(broadening);
+        unit.setAttribute("id", code);
+        addUnitEvents(unit);
 
         this.unitInformation.set(code,
-            new Unit("broadening", code, 6, "broadening","BOTH", [],[],null,null));
+            new Unit(innerHTML, code, 6, innerHTML,"BOTH", [],[],null,null));
 
         this.nextID++;
 
-        return broadening;
-    }
-
-    // makes an elective unit cell
-    makeElective() {
-        let elective = this.makeCell("Elective");
-        let code = "E"+this.nextID
-
-        elective.setAttribute("id", code);
-        addUnitEvents(elective);
-
-        this.unitInformation.set(code,
-            new Unit("elective", code, 6, "elective","BOTH", [],[],null,null));
-            
-        this.nextID++;
-
-        return elective;
+        return unit;
     }
 
     //makes a year row.
@@ -187,9 +193,9 @@ export class Table {
             if(this.maxBroadening > 0)
             {
                 this.maxBroadening -= 6;
-                enrollInPeroid(this.makeBroadening(), container);
+                enrollInPeroid(this.makeDummyUnit("B","Broadening"), container);
             } else {
-                enrollInPeroid(this.makeElective(), container);
+                enrollInPeroid(this.makeElective("E", "Elective"), container);
             }
         }
 

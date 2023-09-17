@@ -1,3 +1,16 @@
+/* 
+ * events.js contains all the event listeners used by elements in the planner.
+ * Responsible for the drag and drop functionality.
+ * The main functions are:
+ *      o addUnitEvents (events for unit cells).
+ *      o addContainerEvents (events for semester container).
+ *      o addSensorEvents (events for "drag here to add a unit").
+ * These functions call the other functions and apply them to the provided element.
+ * 
+ * Too many functions to describe everything here. If you have any other questions
+ * direct them to Josh.
+*/
+
 import {canEnrollInPeriod, unitConditionsMet} from "./checks.js";
 import { updateInfoBar, getPeriodOffered, getById, getByPeriod, enrollInPeroid, clearHighlighting, unitExists } from "./support.js";
 import { planner } from "./main.js";
@@ -42,7 +55,9 @@ function dragend(e)
     e.target.classList.remove("hide");
 }
 
-
+// Prints unit information.
+// highlights prerequisites and corequisites.
+// for clicking on unit event.
 function printInfo(e)
 {
     let unitCode = e.currentTarget.id;

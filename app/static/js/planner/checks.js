@@ -1,9 +1,26 @@
+/*
+ * checks.js is a big file, this is because it's responsible for checking if a unit's
+ * prerequisites were met.
+ * 
+ * unitConditionsMet is the main file. It calls all the other functions:
+ *      o Checks if unit can be enrolled in a given semester.
+ *      o Checks if a unit's perequisites were met.
+ *      o Checks if a unit's corequisites were met.
+ *      o Checks if a unit's point requirements were met (including core unit points requirements).
+ * If all of these functions return true, then the unit conditions were met and the
+ * given can be enrolled in the semester provided. 
+ * 
+ * This file can be hard to understand. Best to ask Josh.
+*/
+
 import { planner } from "./main.js";
 import { updateInfoBar, highlightIfUnitHasProblems, isAlpha, inDOM, getLastCharacter } from "./support.js";
 
 // --------------- Prerequisite Met Functions ----------------//
 
 //checks if all unit prerequisites met.
+// container is the teaching period.
+// unitCode is the unit code.
 export function unitConditionsMet(unitCode, container)
 {
     //empty here for cleaner code

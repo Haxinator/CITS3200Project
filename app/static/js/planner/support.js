@@ -1,3 +1,12 @@
+/* 
+ * support.js contains support functions which are used by other files to simplify code,
+ * aid in modularisation and make code easier to read.
+ * 
+ * The functions should be self-explainitory and relatively simple.
+ * 
+ * Any questions ask Josh.
+*/
+
 import { planner } from "./main.js";
 
 //adds given element to main
@@ -70,10 +79,13 @@ export function getPeriodOffered(id)
     return planner.unitInformation.get(id).semester;
 }
 
+// update the text contents of the info bar to the
+// info provided.
 export function updateInfoBar(info){
     getById("infoBar").firstElementChild.innerHTML = info;
 }
 
+// is the unit in unitInformation param.
 export function unitExists(unitCode)
 {
     return (planner.unitInformation.get(unitCode) != undefined);
