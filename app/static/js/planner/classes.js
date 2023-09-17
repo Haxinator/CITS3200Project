@@ -24,13 +24,38 @@
 
 
 import { enrollInPeroid, addToRoot, updateInfoBar, allUnitsNotAdded } from "./support.js";
-import { unitConditionsMet } from "./checks.js";
+import { unitConditionsMet, canEnrollInPeriod } from "./checks.js";
 import { addUnitEvents, addContainerEvents, addSensorEvents } from "./events.js";
 
 
 //------------------- PROTOTYPES ----------------------------------//
 
-//unit prototype
+export class sideBar {
+    constructor(){
+    }
+
+    makeInfoBar() {
+        let infoBar = document.createElement("div");
+        let text = document.createElement("p");
+
+        infoBar.setAttribute("id", "infoBar");
+        infoBar.appendChild(text);
+        
+        addToRoot(infoBar);
+    }
+
+    //response is the options units json
+    makeOptionsBar(table) {
+        let optionsBar = document.createElement("div");
+
+        optionsBar.setAttribute("id", "optionsBar");
+        optionsBar.appendChild(table.makeOptionsContainer(response));
+
+        addToRoot(optionsBar);
+    }
+
+}
+
 export class Unit {
     constructor(name, code, creditPoints, type, semester, prerequisites, enrollmentReq, pointReq, corequisites) {
         this.name = name;
@@ -154,21 +179,7 @@ export class Table {
         return row;
     }
 
-    //makes a row
-    makeRow(semester) {
-        let row = document.createElement("tr");
-        let container = document.createElement("div");
-        let head = document.createElement("th");
-        let heading = document.createElement("h4");
-        let yearID = "Y" + this.year;
-
-        heading.innerHTML = semester;
-        head.appendChild(heading);
-        head.classList.add("heading");
-        container.setAttribute("id", yearID + semester);
-        row.appendChild(head);
-        row.appendChild(container);
-
+    addUnitsToPlanner(container) {
         //will loop through all units considered
         //and container is full.
         for(let unit of this.unitInformation.values())
@@ -176,7 +187,7 @@ export class Table {
             let unitCode = unit.unitCode;
 
             //check if unit placed in valid teaching period
-            if (unitConditionsMet(unitCode, container) && !unit.isEnrolled()) {
+            if (unitConditionsMet(unitCode, container, this) && !unit.isEnrolled()) {
                 enrollInPeroid(this.makeUnit(unitCode), container);
             }
             if (container.childElementCount > 3) {
@@ -198,6 +209,57 @@ export class Table {
                 enrollInPeroid(this.makeDummyUnit("E", "Elective"), container);
             }
         }
+    }
+
+    enrollInPeroid(unit, container)
+    {
+        let unitInfo = this.unitInformation.get(unit.id);
+
+        //subtract from creditPointsRequired
+        this.creditPointsRequired -= unitInfo.creditPoints;
+        unitInfo.enrollmentPeriod = container.id;
+        
+        container.append(unit);
+    }
+
+
+    //only one unit ATM
+    addUnitsToOptionsBar(container) {
+        for(let unit of this.unitInformation.values())
+        {
+            let unitCode = unit.unitCode;
+
+            //check if unit placed in valid teaching period
+            if (canEnrollInPeriod(unitCode, container) && !unit.isEnrolled()) {
+                // this.enrollInPeroid(this.makeUnit(unitCode), container);
+                container.append(this.makeUnit(unitCode));
+                unit.enrollmentPeriod = container.id;
+            }
+        }
+    }
+
+    //makes a row
+    //containerID either year or options
+    makeRow(containerID, semester) {
+        let row = document.createElement("tr");
+        let container = document.createElement("div");
+        let head = document.createElement("th");
+        let heading = document.createElement("h4");
+
+        heading.innerHTML = semester;
+        head.appendChild(heading);
+        head.classList.add("heading");
+        container.setAttribute("id", containerID + semester);
+        row.appendChild(head);
+        row.appendChild(container);
+
+        //is this a row in option bar or the planner.
+        if(containerID.includes("options"))
+        {
+            this.addUnitsToOptionsBar(container);
+        } else {
+            this.addUnitsToPlanner(container);
+        }
 
         addContainerEvents(container);
 
@@ -211,20 +273,24 @@ export class Table {
 
         container.appendChild(this.makeYearRow());
 
-        if (this.hasNSUnits) {
-            container.appendChild(this.makeRow("S1"));
-            container.appendChild(this.makeRow("NS1"));
-            container.appendChild(this.makeRow("S2"));
-            container.appendChild(this.makeRow("NS2"));
-        } else {
-            container.appendChild(this.makeRow("S1"));
-            container.appendChild(this.makeRow("S2"));
-        }
-
+        this.makePeriods("Y" + this.year, container);
 
         container.setAttribute("id", "Y" + this.year);
 
         return container;
+    }
+
+    makePeriods(containerID, container) {
+
+        if (this.hasNSUnits) {
+            container.appendChild(this.makeRow(containerID, "S1"));
+            container.appendChild(this.makeRow(containerID, "NS1"));
+            container.appendChild(this.makeRow(containerID, "S2"));
+            container.appendChild(this.makeRow(containerID, "NS2"));
+        } else {
+            container.appendChild(this.makeRow(containerID, "S1"));
+            container.appendChild(this.makeRow(containerID, "S2"));
+        }
     }
 
     //makes a sensor
@@ -246,9 +312,11 @@ export class Table {
     //It creates the planner.
     makeTable(response) {
         let table = document.createElement("table");
-        this.extractInformation(response);
         let iterations = 0;
+        let infoBar = new sideBar();
 
+        this.extractInformation(response);
+        infoBar.makeInfoBar();
         table.setAttribute("id", "table");
 
         // if course duration not exceeded.
@@ -268,5 +336,18 @@ export class Table {
         addToRoot(table);
         addToRoot(this.makeSensor());
         updateInfoBar("");
+    }
+
+    //for the option units side bar.
+    makeOptionsContainer(response) {
+        let table = document.createElement("table");
+        let container = document.createElement("div");
+
+        container.setAttribute("id", "optionsBar");
+        this.extractInformation(response);
+        this.makePeriods("options", container);
+        table.appendChild(container);
+
+        return table;
     }
 }

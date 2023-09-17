@@ -12,7 +12,7 @@
 */
 
 import {canEnrollInPeriod, unitConditionsMet} from "./checks.js";
-import { updateInfoBar, getPeriodOffered, getById, getByPeriod, enrollInPeroid, clearHighlighting, unitExists } from "./support.js";
+import { updateInfoBar, getPeriodOffered, getById, getByPeriod, enrollInPeroid, clearHighlighting, unitExists, getUnitInformation } from "./support.js";
 import { planner } from "./main.js";
 
 
@@ -61,7 +61,7 @@ function dragend(e)
 function printInfo(e)
 {
     let unitCode = e.currentTarget.id;
-    let unit = planner.unitInformation.get(unitCode);
+    let unit = getUnitInformation(unitCode);
 
     if(unit.hasProblems())
     {
@@ -78,7 +78,7 @@ function printInfo(e)
     //highlight prerequisites
     for(let prerequisite of unit.prerequisites)
     {
-        let prerequisiteUnit = planner.unitInformation.get(prerequisite);
+        let prerequisiteUnit = getUnitInformation(prerequisite);
 
         if(unitExists(prerequisite))
         {
@@ -97,7 +97,7 @@ function printInfo(e)
     //highlight COREQUISITES!!! WOOOO
     for(let corequisite of unit.corequisites)
     {
-        let corequisiteUnit = planner.unitInformation.get(corequisite);
+        let corequisiteUnit = getUnitInformation(corequisite);
 
         if(unitExists(corequisite))
         {
@@ -231,8 +231,8 @@ function drop(e)
             addUnitEvents(targetClone);
             addUnitEvents(itemClone);
 
-            let targetUnit = planner.unitInformation.get(targetClone.id);
-            let itemUnit = planner.unitInformation.get(itemClone.id);
+            let targetUnit = getUnitInformation(targetClone.id);
+            let itemUnit = getUnitInformation(itemClone.id);
             
             //make sure to update unit period
             targetUnit.enrollmentPeriod = targetClone.parentElement.id
@@ -302,7 +302,7 @@ function appendRow(e)
 //formats unit information
 function printUnitInfo(unitCode)
 {
-    let unit = planner.unitInformation.get(unitCode);
+    let unit = getUnitInformation(unitCode);
     let str = "";
 
     str += `<h5>${unit.name}</h5>`;

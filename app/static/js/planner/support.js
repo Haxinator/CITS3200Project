@@ -7,7 +7,7 @@
  * Any questions ask Josh.
 */
 
-import { planner } from "./main.js";
+import { optionsBar, planner } from "./main.js";
 
 //adds given element to main
 export function addToRoot(element)
@@ -57,7 +57,7 @@ export function getById(id)
 //unit is unit as represented in the DOM.
 export function enrollInPeroid(unit, container)
 {
-    let unitInfo = planner.unitInformation.get(unit.id);
+    let unitInfo = getUnitInformation(unit.id);
 
     //subtract from creditPointsRequired
     planner.creditPointsRequired -= unitInfo.creditPoints;
@@ -65,6 +65,20 @@ export function enrollInPeroid(unit, container)
     
     container.append(unit);
 
+}
+
+// gets unitInformation for a given unit.
+export function getUnitInformation(unitCode) {
+
+    // have to wait until both planner and optionsBar exist.
+    // that's why making sure they're not undefined.
+    // as they are done async.
+    if(planner != undefined && planner.unitInformation.has(unitCode))
+    {
+        return planner.unitInformation.get(unitCode);
+    } else if(optionsBar != undefined && optionsBar.unitInformation.has(unitCode)) {
+        return optionsBar.unitInformation.get(unitCode);
+    }
 }
 
 //get container by period for cleaner code
@@ -76,7 +90,7 @@ export function getByPeriod(year, period)
 //get the teaching period a unit is offered for cleaner code.
 export function getPeriodOffered(id)
 {
-    return planner.unitInformation.get(id).semester;
+    return getUnitInformation(id).semester;
 }
 
 // update the text contents of the info bar to the
@@ -88,7 +102,7 @@ export function updateInfoBar(info){
 // is the unit in unitInformation param.
 export function unitExists(unitCode)
 {
-    return (planner.unitInformation.get(unitCode) != undefined);
+    return (getUnitInformation(unitCode) != undefined);
 }
 
 //true if alphabetical character.

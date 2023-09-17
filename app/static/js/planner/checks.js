@@ -13,8 +13,8 @@
  * This file can be hard to understand. Best to ask Josh.
 */
 
-import { planner } from "./main.js";
-import { updateInfoBar, highlightIfUnitHasProblems, isAlpha, inDOM, getLastCharacter } from "./support.js";
+import { optionsBar, planner } from "./main.js";
+import { updateInfoBar, highlightIfUnitHasProblems, isAlpha, inDOM, getLastCharacter, getUnitInformation } from "./support.js";
 
 // --------------- Prerequisite Met Functions ----------------//
 
@@ -26,7 +26,7 @@ export function unitConditionsMet(unitCode, container)
     //empty here for cleaner code
     //if problems still exist they will be added again
     //if problems are gone, they will be removed from array.
-    let unit = planner.unitInformation.get(unitCode);
+    let unit = getUnitInformation(unitCode);
     unit.problems = [];
 
     //instead of container ID can be used, which would be cleaner.
@@ -63,7 +63,7 @@ export function unitType(unitCode, identifier)
 //both the overall points and core unit points.
 export function pointRequirementsMet(unitCode, container)
 {
-    let unit = planner.unitInformation.get(unitCode);
+    let unit = getUnitInformation(unitCode);
     let pointCount = 0;
     let CoreUnitCount = 0;
     let corePointsRequired = unit.pointRequirements[0];
@@ -142,13 +142,13 @@ export function pointRequirementsMet(unitCode, container)
 //I hope this works. _/\_
 export function corequisitesMet(unitCode, container)
 {
-    let unit = planner.unitInformation.get(unitCode);
+    let unit = getUnitInformation(unitCode);
     let corequisites = unit.corequisites;
     let corequisitesMet = true;
 
     for(let corequisite of corequisites)
     {
-        let corequisiteUnit = planner.unitInformation.get(corequisite);
+        let corequisiteUnit = getUnitInformation(corequisite);
 
         if(corequisiteUnit != undefined)
         {
@@ -175,13 +175,13 @@ export function corequisitesMet(unitCode, container)
 //checks if unit prerequisites met
 export function unitPreRequisitiesMet(unitCode, container)
 {
-    let unit = planner.unitInformation.get(unitCode);
+    let unit = getUnitInformation(unitCode);
     let prerequisites = unit.prerequisites;
     let prerequisitesMet = true;
 
     for(let prerequisite of prerequisites)
     {
-        let prerequisiteUnit = planner.unitInformation.get(prerequisite)
+        let prerequisiteUnit = getUnitInformation(prerequisite)
 
         if (prerequisiteUnit != undefined){
                 
@@ -211,9 +211,9 @@ export function unitPreRequisitiesMet(unitCode, container)
 //@param unitCode is the code of the unit
 export function canEnrollInPeriod(unitCode, container)
 {
-    let unit = planner.unitInformation.get(unitCode);
+    let unit = getUnitInformation(unitCode);
     let semester = container.id;
-    let unitAvaliability = unit.semester;
+    let unitAvaliability = unit.semester; //problem
 
     //remove the year from semester
     semester = semester.substring(2,4);

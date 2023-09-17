@@ -12,17 +12,18 @@
 * As always, for anything confusing ask Josh.
 */
 
-import {addToRoot, getById, updateInfoBar, clearHighlighting} from "./support.js";
-import {Table} from "./classes.js";
+import {getById, updateInfoBar, clearHighlighting} from "./support.js";
+import {Table, sideBar} from "./classes.js";
 
 export var planner;
+export var optionsBar;
 
 //------------------- INSTANCE FUNCTIONS -------------------------//
 
 fetchCourseRequirementsAndBuildPlanner();
 fetchOptionUnits();
 fetchOptionUnitCombinations();
-makeInfoBar();
+// makeInfoBar();
 
 // -------------------- FILTERS ----------------------------- //
 
@@ -126,16 +127,16 @@ getById("pointRequirementsFilter").addEventListener("click", () =>
 // ------------------- INFO BAR FUNCTIONS -----------------------//
 
 
-function makeInfoBar() {
-    let infoBar = document.createElement("div");
-    infoBar.setAttribute("id", "infoBar");
+// function makeInfoBar() {
+//     let infoBar = document.createElement("div");
+//     infoBar.setAttribute("id", "infoBar");
 
-    let text = document.createElement("p");
+//     let text = document.createElement("p");
 
-    infoBar.appendChild(text);
+//     infoBar.appendChild(text);
 
-    addToRoot(infoBar);
-}
+//     addToRoot(infoBar);
+// }
 
 // --------------------------- XHTTP ---------------------------------//
 
@@ -152,7 +153,13 @@ function fetchOptionUnits() {
     xhttp.open('GET', url, true);
     xhttp.onload = (e) => {
         let response = JSON.parse(xhttp.responseText);
+        let bar = new sideBar();
+        optionsBar = new Table();
+        
+        optionsBar.makeOptionsContainer(response);
         console.log(response);
+
+        bar.makeOptionsBar(optionsBar);
     }
     xhttp.send();
 
