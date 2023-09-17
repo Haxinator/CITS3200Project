@@ -1,5 +1,19 @@
+/*
+* The main function that ties everything together.
+* makes only two function calls:
+* o FetchCourseRequirementsAndBuildPlanner.
+* o makeInfoBar
+*
+* The first fetches the course requirements and makes the entire planner.
+* The seconds makes the info bar, could really be added to the first function.
+*
+* This file also contains all the event listeners for the buttons.
+*
+* As always, for anything confusing ask Josh.
+*/
+
 import {addToRoot, getById, updateInfoBar, clearHighlighting} from "./support.js";
-import {Table} from "./prototypes.js";
+import {Table} from "./classes.js";
 
 export var planner;
 

@@ -1,5 +1,30 @@
-import { removeFromArray, enrollInPeroid, addToRoot, updateInfoBar } from "./support.js";
-import { unitConditionsMet } from "./preprequisites.js";
+/*
+ * This file contains all the classes used for the planner.
+ * It has two classes Unit and Table:
+ *      o Unit stores the information for a unit.
+ *      o Table creates the planner and stores information about the major. 
+ * 
+ * The main function of table is makeTable, which uses all of its methods to create the planner.
+ * majority of the functions in the table support it in it's ability to create the planner.
+ * 
+ * Unit's functions provide a clear way of checking unit information:
+ *      o isEnrolled returns true if the unit has been enrolled in the planner,
+ *          which means it's been added to the table (but not necessarily the DOM).
+ *      o hasProblems returns true if the number of problems is greater than 0.
+ *          a problem is a unit requirement that hasn't been met.
+ * 
+ * Functions from support.js are used to aid in coding, and to make code cleaner and easier to read.
+ * Functions from events.js adds the event listeners to the relevant DOM elements.
+ * The Function from checks.js checks if all the unit requirements were met. This is important
+ * when we want to enroll a unit into a particular semester.
+ * 
+ * If you are unsure what anything does, please message Josh.
+ * 
+*/
+
+
+import { enrollInPeroid, addToRoot, updateInfoBar, allUnitsNotAdded } from "./support.js";
+import { unitConditionsMet } from "./checks.js";
 import { addUnitEvents, addContainerEvents, addSensorEvents } from "./events.js";
 
 
@@ -18,15 +43,15 @@ export class Unit {
         this.enrollmentRequirements = enrollmentReq;
         //split points, because they're a string. This makes me a bit sad. I'm sorry.
         this.pointRequirements = pointReq == null ? [] : pointReq.split(";");
-        this.enrollmentPeriod = "None";
+        this.enrollmentPeriod = null;
         //split coreqs, as coreqs are a string. This makes me a bit sad. I'm sorry.
         this.corequisites = corequisites == null ? [] : corequisites;
         this.problems = [];
-
-        this.addPrerequisites = () => {
-            return this.prerequisites = prerequisitesList;
-        };
-        this.isEnrolled = () => { return this.enrollmentPeriod != "None"; };
+    }
+    
+    //true if user is enrolled, false otherwise.
+    isEnrolled() { 
+        return this.enrollmentPeriod != null; 
     }
 
     // if unit has problems returns true,
@@ -45,7 +70,6 @@ export class Table {
         this.creditPointsRequired = 192;
         this.maxBroadening = 24;
         this.unitInformation = new Map();
-        this.unitNames = [];
         this.hasNSUnits = false;
         this.nextID = 0;
     }
@@ -76,16 +100,6 @@ export class Table {
         }
     }
 
-    //extractNames gets all the names of the units from unit info and places them into unitNames
-    extractNames() {
-        let i = 0;
-
-        for (let unit of this.unitInformation.values()) {
-            this.unitNames[i] = unit.unitCode;
-            i++;
-        }
-    }
-
     //makes a cell which represent a unit.
     makeCell(innerHTML) {
         let data = document.createElement("td");
@@ -102,42 +116,25 @@ export class Table {
         let unit = this.makeCell(unitCode);
 
         unit.setAttribute("id", unitCode);
-        removeFromArray(this.unitNames, unitCode);
         addUnitEvents(unit);
 
         return unit;
     }
 
-    // makes a broadening unit cell
-    makeBroadening() {
-        let broadening = this.makeCell("Broadening");
-        let code = "B" + this.nextID;
+    // creates a dummy unit, for electives and broadening.
+    makeDummyUnit(id, innerHTML) {
+        let unit = this.makeCell(innerHTML);
+        let code = id + this.nextID;
 
-        broadening.setAttribute("id", code);
-        addUnitEvents(broadening);
+        unit.setAttribute("id", code);
+        addUnitEvents(unit);
 
         this.unitInformation.set(code,
-            new Unit("broadening", code, 6, "broadening","BOTH", [],[],null,null));
+            new Unit(innerHTML, code, 6, innerHTML,"BOTH", [],[],null,null));
 
         this.nextID++;
 
-        return broadening;
-    }
-
-    // makes an elective unit cell
-    makeElective() {
-        let elective = this.makeCell("Elective");
-        let code = "E"+this.nextID
-
-        elective.setAttribute("id", code);
-        addUnitEvents(elective);
-
-        this.unitInformation.set(code,
-            new Unit("elective", code, 6, "elective","BOTH", [],[],null,null));
-            
-        this.nextID++;
-
-        return elective;
+        return unit;
     }
 
     //makes a year row.
@@ -172,27 +169,23 @@ export class Table {
         row.appendChild(head);
         row.appendChild(container);
 
-        // console.log(container.id);
-
-        //will loop through all units until unit names empty or
-        //container is full.
-        for (let i = 0; i < this.unitNames.length; i++) {
-            let unitCode = this.unitNames[i];
+        //will loop through all units considered
+        //and container is full.
+        for(let unit of this.unitInformation.values())
+        {
+            let unitCode = unit.unitCode;
 
             //check if unit placed in valid teaching period
-            if (unitConditionsMet(unitCode, container)) {
+            if (unitConditionsMet(unitCode, container) && !unit.isEnrolled()) {
                 enrollInPeroid(this.makeUnit(unitCode), container);
-                //-1 as element was removed to get actual index.
-                i -= 1;
-
-                if (container.childElementCount > 3) {
-                    //if container full stop loop.
-                    break;
-                }
+            }
+            if (container.childElementCount > 3) {
+                //if container full stop loop.
+                break;
             }
         }
 
-        //while semester has less than 4 units
+        //while semester has less than 4 units and not NS
         while(container.childElementCount < 4 && this.creditPointsRequired > 0 &&
                 !container.id.includes("NS")) {
 
@@ -200,9 +193,9 @@ export class Table {
             if(this.maxBroadening > 0)
             {
                 this.maxBroadening -= 6;
-                enrollInPeroid(this.makeBroadening(), container);
+                enrollInPeroid(this.makeDummyUnit("B","Broadening"), container);
             } else {
-                enrollInPeroid(this.makeElective(), container);
+                enrollInPeroid(this.makeElective("E", "Elective"), container);
             }
         }
 
@@ -211,10 +204,13 @@ export class Table {
         return row;
     }
 
+    // makes the container for an entire year.
+    // creates S1,S2,N1,N2 and a year heading row.
     makeYearContainer() {
         let container = document.createElement("div");
 
         container.appendChild(this.makeYearRow());
+
         if (this.hasNSUnits) {
             container.appendChild(this.makeRow("S1"));
             container.appendChild(this.makeRow("NS1"));
@@ -250,15 +246,14 @@ export class Table {
     //It creates the planner.
     makeTable(response) {
         let table = document.createElement("table");
+        this.extractInformation(response);
+        let iterations = 0;
 
         table.setAttribute("id", "table");
 
-        this.extractInformation(response);
-        this.extractNames();
-
-        let iterations = 0;
-
-        while (this.unitNames.length > 0 && iterations < 10) {
+        // if course duration not exceeded.
+        // and there are units still to be added.
+        while (allUnitsNotAdded() && iterations < 10) {
             table.appendChild(this.makeYearContainer());
             iterations++;
         }
