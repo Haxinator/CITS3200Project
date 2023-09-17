@@ -228,6 +228,10 @@ export class Table {
         for(let unit of this.unitInformation.values())
         {
             let unitCode = unit.unitCode;
+            console.log(unit);
+            console.log(unit.semester, container.id)
+            console.log(canEnrollInPeriod(unitCode, container));
+
 
             //check if unit placed in valid teaching period
             if (canEnrollInPeriod(unitCode, container) && !unit.isEnrolled()) {
@@ -345,7 +349,7 @@ export class Table {
 
         container.setAttribute("id", "optionsBar");
         this.extractInformation(response);
-        this.makePeriods("options", container);
+        this.makePeriods("op", container);
         table.appendChild(container);
 
         return table;
