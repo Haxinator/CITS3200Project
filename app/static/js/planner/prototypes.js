@@ -20,7 +20,7 @@ export class Unit {
         this.pointRequirements = pointReq == null ? [] : pointReq.split(";");
         this.enrollmentPeriod = "None";
         //split coreqs, as coreqs are a string. This makes me a bit sad. I'm sorry.
-        this.corequisites = corequisites == null ? [] : corequisites.split(";");
+        this.corequisites = corequisites == null ? [] : corequisites;
         this.problems = [];
 
         this.addPrerequisites = () => {

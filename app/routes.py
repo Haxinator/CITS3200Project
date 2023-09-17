@@ -2,6 +2,7 @@ from flask import render_template, flash, redirect, url_for, request, jsonify
 from neo4j import GraphDatabase
 # from neo4j import __version__ as neo4j_version
 from app import app
+import itertools
 
 # Home page
 @app.route('/')
@@ -50,7 +51,7 @@ def send_unit_information(major, bridging):
         # if you need to only get CORE units, change [rel] to [rel:CORE_OF]
         query = f"""
         MATCH (u:Unit) -[rel:CORE_OF]-> (m:Major)
-        WHERE m.major = {major} OR {unit_conditions}
+        WHERE m.major = "{major}" OR {unit_conditions}
         OPTIONAL MATCH (u)-[:REQUIRES]->(r)
         OPTIONAL MATCH (u)-[:COREQUIRES]->(c)
         WITH u, COLLECT(DISTINCT r.unitcode) as unit_req, COLLECT(DISTINCT c.unitcode) as corequisites
@@ -66,7 +67,7 @@ def get_option_units(major):
     with driver.session() as session:
         query = f"""
         MATCH (u:Unit) -[rel:GROUP_A_OF|GROUP_B_OF]-> (m:Major)
-        WHERE m.major = {major}
+        WHERE m.major = "{major}"
         OPTIONAL MATCH (u)-[:REQUIRES]->(r)
         OPTIONAL MATCH (u)-[:COREQUIRES]->(c)
         WITH u, COLLECT(DISTINCT r.unitcode) as unit_req, COLLECT(DISTINCT c.unitcode) as corequisites
@@ -76,6 +77,22 @@ def get_option_units(major):
         results = session.run(query)
         data = results.data()
         return jsonify(data)
+
+@app.route("/option_combos=<string:major>", methods=["GET"])  
+def get_option_combos(major): 
+     with driver.session() as session:
+        query = f"""MATCH (u:Unit) -[rel:GROUP_A_OF|GROUP_B_OF]-> (m:Major)
+        WHERE m.major = "{major}"
+        RETURN COLLECT(DISTINCT u.unitcode) as options"""
+
+        results = session.run(query)
+        options = results.single()['options']
+
+        # Get all possible combinations of the list's elements
+        combinations = list(itertools.combinations(options, 3))
+        # Convert each combination from a tuple to a list
+        combinations = [list(combination) for combination in combinations]
+        return jsonify(combinations)
 
 @app.route("/prereqs/<string:major>/<string:chosen_unit>", methods=["GET"])
 def get_prereq_units(chosen_unit, major):
