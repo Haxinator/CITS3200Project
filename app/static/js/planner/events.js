@@ -228,7 +228,7 @@ function drop(e)
                         ${e.target.id} only available in ${getPeriodOffered(e.target.id)}`);
     }
 
-    let conditionMet = true;
+    // let conditionMet = true;
     //check if prerequisites met for all units.
     for(let unit of planner.unitInformation.values())
     {
@@ -290,7 +290,6 @@ function printUnitInfo(unitCode)
     let unit = planner.unitInformation.get(unitCode);
     let str = "";
 
-    // str += `<span style="font-weight: bolder;text-decoration: underline;">${unit.name}</span><br>`;
     str += `<h5>${unit.name}</h5>`;
     str += formatInfo("Unit Code", unit.unitCode);
     str += formatInfo("Type", unit.type);

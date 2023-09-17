@@ -1,5 +1,5 @@
 import { planner } from "./planner.js";
-import { updateInfoBar, highlightIfUnitHasProblems, isAlpha } from "./support.js";
+import { updateInfoBar, highlightIfUnitHasProblems, isAlpha, inDOM, getLastCharacter } from "./support.js";
 
 // --------------- Prerequisite Met Functions ----------------//
 
@@ -18,9 +18,10 @@ export function unitConditionsMet(unitCode, container)
     let correctCorequisites = corequisitesMet(unitCode, container);
     let correctPoints = pointRequirementsMet(unitCode, container);
 
-    //colour red if problem found.
-    if(planner.unitNames.indexOf(unitCode) == -1 )
+    // check if unit has been enrolled and it's in the DOM
+    if(unit.isEnrolled() && inDOM(unitCode))
     {
+        // colour red if problem found
         highlightIfUnitHasProblems(unit);
     }
 
@@ -51,16 +52,14 @@ export function pointRequirementsMet(unitCode, container)
     let corePointsRequired = unit.pointRequirements[0];
     let extraPointsRequired = unit.pointRequirements[1];
 
-    // console.log(container.id);
-    // console.log("points needed " + unit.pointRequirements);
-
     //if no point requirements, then requirements met.
     if(unit.pointRequirements.length == 0)
     {
         return true;
     }
 
-    let typeIdentifier = corePointsRequired.slice(-1);
+    // get the point type. (last character in corePointsRequired)
+    let typeIdentifier = getLastCharacter(corePointsRequired);
 
     //I cri.
     //IT WORKSS
@@ -69,7 +68,7 @@ export function pointRequirementsMet(unitCode, container)
         let otherUnitCode = otherUnit.unitCode;
 
         //if in planner and before current enrollment period
-        if(planner.unitNames.indexOf(otherUnitCode) == -1 &&
+        if(otherUnit.isEnrolled() &&
             otherUnit.enrollmentPeriod < container.id)
         {
 
@@ -89,6 +88,8 @@ export function pointRequirementsMet(unitCode, container)
     //get last char and check if alphabetical character.
     if(isAlpha(typeIdentifier))
     {
+        // compare core point requirement to coreUnitCount.
+        // don't include the last alpha character in the comparison (why substring is used).
         if(parseInt(corePointsRequired.substring(0, corePointsRequired.length-1)) > CoreUnitCount)
         {
             unit.problems.push(`${unitCode} requires ${corePointsRequired} core unit credit points!`);
@@ -97,6 +98,7 @@ export function pointRequirementsMet(unitCode, container)
             return false;
         }
 
+        // if there are extra point requirements, see if they're met.
         if(unit.pointRequirements.length > 1 && extraPointsRequired > pointCount)
         {
             unit.problems.push(`${unitCode} requires ${extraPointsRequired} credit points!`);
@@ -132,22 +134,22 @@ export function corequisitesMet(unitCode, container)
     {
         let corequisiteUnit = planner.unitInformation.get(corequisite);
 
-        if(planner.unitNames.indexOf(corequisite) != -1)
+        if(corequisiteUnit != undefined)
         {
-            //if corequisite in name list then it isn't in planner
-            return false;
-
-        } else if(corequisiteUnit != null)
-        {
-            if(corequisiteUnit.enrollmentPeriod > container.id && 
-                corequisiteUnit.enrollmentPeriod.length == container.id.length)
-                {
-                    updateInfoBar(`${corequisite} must be done concurrently or prior to commencing ${unitCode}!`);
-                    
-                    unit.problems.push(`${corequisite} must be done concurrently or prior to commencing ${unitCode}`);
-                    
-                    corequisitesMet = false;
-                }
+            if(!corequisiteUnit.isEnrolled())
+            {
+                //if corequisite in name list then it isn't in planner
+                return false;
+    
+            } else if(corequisiteUnit.enrollmentPeriod > container.id && 
+                    corequisiteUnit.enrollmentPeriod.length == container.id.length)
+                    {
+                        updateInfoBar(`${corequisite} must be done concurrently or prior to commencing ${unitCode}!`);
+                        
+                        unit.problems.push(`${corequisite} must be done concurrently or prior to commencing ${unitCode}`);
+                        
+                        corequisitesMet = false;
+                    }
         }
     }
 
@@ -165,22 +167,22 @@ export function unitPreRequisitiesMet(unitCode, container)
     {
         let prerequisiteUnit = planner.unitInformation.get(prerequisite)
 
-        if(planner.unitNames.indexOf(prerequisite) != -1)
-        {
-            //if prerequisite in name list then it isn't in planner
-            return false;
-
-        } else if (prerequisiteUnit != null){
-
-            if(prerequisiteUnit.enrollmentPeriod >= container.id && 
-                prerequisiteUnit.enrollmentPeriod.length == container.id.length) {
-
-                updateInfoBar(`${prerequisite} must be done before ${unitCode}!`);
+        if (prerequisiteUnit != undefined){
                 
-                unit.problems.push(`${prerequisite} must be done before ${unitCode}!`);
+            if(!prerequisiteUnit.isEnrolled())
+            {
+                //if prerequisite isn't in planner
+                return false;
 
-                //if prerequisite is in this period or greater.
-                prerequisitesMet = false;
+            } else if(prerequisiteUnit.enrollmentPeriod >= container.id && 
+                    prerequisiteUnit.enrollmentPeriod.length == container.id.length) {
+
+                    updateInfoBar(`${prerequisite} must be done before ${unitCode}!`);
+                    
+                    unit.problems.push(`${prerequisite} must be done before ${unitCode}!`);
+
+                    //if prerequisite is in this period or greater.
+                    prerequisitesMet = false;
             }
         }
     }

@@ -1,16 +1,28 @@
 import { planner } from "./planner.js";
 
-//removes given value from given array and returns new array.
-export function removeFromArray(array, value)
-{
-    let index = array.indexOf(value);
-    array.splice(index, 1);
-}
-
 //adds given element to main
 export function addToRoot(element)
 {
     document.getElementById("root").appendChild(element);
+}
+
+// true if all units haven't been added.
+// false otherwise.
+export function allUnitsNotAdded()
+{
+    let allUnitsNotAdded = false;
+
+    for(let unit of planner.unitInformation.values())
+    {
+        // if there is a unit that hasn't been enrolled
+        if(!unit.isEnrolled())
+        {
+            // all units haven't been added.
+            allUnitsNotAdded = true;
+        }  
+    }
+
+    return allUnitsNotAdded;
 }
 
 export function getById(id)
@@ -32,9 +44,6 @@ export function getById(id)
 //     return units;
 // }
 
-
-// -------------------- MISC SUPPORT FUNCTIONS --------------//
-
 //enrolls unit into period
 //unit is unit as represented in the DOM.
 export function enrollInPeroid(unit, container)
@@ -44,7 +53,7 @@ export function enrollInPeroid(unit, container)
     //subtract from creditPointsRequired
     planner.creditPointsRequired -= unitInfo.creditPoints;
     unitInfo.enrollmentPeriod = container.id;
-
+    
     container.append(unit);
 
 }
@@ -60,7 +69,6 @@ export function getPeriodOffered(id)
 {
     return planner.unitInformation.get(id).semester;
 }
-
 
 export function updateInfoBar(info){
     getById("infoBar").firstElementChild.innerHTML = info;
@@ -82,19 +90,29 @@ export function isAlpha(char)
 //given a unit object highlights unit if it has a problem
 export function highlightIfUnitHasProblems(unit)
 {
+    // unit in DOM
     let unitElement = getById(unit.unitCode);
 
     if(unit.hasProblems())
     {
         //NS is red.
         unitElement.classList.add("NS");
-    } else {
+    } else{
         unitElement.classList.remove("NS");
     }
 }
 
+// true if element in DOM, false otherwise
+export function inDOM(elementId){
+    return getById(elementId) != null
+}
 
-//--------------------SUPPORT FUNCTIONS--------------------------//
+// gets last character in a string.
+// assumed param is a string.
+export function getLastCharacter(string)
+{
+    return string.slice(-1);
+}
 
 //clears all highlighting
 export function clearHighlighting()
