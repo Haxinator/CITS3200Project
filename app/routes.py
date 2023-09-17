@@ -47,12 +47,14 @@ def send_unit_information(major, bridging):
         units = bridging.split(",") 
         unit_conditions = " OR ".join([f"u.unitcode = '{unit}'" for unit in units])
 
+        # if you need to only get CORE units, change [rel] to [rel:CORE_OF]
         query = f"""
-        MATCH (u)
-        WHERE u.type CONTAINS "CORE_{major}" OR {unit_conditions}
-        OPTIONAL MATCH (u)-[:REQUIRES]->(m)
-        WITH u, COLLECT(m.unitcode) as unit_req
-        RETURN u.unitcode as unitcode, u.unitname as unitname, u.type as type, u.semester as semester, u.major as major, u.level as level, u.credit_points as credit_points, u.points_req as points_req, u.enrolment_req as enrolment_req, unit_req, u.incompatible_units as incompatibilities, u.corequisites as corequisites
+        MATCH (u:Unit) -[rel:CORE_OF]-> (m:Major)
+        WHERE m.major = {major} OR {unit_conditions}
+        OPTIONAL MATCH (u)-[:REQUIRES]->(r)
+        OPTIONAL MATCH (u)-[:COREQUIRES]->(c)
+        WITH u, COLLECT(DISTINCT r.unitcode) as unit_req, COLLECT(DISTINCT c.unitcode) as corequisites
+        RETURN u.unitcode as unitcode, u.unitname as unitname, u.type as type, u.semester as semester, u.major as major, u.level as level, u.credit_points as credit_points, u.points_req as points_req, u.enrolment_req as enrolment_req, unit_req, u.incompatible_units as incompatibilities, corequisites
         ORDER BY level
         """ 
         results = session.run(query)
@@ -63,11 +65,12 @@ def send_unit_information(major, bridging):
 def get_option_units(major):
     with driver.session() as session:
         query = f"""
-        MATCH (u)
-        WHERE u.major CONTAINS '{major}' AND u.type CONTAINS "GROUP_A_{major}" OR u.type CONTAINS "GROUP_B_{major}"
-        OPTIONAL MATCH (u)-[:REQUIRES]->(m)
-        WITH u, COLLECT(m.unitcode) as unit_req
-        RETURN u.unitcode as unitcode, u.unitname as unitname, u.type as type, u.semester as semester, u.major as major, u.level as level, u.credit_points as credit_points, u.points_req as points_req, u.enrolment_req as enrolment_req, unit_req, u.incompatible_units as incompatibilities, u.corequisites as corequisites
+        MATCH (u:Unit) -[rel:GROUP_A_OF|GROUP_B_OF]-> (m:Major)
+        WHERE m.major = {major}
+        OPTIONAL MATCH (u)-[:REQUIRES]->(r)
+        OPTIONAL MATCH (u)-[:COREQUIRES]->(c)
+        WITH u, COLLECT(DISTINCT r.unitcode) as unit_req, COLLECT(DISTINCT c.unitcode) as corequisites
+        RETURN u.unitcode as unitcode, u.unitname as unitname, u.type as type, u.semester as semester, u.major as major, u.level as level, u.credit_points as credit_points, u.points_req as points_req, u.enrolment_req as enrolment_req, unit_req, u.incompatible_units as incompatibilities, corequisites
         ORDER BY level
         """
         results = session.run(query)
