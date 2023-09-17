@@ -243,7 +243,7 @@ function drop(e)
                         ${e.target.id} only available in ${getPeriodOffered(e.target.id)}`);
     }
 
-    // let conditionMet = true;
+    let conditionMet = true;
     //check if prerequisites met for all units.
     for(let unit of planner.unitInformation.values())
     {
