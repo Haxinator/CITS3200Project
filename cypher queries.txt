@@ -6,43 +6,35 @@ RETURN node
 
 //major rel
 LOAD CSV WITH HEADERS FROM 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTiBLvtK4sV6Kf0g79SCJI0twfYQI0GRv8mJxUJQNBjOqXuuqj2rGRMnYYufLEpzMpKne4mY59kgfgO/pub?gid=0&single=true&output=csv' AS row
-MATCH (child:Unit {unitcode: row.unit}), (parent:Major {major: row.major})
+MATCH (child:Unit {unitcode: row.unitcode})
+MATCH (parent:Major {major: row.major})
 CALL apoc.create.relationship(child, row.relationship, {}, parent)
 YIELD rel
 RETURN rel
 
-//nodes - just mech
-LOAD CSV WITH HEADERS FROM 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQnRbOQw37eU9L86N0u4BJmu88lOxLWR0UxqP0NM_YpzHvwAZTz_BYGDXG414KV4_9Z5itTUHWmzVvb/pub?gid=145100429&single=true&output=csv' AS row
-CALL apoc.create.node(["Unit"], row)
-YIELD node
-RETURN node
+------------
 
-//nodes - mech + soft
+//nodes
 LOAD CSV WITH HEADERS FROM 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRWr8QNW9F6FkXMeNq3ytscAlHhZ-E_yQCyutZuFVtoQvcygdzmSBR3BfsAFZJjDsybIHfyEPY9SIUj/pub?gid=1006418552&single=true&output=csv' AS row
 CALL apoc.create.node(["Unit"], row)
 YIELD node
 RETURN node
 
-//rels - just mech
-LOAD CSV WITH HEADERS FROM 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTlj2y3wdM76_8Tcn1ADgdVvinWmcIx0KmawL9pppxcB0npAnKEzqG0xV0wkRl_IXaUZhUA2cJAoEzg/pub?gid=66934476&single=true&output=csv' AS row
-MATCH (child:Unit {unitcode: row.child_unit}), (parent:Unit {unitcode: row.parent_unit})
-CALL apoc.create.relationship(child, row.relationship, {}, parent)
+//rels
+LOAD CSV WITH HEADERS FROM 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRxQJBNXRmpfqGbl2ZbKPFLgPLVsqFgiMxtk33pne9bomN1VOSXMkQi778mg-vteejKloFaI7oGoEA3/pub?gid=889593185&single=true&output=csv' AS row
+MATCH (child:Unit {unitcode: row.child_unit})
+MATCH (parent:Unit {unitcode: row.parent_unit})
+CALL apoc.create.relationship(child, row.relationship, {type: row.rel_type}, parent)
 YIELD rel
 RETURN rel
 
-//rels - mech + soft
-LOAD CSV WITH HEADERS FROM 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRxQJBNXRmpfqGbl2ZbKPFLgPLVsqFgiMxtk33pne9bomN1VOSXMkQi778mg-vteejKloFaI7oGoEA3/pub?gid=889593185&single=true&output=csv' AS row
-MATCH (child:Unit {unitcode: row.child_unit}), (parent:Unit {unitcode: row.parent_unit})
-CALL apoc.create.relationship(child, row.relationship, {}, parent)
-YIELD rel
-RETURN rel
+-------------
 
 //return prereqs chosen unit
 MATCH (u:Unit {unitcode: "ENSC2004"})
 CALL apoc.path.expandConfig(u, {relationshipFilter: "REQUIRES>", minLevel: 1, maxLevel: 5})
 YIELD path
 RETURN [node IN nodes(path) | node.unitcode] AS prerequisites
-
 
 //return units that requires chosen unit
 MATCH (u:Unit {unitcode: "ENSC2004"})
