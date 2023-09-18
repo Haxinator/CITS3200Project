@@ -4,6 +4,7 @@ from neo4j import GraphDatabase
 from app import app
 import itertools
 
+# ------------------------------------- HTML RENDERING ------------------------------------------------
 # Home page
 @app.route('/')
 @app.route('/index/')
@@ -35,6 +36,7 @@ def preferences():
     return render_template('preferences.html', title='Preferences', specialization = specialization, mathSpecialist = mathSpecialist, chemistry = chemistry, physics = physics) # Render the preferences page
 
 
+# ------------------------------------- NEO4J QUERIES ------------------------------------------------
 driver = GraphDatabase.driver(
     "bolt://e5218dc4.databases.neo4j.io:7687", 
     auth=("neo4j", "svH9RLz19fQFpDDgjnQCZMO9MF6WEVPRmtpXEaNVQ2o"), 
@@ -48,7 +50,30 @@ def send_unit_information(major, bridging):
         units = bridging.split(",") 
         unit_conditions = " OR ".join([f"u.unitcode = '{unit}'" for unit in units])
 
-        # if you need to only get CORE units, change [rel] to [rel:CORE_OF]
+    # REVISED VERSION: ----------------------------------------------------------------------
+        # fix js first before implementing this query
+        # 'unit_req' property now implements AND-OR
+        # instead of returning e.g., ["MATH1012", "GENG2000", "CITS1401", "ENSC2004", "CITS2401"],  
+        # it returns e.g., [" MATH1012_AND", " GENG2000_AND", " CITS1401_OR", " ENSC2004_AND", " CITS2401_OR"]
+        # AND = must-have unit 
+        # OR = not necessarily a must-have but can fill the requirements if one of them are taken
+
+        """
+        MATCH (u:Unit) -[rel:CORE_OF]-> (m:Major)
+        WHERE m.major = "{major}" OR {unit_conditions}
+        OPTIONAL MATCH (u)-[rr:REQUIRES]->(r)
+        OPTIONAL MATCH (u)-[:COREQUIRES]->(c)
+        WITH u, rr, COLLECT(DISTINCT r.unitcode) as unit_req, COLLECT(DISTINCT c.unitcode) as corequisites
+        WITH u, rr, corequisites,  REDUCE( s = '', node IN unit_req | 
+        CASE WHEN rr.type IS NOT NULL 
+            THEN s + ' ' + node + '_' + rr.type
+            ELSE s + ' ' + node
+        END) as test
+        RETURN u.unitcode as unitcode, u.unitname as unitname, u.type as type, u.semester as semester, u.major as major, u.level as level, u.credit_points as credit_points, u.points_req as points_req, u.enrolment_req as enrolment_req, COLLECT(test) as unit_req, u.incompatible_units as incompatibilities, corequisites
+        ORDER BY level
+        """
+
+    # --------------------------------------------------------------------------------------
         query = f"""
         MATCH (u:Unit) -[rel:CORE_OF]-> (m:Major)
         WHERE m.major = "{major}" OR {unit_conditions}
@@ -102,6 +127,9 @@ def get_option_combos(major):
         # combine two types of combinations
         combinations = combos_1 + combos_2
         return jsonify(combinations)
+     
+
+# ------------------------------------- TREE VIEW QUERIES ------------------------------------
 
 @app.route("/prereqs/<string:major>/<string:chosen_unit>", methods=["GET"])
 def get_prereq_units(chosen_unit, major):
