@@ -57,6 +57,7 @@ def send_unit_information(major, bridging):
         # it returns e.g., [" MATH1012_AND", " GENG2000_AND", " CITS1401_OR", " ENSC2004_AND", " CITS2401_OR"]
         # AND = must-have unit 
         # OR = not necessarily a must-have but can fill the requirements if one of them are taken
+        # ATAR-type units do not have this flag as they do not appear on the table
 
         """
         MATCH (u:Unit) -[rel:CORE_OF]-> (m:Major)
@@ -68,8 +69,8 @@ def send_unit_information(major, bridging):
         CASE WHEN rr.type IS NOT NULL 
             THEN s + ' ' + node + '_' + rr.type
             ELSE s + ' ' + node
-        END) as test
-        RETURN u.unitcode as unitcode, u.unitname as unitname, u.type as type, u.semester as semester, u.major as major, u.level as level, u.credit_points as credit_points, u.points_req as points_req, u.enrolment_req as enrolment_req, COLLECT(test) as unit_req, u.incompatible_units as incompatibilities, corequisites
+        END) as revised_req
+        RETURN u.unitcode as unitcode, u.unitname as unitname, u.type as type, u.semester as semester, u.major as major, u.level as level, u.credit_points as credit_points, u.points_req as points_req, u.enrolment_req as enrolment_req, COLLECT(revised_req) as unit_req, u.incompatible_units as incompatibilities, corequisites
         ORDER BY level
         """
 
