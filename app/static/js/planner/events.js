@@ -44,7 +44,7 @@ export function addSensorEvents(sensor)
 export function addOptionUnitEvents(optionUnitElement)
 {
     //record to compare against combo.
-    recordUnit(optionUnitElement)
+    optionUnitElement.addEventListener("dragend", recordUnit);
 }
 
 //record if unit was enrolled or unenrolled
@@ -55,12 +55,14 @@ function recordUnit(e)
     //if in placed in option container
     if(unitElement.parentElement.id.includes("op"))
     {
-        //clear from record.
+        //remove from combo.
         optionsBar.removeUnit(unitElement.id);
     } else {
-        //add to record.
-        optionsBar.addUnit(unitElement.id);
+        //push to combo.
+        optionsBar.pushUnit(unitElement.id);
     }
+
+    optionsBar.adjustOptionsBar();
 }
 
 //hide when dragging, the timeout ends hide when item released (or else hidden forever).
@@ -282,6 +284,9 @@ function drop(e)
     // {
     //     updateInfoBar("");
     // }
+
+    //adjust options bar
+    
 
     //show item
     item.classList.remove("hide");

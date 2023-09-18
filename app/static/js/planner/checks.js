@@ -13,7 +13,7 @@
  * This file can be hard to understand. Best to ask Josh.
 */
 
-import { optionsBar, planner } from "./main.js";
+import { planner } from "./main.js";
 import { updateInfoBar, highlightIfUnitHasProblems, isAlpha, inDOM, getLastCharacter, getUnitInformation } from "./support.js";
 
 // --------------- Prerequisite Met Functions ----------------//

@@ -7,7 +7,7 @@
  * Any questions ask Josh.
 */
 
-import { optionsBar, planner } from "./main.js";
+import { optionsTable, planner } from "./main.js";
 
 //adds given element to main
 export function addToRoot(element)
@@ -58,6 +58,11 @@ export function removeFromArray(array, value)
 {
     let index = array.indexOf(value);
     array.splice(index, 1);
+    
+    if(array == undefined) { 
+        array = [];
+    }
+
 }
 
 //enrolls unit into period
@@ -83,8 +88,8 @@ export function getUnitInformation(unitCode) {
     if(planner != undefined && planner.unitInformation.has(unitCode))
     {
         return planner.unitInformation.get(unitCode);
-    } else if(optionsBar != undefined && optionsBar.unitInformation.has(unitCode)) {
-        return optionsBar.unitInformation.get(unitCode);
+    } else if(optionsTable != undefined && optionsTable.unitInformation.has(unitCode)) {
+        return optionsTable.unitInformation.get(unitCode);
     }
 }
 
@@ -164,15 +169,18 @@ export function clearHighlighting()
     }
 
     //clear option bar highlighting
-    for(let unit of optionsBar.unitInformation.values())
+    if(optionsTable != undefined)
     {
-        //overwrite all classes with unit.
-        let unitElement = getById(unit.unitCode);
-        unitElement.setAttribute("class", "unit");
-
-        if(unit.problems.length > 0)
+        for(let unit of optionsTable.unitInformation.values())
         {
-            unitElement.classList.add("NS");
+            //overwrite all classes with unit.
+            let unitElement = getById(unit.unitCode);
+            unitElement.setAttribute("class", "unit");
+
+            if(unit.problems.length > 0)
+            {
+                unitElement.classList.add("NS");
+            }
         }
     }
-}
+    }

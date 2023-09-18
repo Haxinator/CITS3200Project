@@ -26,9 +26,10 @@
 */
 
 
-import { enrollInPeroid, addToRoot, updateInfoBar, allUnitsNotAdded } from "./support.js";
+import { enrollInPeroid, addToRoot, updateInfoBar, allUnitsNotAdded, removeFromArray, getById } from "./support.js";
 import { unitConditionsMet, canEnrollInPeriod } from "./checks.js";
 import { addUnitEvents, addContainerEvents, addSensorEvents, addOptionUnitEvents } from "./events.js";
+import { optionsTable } from "./main.js";
 
 
 //------------------- PROTOTYPES ----------------------------------//
@@ -55,21 +56,93 @@ export class sideBar {
 
     //add unit to list
     pushUnit(unitCode){
-        //add unit to end of list.
-        this.currentOptionCombo.push(unitCode);
+        //if not in the list and list is not full.
+        if(this.currentOptionCombo.indexOf(unitCode) == -1 &&
+            this.currentOptionCombo.length < 3)
+        {
+            //add unit to end of list.
+            this.currentOptionCombo.push(unitCode);
+        }
     }
 
     //remove unit from list
-    popUnit(unitCode){
-        //pop won't work user can remove any unit.
-        this.currentOptionCombo = removeFromArray(this.currentOptionCombo, unitCode);
+    removeUnit(unitCode){
+        //in case drag ends but unit wasn't added to container.
+        if(this.currentOptionCombo.indexOf(unitCode) > -1)
+        {
+            removeFromArray(this.currentOptionCombo, unitCode);
+        }
     }
 
     //check combinations, show next valid legal units.
     //hide units that lead to an illegal combination.
     adjustOptionsBar() {
         //using currentCombo, see all valid next units.
-        
+        console.log(this.optionCombinations);
+        console.log(this.currentOptionCombo);
+        let matches = [];
+
+
+        for(let combination of this.optionCombinations)
+        {
+            let match = true;
+
+            // Does this combination contain all option units
+            // this user has currently enrolled in
+            for(let element of this.currentOptionCombo)
+            {
+                // if not, set match to false
+                if(!combination.includes(element))
+                {
+                    match = false;
+                }
+            }
+
+            // print matching combinations
+            if(match)
+            {
+                console.log(combination);
+                matches.push(combination);
+            }
+        }
+
+        // for each option unit
+        for(let unit of optionsTable.unitInformation.values())
+        {
+            let unitCode = unit.unitCode;
+            let match = false;
+            console.log(unitCode)
+
+            //for each combo current enrolled units match with
+            for(let combo of matches)
+            {
+                console.log(combo);
+                console.log(combo.includes(unitCode));
+
+                //if option unit is a valid next option
+                if(combo.includes(unitCode))
+                {
+                    match = true;
+                }
+            }
+
+            //show if legal next option
+            if(match)
+            {
+                getById(unitCode).classList.add("unit");
+                getById(unitCode).classList.remove("hide");
+            } else {
+                //hide otherwise.
+                getById(unitCode).classList.add("hide");
+                getById(unitCode).classList.remove("unit");
+            }
+
+            // if there are matches
+            // if(matches.length > 0)
+            // {
+                
+            // }
+        }
     }
 
     //response is the options units json
@@ -257,10 +330,6 @@ export class Table {
         for(let unit of this.unitInformation.values())
         {
             let unitCode = unit.unitCode;
-            console.log(unit);
-            console.log(unit.semester, container.id)
-            console.log(canEnrollInPeriod(unitCode, container));
-
 
             //check if unit placed in valid teaching period
             if (canEnrollInPeriod(unitCode, container) && !unit.isEnrolled()) {

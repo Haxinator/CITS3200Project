@@ -16,13 +16,14 @@ import {getById, updateInfoBar, clearHighlighting} from "./support.js";
 import {Table, sideBar} from "./classes.js";
 
 export var planner;
+export var optionsTable;
 export var optionsBar;
 
 //------------------- INSTANCE FUNCTIONS -------------------------//
 
 fetchCourseRequirementsAndBuildPlanner();
 
-fetchOptionUnitCombinations();
+// fetchOptionUnitCombinations();
 // makeInfoBar();
 
 // -------------------- FILTERS ----------------------------- //
@@ -153,15 +154,16 @@ function fetchOptionUnits() {
     xhttp.open('GET', url, true);
     xhttp.onload = (e) => {
         let response = JSON.parse(xhttp.responseText);
-        let bar = new sideBar();
-        optionsBar = new Table();
+        optionsBar = new sideBar();
+        optionsTable = new Table();
         
         console.log(response);
 
         //get legal option unit combinations and store them.
-        bar.addOptionCombinations(fetchOptionUnitCombinations());
+        fetchOptionUnitCombinations();
+
         //make the options bar.
-        bar.makeOptionsBar(optionsBar, response);
+        optionsBar.makeOptionsBar(optionsTable, response);
     }
     xhttp.send();
 
@@ -178,7 +180,7 @@ function fetchOptionUnitCombinations() {
     xhttp.onload = (e) => {
         let response = JSON.parse(xhttp.responseText);
         console.log(response);
-        return response;
+        optionsBar.addOptionCombinations(response);
     }
     xhttp.send();
 }
