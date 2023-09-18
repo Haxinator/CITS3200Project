@@ -139,6 +139,7 @@ h2 {
     display: block;
     max-width: 100px;
     min-width: 0px;
+    padding-bottom: 50px;
 }
 
 #options tr{
