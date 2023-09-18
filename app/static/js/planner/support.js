@@ -53,6 +53,13 @@ export function getById(id)
 //     return units;
 // }
 
+//removes given value from given array and returns new array.
+export function removeFromArray(array, value)
+{
+    let index = array.indexOf(value);
+    array.splice(index, 1);
+}
+
 //enrolls unit into period
 //unit is unit as represented in the DOM.
 export function enrollInPeroid(unit, container)
@@ -143,7 +150,21 @@ export function getLastCharacter(string)
 //clears all highlighting
 export function clearHighlighting()
 {
+    //clear planner highlighting
     for(let unit of planner.unitInformation.values())
+    {
+        //overwrite all classes with unit.
+        let unitElement = getById(unit.unitCode);
+        unitElement.setAttribute("class", "unit");
+
+        if(unit.problems.length > 0)
+        {
+            unitElement.classList.add("NS");
+        }
+    }
+
+    //clear option bar highlighting
+    for(let unit of optionsBar.unitInformation.values())
     {
         //overwrite all classes with unit.
         let unitElement = getById(unit.unitCode);

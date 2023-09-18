@@ -13,7 +13,7 @@
 
 import {canEnrollInPeriod, unitConditionsMet} from "./checks.js";
 import { updateInfoBar, getPeriodOffered, getById, getByPeriod, enrollInPeroid, clearHighlighting, unitExists, getUnitInformation } from "./support.js";
-import { planner } from "./main.js";
+import { optionsBar, planner } from "./main.js";
 
 
 //to add events to unit cells.
@@ -40,6 +40,28 @@ export function addSensorEvents(sensor)
     sensor.addEventListener("drop", appendRow);
 }
 
+//add option unit events
+export function addOptionUnitEvents(optionUnitElement)
+{
+    //record to compare against combo.
+    recordUnit(optionUnitElement)
+}
+
+//record if unit was enrolled or unenrolled
+//to adjust options bar based on combo.
+function recordUnit(e)
+{
+    let unitElement = e.target;
+    //if in placed in option container
+    if(unitElement.parentElement.id.includes("op"))
+    {
+        //clear from record.
+        optionsBar.removeUnit(unitElement.id);
+    } else {
+        //add to record.
+        optionsBar.addUnit(unitElement.id);
+    }
+}
 
 //hide when dragging, the timeout ends hide when item released (or else hidden forever).
 function dragstart(e)

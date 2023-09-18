@@ -125,10 +125,34 @@ h2 {
     padding-left: 10px;
 } */
 
-#optionsBar {
+/* ----------------------------- OPTIONS BAR CSS -------------------------- */
+#optionsBar .unit {
+    display: inline-block;
+}
+
+#optionsBar table {
+    display: block;
+    width: 120px;
+}
+
+#options tr div {
+    display: block;
+    max-width: 100px;
+    min-width: 0px;
+}
+
+#options tr{
+    display: block;
+    border: 1px dashed white;
+    min-height: 72px;
+}
+
+#optionsBar{
     background-color: white;
     margin: auto;
     position: fixed;
+    overflow-y: auto;
+    overflow-x: hidden;
 
     /* Muslim happy :) */
     bottom: 0;
@@ -142,6 +166,7 @@ h2 {
     min-height: 0px;
     min-width: 0px;
 
+
     /* stops text overflow */
     overflow-wrap: break-word;
 
@@ -151,10 +176,14 @@ h2 {
     box-shadow: 3px 3px 5px lightgrey;
 }
 
+/* ---------------------------------- INFO BAR  CSS --------------------------- */
+
 #infoBar {
     background-color: white;
     margin: auto;
     position: fixed;
+    overflow-y: auto;
+    overflow-x: hidden;
 
     /* Muslim happy :) */
     bottom: 0;
@@ -177,7 +206,7 @@ h2 {
     box-shadow: 3px 3px 5px lightgrey;
 }
 
-/* treeview css */
+/* --------------------------------------- treeview css -------------*/
 #treeview {
     text-align: center;
     margin: auto;

@@ -7,6 +7,9 @@
  * The main function of table is makeTable, which uses all of its methods to create the planner.
  * majority of the functions in the table support it in it's ability to create the planner.
  * 
+ * The table class is also used to store the option unit information and make
+ * the options bar.
+ * 
  * Unit's functions provide a clear way of checking unit information:
  *      o isEnrolled returns true if the unit has been enrolled in the planner,
  *          which means it's been added to the table (but not necessarily the DOM).
@@ -25,13 +28,15 @@
 
 import { enrollInPeroid, addToRoot, updateInfoBar, allUnitsNotAdded } from "./support.js";
 import { unitConditionsMet, canEnrollInPeriod } from "./checks.js";
-import { addUnitEvents, addContainerEvents, addSensorEvents } from "./events.js";
+import { addUnitEvents, addContainerEvents, addSensorEvents, addOptionUnitEvents } from "./events.js";
 
 
 //------------------- PROTOTYPES ----------------------------------//
 
 export class sideBar {
     constructor(){
+        this.optionCombinations = null;
+        this.currentOptionCombo = [];
     }
 
     makeInfoBar() {
@@ -44,8 +49,31 @@ export class sideBar {
         addToRoot(infoBar);
     }
 
+    addOptionCombinations(optionCombos) {
+        this.optionCombinations = optionCombos;
+    }
+
+    //add unit to list
+    pushUnit(unitCode){
+        //add unit to end of list.
+        this.currentOptionCombo.push(unitCode);
+    }
+
+    //remove unit from list
+    popUnit(unitCode){
+        //pop won't work user can remove any unit.
+        this.currentOptionCombo = removeFromArray(this.currentOptionCombo, unitCode);
+    }
+
+    //check combinations, show next valid legal units.
+    //hide units that lead to an illegal combination.
+    adjustOptionsBar() {
+        //using currentCombo, see all valid next units.
+        
+    }
+
     //response is the options units json
-    makeOptionsBar(table) {
+    makeOptionsBar(table, response) {
         let optionsBar = document.createElement("div");
 
         optionsBar.setAttribute("id", "optionsBar");
@@ -198,7 +226,7 @@ export class Table {
 
         //while semester has less than 4 units and not NS
         while(container.childElementCount < 4 && this.creditPointsRequired > 0 &&
-                !container.id.includes("NS")) {
+                !container.id.includes("NS") && this.maxBroadening > 0) {
 
             // if max broadening hasn't been met
             if(this.maxBroadening > 0)
@@ -206,7 +234,9 @@ export class Table {
                 this.maxBroadening -= 6;
                 enrollInPeroid(this.makeDummyUnit("B","Broadening"), container);
             } else {
-                enrollInPeroid(this.makeDummyUnit("E", "Elective"), container);
+                // Adding electives break things atm when options units
+                // get added to the planner credit points go into negatives.
+                // enrollInPeroid(this.makeDummyUnit("E", "Elective"), container);
             }
         }
     }
@@ -222,8 +252,7 @@ export class Table {
         container.append(unit);
     }
 
-
-    //only one unit ATM
+    //adds option units to options bar
     addUnitsToOptionsBar(container) {
         for(let unit of this.unitInformation.values())
         {
@@ -235,8 +264,11 @@ export class Table {
 
             //check if unit placed in valid teaching period
             if (canEnrollInPeriod(unitCode, container) && !unit.isEnrolled()) {
-                // this.enrollInPeroid(this.makeUnit(unitCode), container);
-                container.append(this.makeUnit(unitCode));
+                let unitElement = this.makeUnit(unitCode);
+
+                addOptionUnitEvents(unitElement);
+                container.append(unitElement);
+
                 unit.enrollmentPeriod = container.id;
             }
         }
@@ -258,7 +290,7 @@ export class Table {
         row.appendChild(container);
 
         //is this a row in option bar or the planner.
-        if(containerID.includes("options"))
+        if(containerID.includes("op"))
         {
             this.addUnitsToOptionsBar(container);
         } else {
@@ -347,7 +379,7 @@ export class Table {
         let table = document.createElement("table");
         let container = document.createElement("div");
 
-        container.setAttribute("id", "optionsBar");
+        container.setAttribute("id", "options");
         this.extractInformation(response);
         this.makePeriods("op", container);
         table.appendChild(container);

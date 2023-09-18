@@ -21,7 +21,7 @@ export var optionsBar;
 //------------------- INSTANCE FUNCTIONS -------------------------//
 
 fetchCourseRequirementsAndBuildPlanner();
-fetchOptionUnits();
+
 fetchOptionUnitCombinations();
 // makeInfoBar();
 
@@ -156,10 +156,12 @@ function fetchOptionUnits() {
         let bar = new sideBar();
         optionsBar = new Table();
         
-        optionsBar.makeOptionsContainer(response);
         console.log(response);
 
-        bar.makeOptionsBar(optionsBar);
+        //get legal option unit combinations and store them.
+        bar.addOptionCombinations(fetchOptionUnitCombinations());
+        //make the options bar.
+        bar.makeOptionsBar(optionsBar, response);
     }
     xhttp.send();
 
@@ -176,6 +178,7 @@ function fetchOptionUnitCombinations() {
     xhttp.onload = (e) => {
         let response = JSON.parse(xhttp.responseText);
         console.log(response);
+        return response;
     }
     xhttp.send();
 }
@@ -187,7 +190,7 @@ function fetchOptionUnitCombinations() {
 function fetchCourseRequirementsAndBuildPlanner() {
     let major = specialization;
     let bridging = "NONE,";
-    let bridgingCount = 1; //always at least one broadening unit
+    let bridgingCount = 0; //always at least one broadening unit
 
     //check ATAR prerequisites, if not achieved include bridging unit
     if(isSpec == "no") {
@@ -213,6 +216,9 @@ function fetchCourseRequirementsAndBuildPlanner() {
 
         planner.makeTable(response);
         addUnitOptions(response);
+
+        // to prevent async problems fetch options after.
+        fetchOptionUnits();
     }
     xhttp.send();
 }
