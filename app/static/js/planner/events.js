@@ -296,7 +296,7 @@ function printUnitInfo(unitCode) {
     str += formatInfo("Corequisites", unit.corequisites);
     str += formatInfo("Point Requirements", unit.pointRequirements);
     // str += formatInfo("Enrollment Requirements", unit.enrollmentRequirements);
-    str += formatColorLegend("Legend", "Green - Prerequisite, Blue - Corequisite, Yellow - Dependent Units");
+    str += formatColorLegend("Legend", "<br>Green - Prerequisite <br>Blue - Corequisite<br>Yellow - Dependent Units");
 
     return str;
 }

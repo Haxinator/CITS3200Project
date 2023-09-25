@@ -133,6 +133,8 @@ h2 {
     font-family: 'Roboto', sans-serif;
     color: #edebeb;
     scale: 1.05;
+    overflow-y: auto;
+    overflow-x: hidden;
     /* padding: 15px; */
 
     bottom: 0;
