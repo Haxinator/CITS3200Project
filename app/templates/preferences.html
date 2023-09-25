@@ -34,11 +34,14 @@
         <button id="corequisiteFilter" class="button">Units with Corequisites</button>
         <button id="prequisiteFilter" class="button">Units with Prequisites</button>
         <button id="pointRequirementsFilter" class="button">Units with Point Requirements</button>
+        <button id="saveAsPdfButton">Save as PDF</button>
+        <hr id="topHr">
         <!-- <button onclick="get_option_units()">aaaa</button> -->
         <!-- <div id="nodes"></div> -->
     </main>
-
+    <hr id="bottomHr">
     <div id="treeview">
+
         <h3>Need to see the importance of the unit?</h3>
         <p>Select a unit and see dependencies on it. Once the tree is created, you can click on a unit if you wish to narrow down the pathways :D</p>
         <select class="form-control" id="chosen_unit">
@@ -67,20 +70,56 @@
         var isPhys = "{{ physics }}"
         var isChem = "{{ chemistry }}"
 
+        document.addEventListener("DOMContentLoaded", function() {
 
-        // Now you can use the specialization variable in your JavaScript code
-        // Example: Display a welcome message in an alert box
-        // alert("Welcome to the " + specialization + " program!");
-        // if (isSpec == "yes"){
-        //     alert("You have passed Maths specialist! well done!")
-        // }
-        // else{
-        //     alert("You have not completed or passed maths specialist. Unlucky Bud")
-        // }
+                    // Initialize
+            let infoBar = document.getElementById("infoBar");
+            let topHr = document.getElementById("topHr");
+            let bottomHr = document.getElementById("bottomHr");
 
+            function updateInfoBarPosition() {
+                let scrollY = window.scrollY;
+                let topHrY = topHr.getBoundingClientRect().top + scrollY;
+                let bottomHrY = bottomHr.getBoundingClientRect().bottom + scrollY;
+                let infoBarHeight = infoBar.offsetHeight;
+
+                console.log("Scroll:", scrollY, "Top HR:", topHrY, "Bottom HR:", bottomHrY, "InfoBar Height:", infoBarHeight);
+
+                if (scrollY >= topHrY && (scrollY + infoBarHeight) <= bottomHrY) {
+                    console.log("Fixing infoBar...");
+                    infoBar.classList.add("fixed");
+                    infoBar.classList.remove("absolute");
+                } else {
+                    console.log("Making infoBar absolute...");
+                    infoBar.classList.add("absolute");
+                    infoBar.classList.remove("fixed");
+                    
+                    if (scrollY < topHrY) {
+                        infoBar.style.top = `${topHrY}px`;
+                    } else {
+                        infoBar.style.top = `${bottomHrY - infoBarHeight}px`;
+                    }
+                }
+            }
+            // Listen for scroll events
+        window.addEventListener("scroll", updateInfoBarPosition);
+
+        // Initial position
+        updateInfoBarPosition();
+        });
         
+
+
+
+
     </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.2/jspdf.debug.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.5.0-beta4/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.20/jspdf.plugin.autotable.min.js"></script>
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script type="module" src="{{ url_for('static', filename='js/planner/planner.js') }}"></script>
     <script type="text/javascript" src="{{ url_for('static', filename='js/treeview.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/planner/exportPdf.js') }}"></script>
 {% endblock %}
+
+

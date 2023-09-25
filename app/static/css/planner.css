@@ -126,29 +126,57 @@ h2 {
 } */
 
 #infoBar {
-    background-color: white;
+    background-color: #f9f9f9; /* Light grey background */
     margin: auto;
     position: fixed;
-
-    /* Muslim happy :) */
+    padding: 20px; /* Inner padding */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Modern font */
+    color: #333; /* Dark grey text color */
+    text-align: left; /* Left-aligned text */
+    
+    /* Positioning */
     bottom: 0;
-    top: 0;
-    left: 0;
+    top: 50%;
+    left: 20px; /* Left margin padding */
+    transform: translateY(-50%); /* Center vertically */
     z-index: 900;
 
-    /* if info bar empty it will shrink into nothingness */
+    /* Dimensions */
     max-height: 60%;
     max-width: 25%;
     min-height: 0px;
     min-width: 0px;
 
-    /* stops text overflow */
+    /* Text properties */
     overflow-wrap: break-word;
 
-    /* modern curved look */
-    border-top-right-radius: 5px;
-    border-bottom-right-radius: 5px;
-    box-shadow: 3px 3px 5px lightgrey;
+    /* Modern curved look */
+    border: 2px solid blue; /* Blue border */
+    border-radius: 15px; /* Rounded border */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); /* Subtle box shadow */
+
+    /* Hover effect */
+    transition: background-color 0.3s, box-shadow 0.3s, transform 0.3s; /* Smooth transition */
+}
+
+#infoBar:hover {
+    background-color: #f0f0f0; /* Slightly darker background on hover */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); /* Darker box shadow on hover */
+    transform: translateY(-50%) scale(1.05); /* Slightly lifted and scaled on hover */
+}
+/* New classes */
+#infoBar.fixed {
+    position: fixed;
+    top: 50%;
+    left: 20px;
+    transform: translateY(-50%);
+}
+
+#infoBar.absolute {
+    position: absolute;
+    top: auto;  /* Reset this property */
+    left: 20px;
+    transform: none;  /* Reset this property */
 }
 
 /* treeview css */
