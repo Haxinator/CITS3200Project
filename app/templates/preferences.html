@@ -77,35 +77,35 @@
             let topHr = document.getElementById("topHr");
             let bottomHr = document.getElementById("bottomHr");
 
-            function updateInfoBarPosition() {
-                let scrollY = window.scrollY;
-                let topHrY = topHr.getBoundingClientRect().top + scrollY;
-                let bottomHrY = bottomHr.getBoundingClientRect().bottom + scrollY;
-                let infoBarHeight = infoBar.offsetHeight;
+        //     function updateInfoBarPosition() {
+        //         let scrollY = window.scrollY;
+        //         let topHrY = topHr.getBoundingClientRect().top + scrollY;
+        //         let bottomHrY = bottomHr.getBoundingClientRect().bottom + scrollY;
+        //         let infoBarHeight = infoBar.offsetHeight;
 
-                console.log("Scroll:", scrollY, "Top HR:", topHrY, "Bottom HR:", bottomHrY, "InfoBar Height:", infoBarHeight);
+        //         console.log("Scroll:", scrollY, "Top HR:", topHrY, "Bottom HR:", bottomHrY, "InfoBar Height:", infoBarHeight);
 
-                if (scrollY >= topHrY && (scrollY + infoBarHeight) <= bottomHrY) {
-                    console.log("Fixing infoBar...");
-                    infoBar.classList.add("fixed");
-                    infoBar.classList.remove("absolute");
-                } else {
-                    console.log("Making infoBar absolute...");
-                    infoBar.classList.add("absolute");
-                    infoBar.classList.remove("fixed");
+        //         if (scrollY >= topHrY && (scrollY + infoBarHeight) <= bottomHrY) {
+        //             console.log("Fixing infoBar...");
+        //             infoBar.classList.add("fixed");
+        //             infoBar.classList.remove("absolute");
+        //         } else {
+        //             console.log("Making infoBar absolute...");
+        //             infoBar.classList.add("absolute");
+        //             infoBar.classList.remove("fixed");
                     
-                    if (scrollY < topHrY) {
-                        infoBar.style.top = `${topHrY}px`;
-                    } else {
-                        infoBar.style.top = `${bottomHrY - infoBarHeight}px`;
-                    }
-                }
-            }
-            // Listen for scroll events
-        window.addEventListener("scroll", updateInfoBarPosition);
+        //             if (scrollY < topHrY) {
+        //                 infoBar.style.top = `${topHrY}px`;
+        //             } else {
+        //                 infoBar.style.top = `${bottomHrY - infoBarHeight}px`;
+        //             }
+        //         }
+        //     }
+        //     // Listen for scroll events
+        // window.addEventListener("scroll", updateInfoBarPosition);
 
-        // Initial position
-        updateInfoBarPosition();
+        // // Initial position
+        // updateInfoBarPosition();
         });
         
 

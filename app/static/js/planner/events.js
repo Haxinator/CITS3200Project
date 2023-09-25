@@ -295,8 +295,8 @@ function printUnitInfo(unitCode) {
     str += formatInfo("Prerequisites", unit.prerequisites);
     str += formatInfo("Corequisites", unit.corequisites);
     str += formatInfo("Point Requirements", unit.pointRequirements);
-    str += formatInfo("Enrollment Requirements", unit.enrollmentRequirements);
-    str += formatColorLegend("Legend", "green - prerequisite, blue - corequisite, yellow - unit is prerequisite for");
+    // str += formatInfo("Enrollment Requirements", unit.enrollmentRequirements);
+    str += formatColorLegend("Legend", "Green - Prerequisite, Blue - Corequisite, Yellow - Dependent Units");
 
     return str;
 }
@@ -309,9 +309,9 @@ function formatInfo(label, info) {
 }
 
 function formatColorLegend(label, info) {
-    let coloredInfo = info.replace("green", '<span style="color: green;">green</span>')
-                           .replace("blue", '<span style="color: blue;">blue</span>')
-                           .replace("yellow", '<span style="color: yellow;">yellow</span>');
+    let coloredInfo = info.replace("Green", '<span style="color: green;">Green</span>')
+                           .replace("Blue", '<span style="color: blue;">Blue</span>')
+                           .replace("Yellow", '<span style="color: yellow;">Yellow</span>');
     return `<span style="font-weight: bold;">${label}</span>: ${coloredInfo}<br>`;
 }
 

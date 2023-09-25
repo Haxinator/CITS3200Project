@@ -106,7 +106,7 @@ export class Table {
             addUnitEvents(broadening);
 
             this.unitInformation.set(code,
-                new Unit("broadening", code, 6, "broadening","BOTH", [],[],"",""));
+                new Unit("Broadening", code, 6, "Broadening","BOTH", [],[],"",""));
 
             this.nextID++;
 
