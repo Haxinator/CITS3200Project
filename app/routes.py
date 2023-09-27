@@ -111,24 +111,59 @@ def get_option_combos(major):
      with driver.session() as session:
         query = f"""MATCH (u:Unit) -[rel:GROUP_A_OF|GROUP_B_OF]-> (m:Major)
         WHERE m.major = "{major}"
-        RETURN COLLECT(DISTINCT u.unitcode) as options"""
+        RETURN COLLECT(DISTINCT u.unitcode) as options, TYPE(rel) as group_type"""
 
         results = session.run(query)
-        options = results.single()['options']
+        result_list = [dict(record) for record in results]
+        print(result_list)
 
-        # one 12-point unit + one 6-point 
-        combos_1 = []
-        if ("GENG4411" in options) and ("GENG4412" in options):
-            combos_1 = [["GENG4411", "GENG4412", unit] for unit in options if (unit != "GENG4411") and (unit != "GENG4412")]
+        # lists of different option units
+        options_a = result_list[1]['options']
+        options_b = result_list[0]['options']
+        both = options_a+options_b
 
-        # three 6-point units
-        exclude = ["GENG4411", "GENG4412"]
-        filtered_options = [x for x in options if x not in exclude]
-        combos_2 = list(itertools.combinations(filtered_options, 3))
-        combos_2 = [list(combination) for combination in combos_2]
+        # FOR MECH ENGINEERING
+        if major == "SP-EMECH":
+            # one 12-point unit (from Group A) + one 6-point (from any group)
+            combos_1 = []
+            if ("GENG4411" in options_a) and ("GENG4412" in options_a):
+                combos_1 = [["GENG4411", "GENG4412", unit] for unit in both if (unit != "GENG4411") and (unit != "GENG4412")]
 
-        # combine two types of combinations
-        combinations = combos_1 + combos_2
+            # three 6-point units - must have AT LEAST ONE Group A unit
+            group_b = list(itertools.combinations(options_b, 2))
+            combos_2 = []
+            for combination in group_b:
+                valid_combo = list(combination) 
+                valid_combo.append("MECH5552")
+                combos_2.append(valid_combo)
+            # combine two types of combinations
+            combinations = combos_1 + combos_2
+
+        # FOR CHEM ENGINEERING
+        if major == "SP-ECHEM":
+            # two Group A units
+            group_a = list(itertools.combinations(options_a, 2))
+            combos_1 = [list(combination) for combination in group_a]
+
+            # two Group B units
+            group_b = list(itertools.combinations(options_b, 2))
+            combos_2 = [list(combination) for combination in group_b]
+
+            # combine both groups and do cartesian product
+            chem_ab = itertools.product(combos_1, combos_2)
+
+            # cleans up the tuple by removing lists within the combo - returns just four units in the combination
+            combinations = []
+            for c in chem_ab: 
+                finalised = []
+                g_A = c[0]
+                g_B = c[1]
+                for i in range(2):
+                    finalised.append(g_A[i])
+                    finalised.append(g_B[i])
+                combinations.append(finalised)
+            print(combinations)
+
         return jsonify(combinations)
      
 
