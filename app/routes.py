@@ -120,10 +120,12 @@ def get_option_combos(major):
         print(result_list)
 
         # lists of different option units
-        options_a = result_list[1]['options']
-        options_b = result_list[0]['options']
-        both = options_a+options_b
+        if(major != "SP-ESOFT"):
+            options_a = result_list[1]['options']
+            options_b = result_list[0]['options']
+            both = options_a+options_b
 
+        combinations = []
         # FOR MECH ENGINEERING
         if major == "SP-EMECH":
             # one 12-point unit (from Group A) + one 6-point (from any group)
@@ -155,7 +157,6 @@ def get_option_combos(major):
             chem_ab = itertools.product(combos_1, combos_2)
 
             # cleans up the tuple by removing lists within the combo - returns just four units in the combination
-            combinations = []
             for c in chem_ab: 
                 finalised = []
                 g_A = c[0]
