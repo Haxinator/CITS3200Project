@@ -12,7 +12,7 @@
 */
 
 import {canEnrollInPeriod, unitConditionsMet} from "./checks.js";
-import { updateInfoBar, getPeriodOffered, getById, getByPeriod, enrollInPeroid, clearHighlighting, unitExists, getUnitInformation, isOption } from "./support.js";
+import { updateInfoBar, getPeriodOffered, getById, getByPeriod, enrollInPeroid, clearHighlighting, unitExists, getUnitInformation, isOption, creditPointsInPeriod } from "./support.js";
 import { optionsBar, optionsTable, planner } from "./main.js";
 import { infoBar, statusBar } from "./classes.js";
 
@@ -252,13 +252,27 @@ function drop(e)
             }
 
         } else {
-            if(e.currentTarget.childElementCount > 3)
+
+            if (e.currentTarget.id.includes("op")) {
+                //if option bar
+                enrollInPeroid(item, e.target);
+            }
+            // BUG THAT I NEED TO FIX.
+            // should check number of credit points instead
+            // else if(e.currentTarget.childElementCount > 3)
+            // get all children
+            // else if (e.currentTarget.getElementByTagName("*"))
+
+            // there can only be 24 credit points in a semester
+            else if (creditPointsInPeriod(e.currentTarget) >= 24)
             {
                 //if unit not already enrolled in this period
                 if(e.currentTarget.id != item.parentElement.id)
                 {
+                    // BUG NOT PRINTING FOR SOME REASON
                     infoBar.addInfo(`${e.currentTarget.id} is full`);
                 } else {
+                    // don't print error if unit is already enrolled in period
                     //else append to end of row.
                     enrollInPeroid(item, e.target);
                 }
@@ -441,6 +455,46 @@ function appendRow(e)
             }
         } else {
             statusBar.updateStatus("Add Option Units");
+        }
+
+
+        // problem checking.
+        var conditionMet = true;
+        //check if prerequisites met for all units.
+        for(let unit of planner.unitInformation.values())
+        {
+            item = getById(unit.unitCode);
+    
+            if(!unitConditionsMet(item.id, item.parentElement)){
+                conditionMet = false;
+            }
+        }
+    
+        // color option units if problems, if they're in the planner
+        for(let unit of optionsTable.unitInformation.values())
+        {
+            item = getById(unit.unitCode);
+    
+            // if unit conditions not met and unit is not in option bar.
+            if(!item.parentElement.id.includes("op"))
+            {
+                // if option unit in planner.
+                if(!unitConditionsMet(item.id, item.parentElement)){
+                    conditionMet = false;
+                }
+            } else {
+                // clear problems if unit placed back into options bar.
+                item.classList.remove("magenta");
+                unit.problems = [];
+            }
+            
+        }
+    
+        // removes invalid semester from info bar hence why its commented.
+        //clear info bar if prerequisites met.
+        if(conditionMet && !infoBar.messageToDisplay)
+        {
+            infoBar.clearInfo();
         }
 
     } else {

@@ -9,6 +9,17 @@
 
 import { optionsTable, planner } from "./main.js";
 
+export function creditPointsInPeriod(semester) {
+    totalCreditPoints = 0;
+
+    for(unitElement of semester.getElementByTagName("*"))
+    {
+        totalCreditPoints += getUnitInformation(unitElement.id).creditPoints
+    }
+
+    return totalCreditPoints;
+}
+
 //adds given element to main
 export function addToRoot(element)
 {
