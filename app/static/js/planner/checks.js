@@ -8,13 +8,14 @@
  *      o Checks if a unit's corequisites were met.
  *      o Checks if a unit's point requirements were met (including core unit points requirements).
  * If all of these functions return true, then the unit conditions were met and the
- * given can be enrolled in the semester provided. 
+ * given unit can be enrolled in the semester provided. 
  * 
  * This file can be hard to understand. Best to ask Josh.
 */
 
 import { planner } from "./main.js";
-import { updateInfoBar, highlightIfUnitHasProblems, isAlpha, inDOM, getLastCharacter, getUnitInformation } from "./support.js";
+import { infoBar } from "./classes.js";
+import { updateInfoBar, highlightIfUnitHasProblems, isAlpha, inDOM, getLastCharacter, getUnitInformation, isOption } from "./support.js";
 
 // --------------- Prerequisite Met Functions ----------------//
 
@@ -38,7 +39,7 @@ export function unitConditionsMet(unitCode, container)
     // check if unit has been enrolled and it's in the DOM
     if(unit.isEnrolled() && inDOM(unitCode))
     {
-        // colour red if problem found
+        // colour magenta if problem found
         highlightIfUnitHasProblems(unit);
     }
 
@@ -109,7 +110,8 @@ export function pointRequirementsMet(unitCode, container)
         if(parseInt(corePointsRequired.substring(0, corePointsRequired.length-1)) > CoreUnitCount)
         {
             unit.problems.push(`${unitCode} requires ${corePointsRequired} core unit credit points!`);
-            updateInfoBar(`${unitCode} requires ${corePointsRequired} core unit credit points!`);
+            infoBar.addInfo(`${unitCode} requires ${corePointsRequired} core unit credit points!`);
+            // updateInfoBar(`${unitCode} requires ${corePointsRequired} core unit credit points!`);
 
             return false;
         }
@@ -118,7 +120,7 @@ export function pointRequirementsMet(unitCode, container)
         if(unit.pointRequirements.length > 1 && extraPointsRequired > pointCount)
         {
             unit.problems.push(`${unitCode} requires ${extraPointsRequired} credit points!`);
-            updateInfoBar(`${unitCode} requires ${extraPointsRequired} credit points!`);
+            infoBar.addInfo(`${unitCode} requires ${extraPointsRequired} credit points!`);
                 
             return false;
         }
@@ -127,7 +129,7 @@ export function pointRequirementsMet(unitCode, container)
         if(corePointsRequired > pointCount)
         {
             unit.problems.push(`${unitCode} requires ${corePointsRequired} credit points!`);
-            updateInfoBar(`${unitCode} requires ${corePointsRequired} credit points!`);
+            infoBar.addInfo(`${unitCode} requires ${corePointsRequired} credit points!`);
                 
             return false;
         }
@@ -160,7 +162,7 @@ export function corequisitesMet(unitCode, container)
             } else if(corequisiteUnit.enrollmentPeriod > container.id && 
                     corequisiteUnit.enrollmentPeriod.length == container.id.length)
                     {
-                        updateInfoBar(`${corequisite} must be done concurrently or prior to commencing ${unitCode}!`);
+                        infoBar.addInfo(`${corequisite} must be done concurrently or prior to commencing ${unitCode}!`);
                         
                         unit.problems.push(`${corequisite} must be done concurrently or prior to commencing ${unitCode}`);
                         
@@ -193,7 +195,7 @@ export function unitPreRequisitiesMet(unitCode, container)
             } else if(prerequisiteUnit.enrollmentPeriod >= container.id && 
                     prerequisiteUnit.enrollmentPeriod.length == container.id.length) {
 
-                    updateInfoBar(`${prerequisite} must be done before ${unitCode}!`);
+                    infoBar.addInfo(`${prerequisite} must be done before ${unitCode}!`);
                     
                     unit.problems.push(`${prerequisite} must be done before ${unitCode}!`);
 
@@ -218,7 +220,19 @@ export function canEnrollInPeriod(unitCode, container)
     //remove the year from semester
     semester = semester.substring(2,4);
 
+    // unit available that semester.
+    let unitAvailable = unitAvaliability.includes(semester);
+    // unit available for S1S2 and semester is not NS
+    let unitAvailableAndNotNS = unitAvaliability == "BOTH" && !semester.includes("NS");
+    //unit is core and semester is not option bar.
+    let coreUnitAndNotOptionBar = !isOption(unitCode) && !container.id.includes("op");
+    //option unit and option bar.
+    let optionUnitAndOptionBar = isOption(unitCode) && container.id.includes("op");
+    //option unit and planner.
+    let optionUnitAndPlanner = isOption(unitCode) && !container.id.includes("op");
+
+
     //if semester matched when unit is offered.
-    return (unitAvaliability.includes(semester) ||
-      (unitAvaliability == "BOTH" && !semester.includes("NS")));
+    return (unitAvailable || unitAvailableAndNotNS) && 
+            (coreUnitAndNotOptionBar || optionUnitAndOptionBar || optionUnitAndPlanner);
 }

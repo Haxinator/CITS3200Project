@@ -12,8 +12,9 @@
 */
 
 import {canEnrollInPeriod, unitConditionsMet} from "./checks.js";
-import { updateInfoBar, getPeriodOffered, getById, getByPeriod, enrollInPeroid, clearHighlighting, unitExists, getUnitInformation } from "./support.js";
-import { optionsBar, planner } from "./main.js";
+import { updateInfoBar, getPeriodOffered, getById, getByPeriod, enrollInPeroid, clearHighlighting, unitExists, getUnitInformation, isOption } from "./support.js";
+import { optionsBar, optionsTable, planner } from "./main.js";
+import { infoBar, statusBar } from "./classes.js";
 
 
 //to add events to unit cells.
@@ -40,18 +41,37 @@ export function addSensorEvents(sensor)
     sensor.addEventListener("drop", appendRow);
 }
 
-//add option unit events
-export function addOptionUnitEvents(optionUnitElement)
+// //add option unit events
+// export function addOptionUnitEvents(optionUnitElement)
+// {
+//     //record to compare against combo.
+//     optionUnitElement.addEventListener("dragend", recordUnit);
+// }
+
+export function optionButtonEvent(button)
 {
-    //record to compare against combo.
-    optionUnitElement.addEventListener("dragend", recordUnit);
+    button.addEventListener("click", hideOptionBar);
+}
+
+function hideOptionBar() {
+    let arrow = getById("optionsBar").childNodes[1].firstChild;
+    let heading = getById("optionsBar").firstElementChild;
+
+    getById("options").classList.toggle("hide");
+    heading.classList.toggle("hide");
+    arrow.parentElement.classList.toggle("leftMargin");
+    arrow.parentElement.classList.toggle("noMargin");
+
+    arrow.classList.toggle("leftArrow");
+    arrow.classList.toggle("rightArrow");
+
 }
 
 //record if unit was enrolled or unenrolled
 //to adjust options bar based on combo.
-function recordUnit(e)
+function recordUnit(unitCode)
 {
-    let unitElement = e.target;
+    let unitElement = getById(unitCode);
     //if in placed in option container
     if(unitElement.parentElement.id.includes("op"))
     {
@@ -69,13 +89,27 @@ function recordUnit(e)
 function dragstart(e)
 {
     e.dataTransfer.setData('text/plain', e.target.id);
-    setTimeout(() => e.target.classList.add("hide"), 0);
+
+    if(isOption(e.target.id))
+    {
+        
+
+        setTimeout(() => {
+            e.target.classList.add("hide");
+            e.target.classList.remove("unit");}, 0);
+    } else {
+        setTimeout(() => e.target.classList.add("hide"), 0);
+    }
 }
 
 //When drag ends, reveal the item.
 function dragend(e)
 {
     //put item back if not drop occured at end of drag.
+
+    if(isOption(e.target.id)) {
+        e.target.classList.add("unit");
+    }
     e.target.classList.remove("hide");
 }
 
@@ -110,9 +144,9 @@ function printInfo(e)
             
             if(prerequisiteUnit.hasProblems())
             {
-                unitElement.classList.add("redGreenStripe");
+                unitElement.classList.add("redPurpleStripe");
             } else {
-                unitElement.classList.add("S2");
+                unitElement.classList.add("purple");
             }
             //it would be nice to add an arrow going from prerequiste to unit.
         }
@@ -131,7 +165,7 @@ function printInfo(e)
             {
                 unitElement.classList.add("redBlueStripe");
             } else {
-                unitElement.classList.add("S1");
+                unitElement.classList.add("blue");
             }
             //it would be nice to add an arrow going from prerequiste to unit.
         }
@@ -149,7 +183,7 @@ function printInfo(e)
             {
                 unitElement.classList.add("redYellowStripe");
             } else {
-                unitElement.classList.add("S1S2");
+                unitElement.classList.add("yellow");
             }
         }
     }
@@ -157,7 +191,7 @@ function printInfo(e)
 
 //--------------------- EVENT LISTENER FUNCTIONS -------------------------//
 
-//if your cursor (whilst dragging unit) is over the row add red lines.
+//if your cursor (whilst dragging unit) is over the row add magenta lines.
 function sensordragover(e)
 {
     //prevent default to have drop cursor appear
@@ -165,7 +199,7 @@ function sensordragover(e)
     // e.target.classList.add("dragover");
 }
 
-//if your cursor (whilst dragging unit) is over the row add red lines.
+//if your cursor (whilst dragging unit) is over the row add magenta lines.
 function dragover(e)
 {
     //prevent default to have drop cursor appear
@@ -173,14 +207,14 @@ function dragover(e)
     e.target.classList.add("dragover");
 }
 
-//if your cursor (whilst dragging unit) enters the row add red lines.
+//if your cursor (whilst dragging unit) enters the row add magenta lines.
 function dragenter(e)
 {
     e.preventDefault();
     e.target.classList.add("dragover");
 }
 
-//if your cursor (whilst dragging unit) leaves the row, remove red lines.
+//if your cursor (whilst dragging unit) leaves the row, remove magenta lines.
 function dragleave(e)
 {
     e.target.classList.remove("dragover");
@@ -209,15 +243,36 @@ function drop(e)
             // e.target.appendChild(item);
             enrollInPeroid(item, e.target);
 
+            // if option unit record change.
+            if(isOption(id))
+            {
+                console.log(getById("GENG5514"));
+
+                recordUnit(id);
+            }
+
         } else {
             if(e.currentTarget.childElementCount > 3)
             {
-                updateInfoBar(`${e.currentTarget.id} is full`);
+                //if unit not already enrolled in this period
+                if(e.currentTarget.id != item.parentElement.id)
+                {
+                    infoBar.addInfo(`${e.currentTarget.id} is full`);
+                } else {
+                    //else append to end of row.
+                    enrollInPeroid(item, e.target);
+                }
             }
 
             if(!canEnrollInPeriod(id, e.currentTarget))
             {
-                updateInfoBar(`${id} only available in ${getPeriodOffered(id)}!`);
+                // trying to put option unit in option bar.
+                if(!isOption(id) && e.currentTarget.id.includes("op"))
+                {
+                    infoBar.addInfo(`${id} isn't an option unit! It can't be added to the side bar.`);
+                } else {
+                    infoBar.addInfo(`${id} only available in ${getPeriodOffered(id)}!`);
+                }
             }
         }
 
@@ -250,6 +305,7 @@ function drop(e)
 
             //show item
             itemClone.classList.remove("hide");
+            itemClone.classList.add("unit"); //in case option unit.
 
             //add the event listeners to swapped units.
             addUnitEvents(targetClone);
@@ -257,17 +313,29 @@ function drop(e)
 
             let targetUnit = getUnitInformation(targetClone.id);
             let itemUnit = getUnitInformation(itemClone.id);
+
+            // if swapping option units, update comdo.
+            if(isOption(targetClone.id) && isOption(itemClone.id))
+            {
+                recordUnit(targetClone.id);
+                recordUnit(itemClone.id);
+            }
             
             //make sure to update unit period
-            targetUnit.enrollmentPeriod = targetClone.parentElement.id
-            itemUnit.enrollmentPeriod = itemClone.parentElement.id
-            
+            targetUnit.enrollmentPeriod = targetClone.parentElement.id;
+            itemUnit.enrollmentPeriod = itemClone.parentElement.id;
     } else {
-        updateInfoBar(`${id} only available in ${getPeriodOffered(id)} <br>
-                        ${e.target.id} only available in ${getPeriodOffered(e.target.id)}`);
+
+        if(isOption(id) || isOption(e.target.id))
+        {
+            infoBar.addInfo(`Only option units can be added to the side bar.`);
+        } else {
+            infoBar.addInfo(`${id} only available in ${getPeriodOffered(id)} <br>
+                            ${e.target.id} only available in ${getPeriodOffered(e.target.id)}`);
+        }
     }
 
-    let conditionMet = true;
+    var conditionMet = true;
     //check if prerequisites met for all units.
     for(let unit of planner.unitInformation.values())
     {
@@ -278,12 +346,51 @@ function drop(e)
         }
     }
 
+    // color option units if problems, if they're in the planner
+    for(let unit of optionsTable.unitInformation.values())
+    {
+        item = getById(unit.unitCode);
+
+        // if unit conditions not met and unit is not in option bar.
+        if(!item.parentElement.id.includes("op"))
+        {
+            // if option unit in planner.
+            if(!unitConditionsMet(item.id, item.parentElement)){
+                conditionMet = false;
+            }
+        } else {
+            // clear problems if unit placed back into options bar.
+            item.classList.remove("magenta");
+            unit.problems = [];
+        }
+        
+    }
+
     // removes invalid semester from info bar hence why its commented.
-    // //clear info bar if prerequisites met.
-    // if(conditionMet)
-    // {
-    //     updateInfoBar("");
-    // }
+    //clear info bar if prerequisites met.
+    if(conditionMet && !infoBar.messageToDisplay)
+    {
+        infoBar.clearInfo();
+    }
+
+    console.log(optionsBar.optionsDone);
+
+
+    //for updating status.
+    if(optionsBar.optionsDone)
+    {
+        if(conditionMet)
+        {
+            statusBar.updateStatus("Done");
+            // PUT SHOW EXPORT TO PDF BUTTON HERE.
+        } else {
+            statusBar.updateStatus("Fix Problems");
+        }
+    } else {
+        statusBar.updateStatus("Add Option Units");
+    }
+
+    infoBar.display();
 
     //adjust options bar
     
@@ -318,6 +425,22 @@ function appendRow(e)
             enrollInPeroid(unit, semester2);
         } else {
             enrollInPeroid(unit, NS);
+        }
+
+        if(isOption(unitCode)) {
+            recordUnit(unitCode);
+        }
+
+        if(optionsBar.optionsDone)
+        {
+            if(getUnitInformation(unitCode))
+            {
+                statusBar.updateStatus("Done");
+            } else {
+                statusBar.updateStatus("Fix Problems");
+            }
+        } else {
+            statusBar.updateStatus("Add Option Units");
         }
 
     } else {

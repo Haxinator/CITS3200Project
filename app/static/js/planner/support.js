@@ -109,6 +109,7 @@ export function getPeriodOffered(id)
 // info provided.
 export function updateInfoBar(info){
     getById("infoBar").firstElementChild.innerHTML = info;
+    
 }
 
 // is the unit in unitInformation param.
@@ -133,10 +134,9 @@ export function highlightIfUnitHasProblems(unit)
 
     if(unit.hasProblems())
     {
-        //NS is red.
-        unitElement.classList.add("NS");
+        unitElement.classList.add("magenta");
     } else{
-        unitElement.classList.remove("NS");
+        unitElement.classList.remove("magenta");
     }
 }
 
@@ -152,6 +152,19 @@ export function getLastCharacter(string)
     return string.slice(-1);
 }
 
+export function isOption(unitCode)
+{
+    // if option table was created.
+    if(optionsTable != undefined)
+    {
+        return optionsTable.unitInformation.has(unitCode);
+    } else {
+        // can't be option if option table doesn't exist
+        return false
+    }
+
+}
+
 //clears all highlighting
 export function clearHighlighting()
 {
@@ -160,11 +173,19 @@ export function clearHighlighting()
     {
         //overwrite all classes with unit.
         let unitElement = getById(unit.unitCode);
-        unitElement.setAttribute("class", "unit");
+
+        if(unit.creditPoints == 0)
+        {
+            // if zero point unit add back styling.
+            unitElement.setAttribute("class", "unit zeroPoint");            
+        } else {
+            unitElement.setAttribute("class", "unit");            
+        }
+
 
         if(unit.problems.length > 0)
         {
-            unitElement.classList.add("NS");
+            unitElement.classList.add("magenta");
         }
     }
 
@@ -175,11 +196,24 @@ export function clearHighlighting()
         {
             //overwrite all classes with unit.
             let unitElement = getById(unit.unitCode);
-            unitElement.setAttribute("class", "unit");
 
-            if(unit.problems.length > 0)
+            // if unit hidden add hidden class back
+            if(unitElement.classList.contains("otherHide"))
             {
-                unitElement.classList.add("NS");
+                unitElement.setAttribute("class", "otherHide option");
+            } else {
+                unitElement.setAttribute("class", "unit option");
+            }
+
+            // problems and not in side bar
+            if(unit.problems.length > 0 && !unitElement.parentElement.id.includes("op"))
+            {
+                unitElement.classList.add("magenta");
+            }
+
+            if(unit.creditPoints == 0)
+            {
+                unitElement.classList.add("zeroPoint");
             }
         }
     }

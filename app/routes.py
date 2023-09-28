@@ -60,8 +60,9 @@ def send_unit_information(major, bridging):
         # ATAR-type units do not have this flag as they do not appear on the table
 
         """
-        MATCH (u:Unit) -[rel:CORE_OF]-> (m:Major)
-        WHERE m.major = "{major}" OR {unit_conditions}
+        MATCH (u:Unit) 
+        MATCH (m:Major)
+        WHERE  ( (u)-[:CORE_OF]-> (m)) AND m.major = "{major}" OR {unit_conditions}
         OPTIONAL MATCH (u)-[rr:REQUIRES]->(r)
         OPTIONAL MATCH (u)-[:COREQUIRES]->(c)
         WITH u, rr, COLLECT(DISTINCT r.unitcode) as unit_req, COLLECT(DISTINCT c.unitcode) as corequisites
@@ -76,8 +77,9 @@ def send_unit_information(major, bridging):
 
     # --------------------------------------------------------------------------------------
         query = f"""
-        MATCH (u:Unit) -[rel:CORE_OF]-> (m:Major)
-        WHERE m.major = "{major}" OR {unit_conditions}
+        MATCH (u:Unit) 
+        MATCH (m:Major)
+        WHERE  ( (u)-[:CORE_OF]-> (m)) AND m.major = "{major}" OR {unit_conditions}
         OPTIONAL MATCH (u)-[:REQUIRES]->(r)
         OPTIONAL MATCH (u)-[:COREQUIRES]->(c)
         WITH u, COLLECT(DISTINCT r.unitcode) as unit_req, COLLECT(DISTINCT c.unitcode) as corequisites

@@ -1,11 +1,9 @@
 /*
 * The main function that ties everything together.
-* makes only two function calls:
+* makes one function call:
 * o FetchCourseRequirementsAndBuildPlanner.
-* o makeInfoBar
 *
-* The first fetches the course requirements and makes the entire planner.
-* The seconds makes the info bar, could really be added to the first function.
+* It fetches the course requirements and makes the entire planner.
 *
 * This file also contains all the event listeners for the buttons.
 *
@@ -54,16 +52,33 @@ getById("SemesterFilter").addEventListener("click", () => {
 
         if(unit.semester == "S1")
         {
-            item.classList.toggle("S1");
+            item.classList.toggle("blue");
         } else if(unit.semester == "S2"){
-            item.classList.toggle("S2");
+            item.classList.toggle("purple");
         } else if(unit.semester == "NS"){
-            item.classList.toggle("NS")
+            item.classList.toggle("magenta")
         }else {
-            item.classList.toggle("S1S2");
+            item.classList.toggle("yellow");
         }
     }
-        updateInfoBar("Legend: <br>Blue - S1, Green - S2, Yellow - S1/S2, red - NS");
+
+    //filter option units.
+    for(let unit of optionsTable.unitInformation.values())
+    {
+        let item = getById(unit.unitCode);
+
+        if(unit.semester == "S1")
+        {
+            item.classList.toggle("blue");
+        } else if(unit.semester == "S2"){
+            item.classList.toggle("purple");
+        } else if(unit.semester == "NS"){
+            item.classList.toggle("magenta")
+        }else {
+            item.classList.toggle("yellow");
+        }
+    }
+        updateInfoBar("Legend: <br>Blue - S1, Purple - S2, Yellow - S1/S2, magenta - NS");
 });
 
 getById("corequisiteFilter").addEventListener("click", () =>
@@ -76,10 +91,22 @@ getById("corequisiteFilter").addEventListener("click", () =>
 
         if(unit.corequisites.length > 0)
         {
-            //NS is red.
-            item.classList.toggle("S1");
+            item.classList.toggle("blue");
         } else {
-            item.classList.remove("S1");
+            item.classList.remove("blue");
+        }
+    }
+
+    //option units
+    for(let unit of optionsTable.unitInformation.values())
+    {
+        let item = getById(unit.unitCode);
+
+        if(unit.corequisites.length > 0)
+        {
+            item.classList.toggle("blue");
+        } else {
+            item.classList.remove("blue");
         }
     }
 
@@ -96,10 +123,22 @@ getById("prequisiteFilter").addEventListener("click", () =>
 
         if(unit.prerequisites.length > 0)
         {
-            //NS is red.
-            item.classList.toggle("S1S2");
+            item.classList.toggle("yellow");
         } else {
-            item.classList.remove("S1S2");
+            item.classList.remove("yellow");
+        }
+    }
+
+    //options
+    for(let unit of optionsTable.unitInformation.values())
+    {
+        let item = getById(unit.unitCode);
+
+        if(unit.prerequisites.length > 0)
+        {
+            item.classList.toggle("yellow");
+        } else {
+            item.classList.remove("yellow");
         }
     }
 
@@ -116,28 +155,25 @@ getById("pointRequirementsFilter").addEventListener("click", () =>
 
         if(unit.pointRequirements.length > 0)
         {
-            item.classList.toggle("S1S2");
+            item.classList.toggle("yellow");
         } else {
-            item.classList.remove("S1S2");
+            item.classList.remove("yellow");
         }
     }
 
+    for(let unit of optionsTable.unitInformation.values())
+    {
+        let item = getById(unit.unitCode);
+
+        if(unit.pointRequirements.length > 0)
+        {
+            item.classList.toggle("yellow");
+        } else {
+            item.classList.remove("yellow");
+        }
+    }
     updateInfoBar("Legend: Yellow - Unit has point requirements");
 });
-
-// ------------------- INFO BAR FUNCTIONS -----------------------//
-
-
-// function makeInfoBar() {
-//     let infoBar = document.createElement("div");
-//     infoBar.setAttribute("id", "infoBar");
-
-//     let text = document.createElement("p");
-
-//     infoBar.appendChild(text);
-
-//     addToRoot(infoBar);
-// }
 
 // --------------------------- XHTTP ---------------------------------//
 
@@ -192,7 +228,7 @@ function fetchOptionUnitCombinations() {
 function fetchCourseRequirementsAndBuildPlanner() {
     let major = specialization;
     let bridging = "NONE,";
-    let bridgingCount = 0; //always at least one broadening unit
+    let bridgingCount = 0; 
 
     //check ATAR prerequisites, if not achieved include bridging unit
     if(isSpec == "no") {
