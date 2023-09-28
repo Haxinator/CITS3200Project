@@ -121,8 +121,8 @@ def get_option_combos(major):
 
         # lists of different option units
         if(major != "SP-ESOFT"):
-            options_a = result_list[1]['options']
-            options_b = result_list[0]['options']
+            options_a = result_list[0]['options']
+            options_b = result_list[1]['options']
             both = options_a+options_b
 
         combinations = []
@@ -142,6 +142,7 @@ def get_option_combos(major):
                 combos_2.append(valid_combo)
             # combine two types of combinations
             combinations = combos_1 + combos_2
+            print(combinations)
 
         # FOR CHEM ENGINEERING
         if major == "SP-ECHEM":
