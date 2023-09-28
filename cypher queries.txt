@@ -40,7 +40,7 @@ ON CREATE SET u.unitname = row.unitname, u.semester = row.semester, u.type = row
 LOAD CSV WITH HEADERS FROM 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRxQJBNXRmpfqGbl2ZbKPFLgPLVsqFgiMxtk33pne9bomN1VOSXMkQi778mg-vteejKloFaI7oGoEA3/pub?gid=889593185&single=true&output=csv' AS row
 MATCH (child:Unit {unitcode: row.child_unit})
 MATCH (parent:Unit {unitcode: row.parent_unit})
-CALL apoc.merge.relationship(child, row.relationship, {}, {type: row.rel_type}, parent) YIELD rel
+CALL apoc.merge.relationship(child, row.relationship, {type: row.rel_type, year: row.year}, {}, parent) YIELD rel
 RETURN rel
 
 //loading majors
@@ -52,5 +52,26 @@ ON CREATE SET m.major = row.major
 LOAD CSV WITH HEADERS FROM 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTiBLvtK4sV6Kf0g79SCJI0twfYQI0GRv8mJxUJQNBjOqXuuqj2rGRMnYYufLEpzMpKne4mY59kgfgO/pub?gid=0&single=true&output=csv' AS row
 MATCH (child:Unit {unitcode: row.unitcode})
 MATCH (parent:Major {major: row.major})
-CALL apoc.merge.relationship(child, row.relationship, {type: row.rel_type}, {}, parent) YIELD rel
+CALL apoc.merge.relationship(child, row.relationship, {}, {}, parent) YIELD rel
+RETURN rel
+
+
+MULTIPLE YEAR SUPPORT SAMPLE - Software Engineering 2022
+//loading units
+LOAD CSV WITH HEADERS FROM 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQfaz-FOCK4_htdAlU0ysxBkn1iCdhgtHdjQc6pJCxh9qKkiJ-3auUUrl_tNhXnd-MjBzWImlituYd9/pub?gid=0&single=true&output=csv' AS row
+MERGE (u:Unit {unitcode: row.unitcode})
+ON CREATE SET u.unitname = row.unitname, u.semester = row.semester, u.type = row.type, u.level = row.level, u.credit_points = row.credit_points, u.points_req = row.points_req, u.enrolment_req = row.enrolment_req, u.incompatible_units = row.incompatible_units, u.corequisites = row.corequisites
+
+//loading unit relationships
+LOAD CSV WITH HEADERS FROM 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQfaz-FOCK4_htdAlU0ysxBkn1iCdhgtHdjQc6pJCxh9qKkiJ-3auUUrl_tNhXnd-MjBzWImlituYd9/pub?gid=982367849&single=true&output=csv' AS row
+MATCH (child:Unit {unitcode: row.child_unit})
+MATCH (parent:Unit {unitcode: row.parent_unit})
+CALL apoc.merge.relationship(child, row.relationship, {type: row.rel_type, year: row.year}, {}, parent) YIELD rel
+RETURN rel
+
+//loading major relationship
+LOAD CSV WITH HEADERS FROM 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQfaz-FOCK4_htdAlU0ysxBkn1iCdhgtHdjQc6pJCxh9qKkiJ-3auUUrl_tNhXnd-MjBzWImlituYd9/pub?gid=171016116&single=true&output=csv' AS row
+MATCH (child:Unit {unitcode: row.unitcode})
+MATCH (parent:Major {major: row.major})
+CALL apoc.merge.relationship(child, row.relationship, {year: row.year}, {}, parent) YIELD rel
 RETURN rel

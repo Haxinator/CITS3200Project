@@ -64,7 +64,9 @@ def send_unit_information(major, bridging):
         MATCH (m:Major)
         WHERE  ( (u)-[:CORE_OF]-> (m)) AND m.major = "{major}" OR {unit_conditions}
         OPTIONAL MATCH (u)-[rr:REQUIRES]->(r)
-        OPTIONAL MATCH (u)-[:COREQUIRES]->(c)
+        WHERE rr.year = {year}
+        OPTIONAL MATCH (u)-[cc:COREQUIRES]->(c)
+        WHERE cc.year = {year}
         WITH u, rr, COLLECT(DISTINCT r.unitcode) as unit_req, COLLECT(DISTINCT c.unitcode) as corequisites
         WITH u, rr, corequisites,  REDUCE( s = '', node IN unit_req | 
         CASE WHEN rr.type IS NOT NULL 
