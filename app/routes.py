@@ -84,7 +84,7 @@ def send_unit_information(major, bridging):
         # placeholder variables for now 
         year = 2023
         if major == "SP-ESOFT":
-            year = 2023
+            year = 2022
 
         query = f"""
         MATCH ((u:Unit)-[a:CORE_OF]->(m:Major))
