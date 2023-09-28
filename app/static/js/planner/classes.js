@@ -28,16 +28,60 @@
 
 import { enrollInPeroid, addToRoot, updateInfoBar, allUnitsNotAdded, removeFromArray, getById } from "./support.js";
 import { unitConditionsMet, canEnrollInPeriod } from "./checks.js";
-import { addUnitEvents, addContainerEvents, addSensorEvents, addOptionUnitEvents } from "./events.js";
+import { addUnitEvents, addContainerEvents, addSensorEvents, optionButtonEvent} from "./events.js";
 import { optionsTable } from "./main.js";
 
 
 //------------------- PROTOTYPES ----------------------------------//
 
+export var infoBar;
+export var statusBar;
+
 export class sideBar {
     constructor(){
         this.optionCombinations = null;
         this.currentOptionCombo = [];
+        this.messageToDisplay = false;
+        this.innerHTML = "";
+        this.optionsDone = false;
+    }
+
+    // for updating content of info bar.
+    addInfo(innerHTML) {
+        // add message to storage.
+        // getById("infoBar").firstElementChild.innerHTML += innerHTML;
+        this.innerHTML += innerHTML + "<br>";
+        this.messageToDisplay = true;
+    }
+
+    // clears all info bar info.
+    clearInfo() {
+        this.innerHTML = "";
+        getById("infoBar").firstElementChild.innerHTML = "";
+    }
+
+    display() {
+        if(this.messageToDisplay)
+        {
+            getById("infoBar").firstElementChild.innerHTML = this.innerHTML;
+            // clear message from storage
+            this.messageToDisplay = false;
+            this.innerHTML = ""
+        }
+    }
+
+    updateStatus(innerHTML) {
+        getById("statusBar").firstElementChild.innerHTML = innerHTML;
+    }
+
+    makeStatusBar() {
+        let statusBar = document.createElement("div");
+        let text = document.createElement("p");
+
+        statusBar.setAttribute("id", "statusBar");
+        statusBar.appendChild(text);
+        
+        addToRoot(statusBar);
     }
 
     makeInfoBar() {
@@ -49,6 +93,8 @@ export class sideBar {
         
         addToRoot(infoBar);
     }
+
+    //option bar functions
 
     addOptionCombinations(optionCombos) {
         this.optionCombinations = optionCombos;
@@ -78,8 +124,8 @@ export class sideBar {
     //hide units that lead to an illegal combination.
     adjustOptionsBar() {
         //using currentCombo, see all valid next units.
-        console.log(this.optionCombinations);
-        console.log(this.currentOptionCombo);
+        // console.log(this.optionCombinations);
+        // console.log(this.currentOptionCombo);
         let matches = [];
 
 
@@ -101,23 +147,32 @@ export class sideBar {
             // print matching combinations
             if(match)
             {
-                console.log(combination);
+                // console.log(combination);
                 matches.push(combination);
             }
+        }
+
+        // only one match if done
+        if(matches.length == 1) {
+            this.optionsDone = true;
+        } else {
+            this.optionsDone = false;
         }
 
         // for each option unit
         for(let unit of optionsTable.unitInformation.values())
         {
+
             let unitCode = unit.unitCode;
+
             let match = false;
-            console.log(unitCode)
+            // console.log(unitCode)
 
             //for each combo current enrolled units match with
             for(let combo of matches)
             {
-                console.log(combo);
-                console.log(combo.includes(unitCode));
+                // console.log(combo);
+                // console.log(combo.includes(unitCode));
 
                 //if option unit is a valid next option
                 if(combo.includes(unitCode))
@@ -129,28 +184,41 @@ export class sideBar {
             //show if legal next option
             if(match)
             {
+                // getById(unitCode).classList.remove("hide");
+                getById(unitCode).classList.remove("otherHide");
                 getById(unitCode).classList.add("unit");
-                getById(unitCode).classList.remove("hide");
             } else {
                 //hide otherwise.
-                getById(unitCode).classList.add("hide");
                 getById(unitCode).classList.remove("unit");
+                // getById(unitCode).classList.add("hide");
+                // amazingly doesn't work UNLESS it's not called "hide"?!??!?!
+                // took me 50 minutes to figure that out.
+                getById(unitCode).classList.add("otherHide");
             }
 
-            // if there are matches
-            // if(matches.length > 0)
-            // {
-                
-            // }
         }
     }
 
     //response is the options units json
     makeOptionsBar(table, response) {
         let optionsBar = document.createElement("div");
+        let button = document.createElement("button");
+        let tableElement = table.makeOptionsContainer(response);
+        let arrow = document.createElement("div");
 
+        let heading = document.createElement("h3");
+
+        heading.innerHTML = "Options";
+        optionsBar.appendChild(heading);
+
+        arrow.classList.add("leftArrow");
+        button.classList.add("noMargin");
+        button.appendChild(arrow);
+
+        optionButtonEvent(button);
         optionsBar.setAttribute("id", "optionsBar");
-        optionsBar.appendChild(table.makeOptionsContainer(response));
+        optionsBar.appendChild(button);
+        optionsBar.appendChild(tableElement);
 
         addToRoot(optionsBar);
     }
@@ -244,6 +312,11 @@ export class Table {
         unit.setAttribute("id", unitCode);
         addUnitEvents(unit);
 
+        if(this.unitInformation.get(unitCode).creditPoints == 0)
+        {
+            unit.classList.add("zeroPoint");
+        }
+
         return unit;
     }
 
@@ -283,15 +356,19 @@ export class Table {
     addUnitsToPlanner(container) {
         //will loop through all units considered
         //and container is full.
+        let creditPointsAvailable = 24;
+
         for(let unit of this.unitInformation.values())
         {
             let unitCode = unit.unitCode;
 
             //check if unit placed in valid teaching period
             if (unitConditionsMet(unitCode, container, this) && !unit.isEnrolled()) {
+                // enroll then subtract credit points from those available for the semester.
                 enrollInPeroid(this.makeUnit(unitCode), container);
+                creditPointsAvailable -= unit.creditPoints;
             }
-            if (container.childElementCount > 3) {
+            if (creditPointsAvailable < 1) {
                 //if container full stop loop.
                 break;
             }
@@ -335,7 +412,9 @@ export class Table {
             if (canEnrollInPeriod(unitCode, container) && !unit.isEnrolled()) {
                 let unitElement = this.makeUnit(unitCode);
 
-                addOptionUnitEvents(unitElement);
+                unitElement.classList.add("option");
+
+                // addOptionUnitEvents(unitElement);
                 container.append(unitElement);
 
                 unit.enrollmentPeriod = container.id;
@@ -418,10 +497,13 @@ export class Table {
     makeTable(response) {
         let table = document.createElement("table");
         let iterations = 0;
-        let infoBar = new sideBar();
+        infoBar = new sideBar();
+        statusBar = new sideBar();
+
+        infoBar.makeInfoBar();
+        statusBar.makeStatusBar();
 
         this.extractInformation(response);
-        infoBar.makeInfoBar();
         table.setAttribute("id", "table");
 
         // if course duration not exceeded.
@@ -440,13 +522,16 @@ export class Table {
         //make table then sensor underneath
         addToRoot(table);
         addToRoot(this.makeSensor());
-        updateInfoBar("");
+        infoBar.clearInfo();
+
+        statusBar.updateStatus("Add option Units");
     }
 
     //for the option units side bar.
     makeOptionsContainer(response) {
         let table = document.createElement("table");
         let container = document.createElement("div");
+
 
         container.setAttribute("id", "options");
         this.extractInformation(response);
