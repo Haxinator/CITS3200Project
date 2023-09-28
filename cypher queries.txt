@@ -52,7 +52,7 @@ ON CREATE SET m.major = row.major
 LOAD CSV WITH HEADERS FROM 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTiBLvtK4sV6Kf0g79SCJI0twfYQI0GRv8mJxUJQNBjOqXuuqj2rGRMnYYufLEpzMpKne4mY59kgfgO/pub?gid=0&single=true&output=csv' AS row
 MATCH (child:Unit {unitcode: row.unitcode})
 MATCH (parent:Major {major: row.major})
-CALL apoc.merge.relationship(child, row.relationship, {}, {}, parent) YIELD rel
+CALL apoc.merge.relationship(child, row.relationship, {year: row.year}, {}, parent) YIELD rel
 RETURN rel
 
 

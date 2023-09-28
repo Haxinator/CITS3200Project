@@ -48,7 +48,7 @@ driver = GraphDatabase.driver(
 def send_unit_information(major, bridging):
     with driver.session() as session:
         units = bridging.split(",") 
-        unit_conditions = " OR ".join([f"u.unitcode = '{unit}'" for unit in units])
+        unit_conditions = " OR ".join([f"bridge.unitcode = '{unit}'" for unit in units])
 
     # REVISED VERSION: ----------------------------------------------------------------------
         # fix js first before implementing this query
@@ -57,35 +57,48 @@ def send_unit_information(major, bridging):
         # it returns e.g., [" MATH1012_AND", " GENG2000_AND", " CITS1401_OR", " ENSC2004_AND", " CITS2401_OR"]
         # AND = must-have unit 
         # OR = not necessarily a must-have but can fill the requirements if one of them are taken
-        # ATAR-type units do not have this flag as they do not appear on the table
+        # ATAR-type units have an "NA" (non-applicable) flag as they do not appear on the table
 
         """
-        MATCH (u:Unit) 
-        MATCH (m:Major)
-        WHERE  ( (u)-[:CORE_OF]-> (m)) AND m.major = "{major}" OR {unit_conditions}
-        OPTIONAL MATCH (u)-[rr:REQUIRES]->(r)
-        WHERE rr.year = {year}
-        OPTIONAL MATCH (u)-[cc:COREQUIRES]->(c)
-        WHERE cc.year = {year}
-        WITH u, rr, COLLECT(DISTINCT r.unitcode) as unit_req, COLLECT(DISTINCT c.unitcode) as corequisites
-        WITH u, rr, corequisites,  REDUCE( s = '', node IN unit_req | 
+        MATCH ((u:Unit)-[a:CORE_OF]->(m:Major))
+        WHERE m.major = "{major}" AND a.year = "{year}"
+        OPTIONAL MATCH (bridge:Unit)
+        WHERE {unit_conditions}
+        WITH COLLECT(DISTINCT u) + COLLECT(DISTINCT bridge) AS combined
+        UNWIND combined as node
+        OPTIONAL MATCH (node)-[rr:REQUIRES]->(r)
+        WHERE rr.year = "{year}"
+        OPTIONAL MATCH (node)-[cc:COREQUIRES]->(c)
+        WHERE cc.year = "{year}"
+        WITH node, COLLECT(DISTINCT r.unitcode) as unit_req, COLLECT(DISTINCT c.unitcode) as corequisites
+        WITH node, rr, corequisites,  REDUCE( s = '', node IN unit_req | 
         CASE WHEN rr.type IS NOT NULL 
             THEN s + ' ' + node + '_' + rr.type
             ELSE s + ' ' + node
         END) as revised_req
-        RETURN u.unitcode as unitcode, u.unitname as unitname, u.type as type, u.semester as semester, u.major as major, u.level as level, u.credit_points as credit_points, u.points_req as points_req, u.enrolment_req as enrolment_req, COLLECT(revised_req) as unit_req, u.incompatible_units as incompatibilities, corequisites
+        RETURN node.unitcode as unitcode, node.unitname as unitname, node.type as type, node.semester as semester, node.major as major, node.level as level, node.credit_points as credit_points, node.points_req as points_req, node.enrolment_req as enrolment_req, COLLECT(revised_req) as unit_req, node.incompatible_units as incompatibilities, corequisites
         ORDER BY level
         """
 
     # --------------------------------------------------------------------------------------
+        # placeholder variables for now 
+        year = 2023
+        if major == "SP-ESOFT":
+            year = 2023
+
         query = f"""
-        MATCH (u:Unit) 
-        MATCH (m:Major)
-        WHERE  ( (u)-[:CORE_OF]-> (m)) AND m.major = "{major}" OR {unit_conditions}
-        OPTIONAL MATCH (u)-[:REQUIRES]->(r)
-        OPTIONAL MATCH (u)-[:COREQUIRES]->(c)
-        WITH u, COLLECT(DISTINCT r.unitcode) as unit_req, COLLECT(DISTINCT c.unitcode) as corequisites
-        RETURN u.unitcode as unitcode, u.unitname as unitname, u.type as type, u.semester as semester, u.major as major, u.level as level, u.credit_points as credit_points, u.points_req as points_req, u.enrolment_req as enrolment_req, unit_req, u.incompatible_units as incompatibilities, corequisites
+        MATCH ((u:Unit)-[a:CORE_OF]->(m:Major))
+        WHERE m.major = "{major}" AND a.year = "{year}"
+        OPTIONAL MATCH (bridge:Unit)
+        WHERE {unit_conditions}
+        WITH COLLECT(DISTINCT u) + COLLECT(DISTINCT bridge) AS combined
+        UNWIND combined as node
+        OPTIONAL MATCH (node)-[rr:REQUIRES]->(r)
+        WHERE rr.year = "{year}"
+        OPTIONAL MATCH (node)-[cc:COREQUIRES]->(c)
+        WHERE cc.year = "{year}"
+        WITH node, COLLECT(DISTINCT r.unitcode) as unit_req, COLLECT(DISTINCT c.unitcode) as corequisites
+        RETURN node.unitcode as unitcode, node.unitname as unitname, node.type as type, node.semester as semester, node.major as major, node.level as level, node.credit_points as credit_points, node.points_req as points_req, node.enrolment_req as enrolment_req, unit_req, node.incompatible_units as incompatibilities, corequisites
         ORDER BY level
         """ 
         results = session.run(query)
@@ -97,7 +110,7 @@ def get_option_units(major):
     with driver.session() as session:
         query = f"""
         MATCH (u:Unit) -[rel:GROUP_A_OF|GROUP_B_OF]-> (m:Major)
-        WHERE m.major = "{major}"
+        WHERE m.major = "{major}" 
         OPTIONAL MATCH (u)-[:REQUIRES]->(r)
         OPTIONAL MATCH (u)-[:COREQUIRES]->(c)
         WITH u, COLLECT(DISTINCT r.unitcode) as unit_req, COLLECT(DISTINCT c.unitcode) as corequisites
