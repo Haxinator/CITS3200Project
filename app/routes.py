@@ -44,7 +44,7 @@ driver = GraphDatabase.driver(
     trust="TRUST_ALL_CERTIFICATES"
 )
 
-@app.route("/unitInformation/<string:major>/bridging=<string:bridging>", methods=["GET"])
+@app.route("/get_majors", methods=["GET"])
 def get_majors():
     with driver.session() as session:
         query = """
