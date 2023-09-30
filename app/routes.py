@@ -51,20 +51,20 @@ driver = GraphDatabase.driver(
     trust="TRUST_ALL_CERTIFICATES"
 )
 
-@app.route("/get_majors", methods=["GET"])
-def get_majors():
+@app.route("/get_majors=<string:year>", methods=["GET"])
+def get_majors(year):
     with driver.session() as session:
-        query = """
+        query = f"""
         MATCH (m:Major)
-        WHERE (m)--()
+        WHERE (m)--() AND m.year_offered CONTAINS {year}
         RETURN m.major
         """
         results = session.run(query)
         data = results.data()
         return jsonify(data)
 
-@app.route("/unitInformation/<string:major>/bridging=<string:bridging>", methods=["GET"])
-def send_unit_information(major, bridging):
+@app.route("/unitInformation/<string:major>/bridging=<string:bridging>/year=<string:year>", methods=["GET"])
+def send_unit_information(major, bridging, year):
     with driver.session() as session:
         units = bridging.split(",") 
         unit_conditions = " OR ".join([f"bridge.unitcode = '{unit}'" for unit in units])
@@ -101,9 +101,9 @@ def send_unit_information(major, bridging):
 
     # --------------------------------------------------------------------------------------
         # placeholder variables for now 
-        year = 2023
-        if major == "SP-ESOFT":
-            year = 2022
+        # year = 2023
+        # if major == "SP-ESOFT":
+        #     year = 2022
 
         query = f"""
         MATCH ((u:Unit)-[a:CORE_OF]->(m:Major))
