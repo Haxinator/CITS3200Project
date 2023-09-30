@@ -18,12 +18,19 @@ def getStarted():
     # Render the index template with the title
     return render_template('getStarted.html', title='Get Started')
 
+# Stafflogin
+@app.route('/staffLogin/')
+def staffLogin():
+    # Render the staff Login template with the title
+    return render_template('staffLogin.html', title='Staff Login')
+
 
 
 @app.route('/preferences', methods=['POST'])
 def preferences():
     # You can access form data using request.form
     specialization = request.form['specialization']
+    yearLevel = request.form['yearLevel']
     #prints out unit code SP-ECHEM
     mathSpecialist = request.form['mathSpecialist']
     chemistry = request.form['chemistry']
@@ -33,7 +40,7 @@ def preferences():
 
     # Do something with the form data (e.g., save to the database)
 
-    return render_template('preferences.html', title='Preferences', specialization = specialization, mathSpecialist = mathSpecialist, chemistry = chemistry, physics = physics) # Render the preferences page
+    return render_template('preferences.html', title='Preferences', specialization = specialization, mathSpecialist = mathSpecialist, chemistry = chemistry, physics = physics, yearLevel = yearLevel) # Render the preferences page
 
 
 # ------------------------------------- NEO4J QUERIES ------------------------------------------------

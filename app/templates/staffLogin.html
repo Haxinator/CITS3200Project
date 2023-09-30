@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="content">
+    <div class="column-group flex">
+        <div class="column-three-quarter">
+            <div id="ctl00_pnlSubPageContent" class="width-full">
+                <div class="form">
+                    <h3>Please login</h3>
+                    <table>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <span id="ctl00_LeftCol_lblUWAPersonID">Staff Number</span>
+                                </td>
+                                <td>
+                                    <input type="text" id="ctl00_LeftCol_txtUWAPersonID">
+                                    <span style="color:Red;visibility:hidden;">*</span>
+                                    <span style="color:Red;visibility:hidden;">*</span>
+                                    <br>
+                                    <span id="ctl00_LeftCol_lblUWAPersonIDMsg" style="margin-top: 0em">Your eight-digit staff number starting with a zero (eg. 00012345).</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <span id="ctl00_LeftCol_lblPassword">Password</span>
+                                </td>
+                                <td>
+                                    <input type="password" id="ctl00_LeftCol_txtPassword">
+                                    <span style="color:Red;visibility:hidden;">*</span>
+                                    <br>
+                                    <br>
+                                    <a id="ctl00_LeftCol_hplSSPRInfo" href="#">Forgotten my password</a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p style="text-align: center">
+                        <input type="button" value="Log In" id="ctl00_LeftCol_btnSubmit">
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

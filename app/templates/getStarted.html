@@ -29,6 +29,13 @@
                 <option value="SP-ESOFT">Software Engineering</option>
             </select>
         </div>
+        <div class="form-group">
+            <select class="form-control" name="yearLevel" id="yearLevel" required>
+                <option value="" selected>Select the Commencement Year</option>
+                <option value="2023">Year 2023</option>
+                <option value="2022">Year 2022</option>
+            </select>
+        </div>
 
         <!-- High School Courses Questions -->
         <!-- High School Courses Questions -->
@@ -109,6 +116,7 @@
     function validateForm() {
         // Retrieve form elements
         var specialization = document.getElementById('specialization');
+        var yearLevel = document.getElementById('yearLevel');
         var mathSpecialist = document.getElementsByName('mathSpecialist');
         var chemistry = document.getElementsByName('chemistry');
         var physics = document.getElementsByName('physics');
@@ -116,7 +124,7 @@
 
         // Check if all fields are filled
         if (specialization.value !== "" && radioIsChecked(mathSpecialist) &&
-            radioIsChecked(chemistry) && radioIsChecked(physics)) {
+            radioIsChecked(chemistry) && radioIsChecked(physics) && yearLevel.value !== "" ){
             submitButton.disabled = false;
             submitButton.style.opacity = "1";
         } else {
