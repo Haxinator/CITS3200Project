@@ -46,7 +46,7 @@ RETURN rel
 //loading majors
 LOAD CSV WITH HEADERS FROM 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRyHZgzU-R8wb5cbQB2PaH-mFWkIlmlFzL4HQNFgnyW4VZ1g7lbQ8IEL80j_beFAajNoM7xUivpgMRu/pub?gid=0&single=true&output=csv' AS row
 MERGE (m:Major {major: row.major})
-ON CREATE SET m.major = row.major
+ON CREATE SET m.major = row.major, m.year_offered = row.year_offered
 
 //loading major relationship
 LOAD CSV WITH HEADERS FROM 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTiBLvtK4sV6Kf0g79SCJI0twfYQI0GRv8mJxUJQNBjOqXuuqj2rGRMnYYufLEpzMpKne4mY59kgfgO/pub?gid=0&single=true&output=csv' AS row
