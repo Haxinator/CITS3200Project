@@ -51,11 +51,23 @@ driver = GraphDatabase.driver(
     trust="TRUST_ALL_CERTIFICATES"
 )
 
+@app.route("/get_majors", methods=["GET"])
+def get_majors():
+    with driver.session() as session:
+        query = """
+        MATCH (m:Major)
+        WHERE (m)--()
+        RETURN m.major
+        """
+        results = session.run(query)
+        data = results.data()
+        return jsonify(data)
+
 @app.route("/unitInformation/<string:major>/bridging=<string:bridging>", methods=["GET"])
 def send_unit_information(major, bridging):
     with driver.session() as session:
         units = bridging.split(",") 
-        unit_conditions = " OR ".join([f"u.unitcode = '{unit}'" for unit in units])
+        unit_conditions = " OR ".join([f"bridge.unitcode = '{unit}'" for unit in units])
 
     # REVISED VERSION: ----------------------------------------------------------------------
         # fix js first before implementing this query
@@ -64,33 +76,48 @@ def send_unit_information(major, bridging):
         # it returns e.g., [" MATH1012_AND", " GENG2000_AND", " CITS1401_OR", " ENSC2004_AND", " CITS2401_OR"]
         # AND = must-have unit 
         # OR = not necessarily a must-have but can fill the requirements if one of them are taken
-        # ATAR-type units do not have this flag as they do not appear on the table
+        # ATAR-type units have an "NA" (non-applicable) flag as they do not appear on the table
 
         """
-        MATCH (u:Unit) 
-        MATCH (m:Major)
-        WHERE  ( (u)-[:CORE_OF]-> (m)) AND m.major = "{major}" OR {unit_conditions}
-        OPTIONAL MATCH (u)-[rr:REQUIRES]->(r)
-        OPTIONAL MATCH (u)-[:COREQUIRES]->(c)
-        WITH u, rr, COLLECT(DISTINCT r.unitcode) as unit_req, COLLECT(DISTINCT c.unitcode) as corequisites
-        WITH u, rr, corequisites,  REDUCE( s = '', node IN unit_req | 
+        MATCH ((u:Unit)-[a:CORE_OF]->(m:Major))
+        WHERE m.major = "{major}" AND a.year = "{year}"
+        OPTIONAL MATCH (bridge:Unit)
+        WHERE {unit_conditions}
+        WITH COLLECT(DISTINCT u) + COLLECT(DISTINCT bridge) AS combined
+        UNWIND combined as node
+        OPTIONAL MATCH (node)-[rr:REQUIRES]->(r)
+        WHERE rr.year = "{year}"
+        OPTIONAL MATCH (node)-[cc:COREQUIRES]->(c)
+        WHERE cc.year = "{year}"
+        WITH node, COLLECT(DISTINCT r.unitcode) as unit_req, COLLECT(DISTINCT c.unitcode) as corequisites
+        WITH node, rr, corequisites,  REDUCE( s = '', node IN unit_req | 
         CASE WHEN rr.type IS NOT NULL 
             THEN s + ' ' + node + '_' + rr.type
             ELSE s + ' ' + node
         END) as revised_req
-        RETURN u.unitcode as unitcode, u.unitname as unitname, u.type as type, u.semester as semester, u.major as major, u.level as level, u.credit_points as credit_points, u.points_req as points_req, u.enrolment_req as enrolment_req, COLLECT(revised_req) as unit_req, u.incompatible_units as incompatibilities, corequisites
+        RETURN node.unitcode as unitcode, node.unitname as unitname, node.type as type, node.semester as semester, node.major as major, node.level as level, node.credit_points as credit_points, node.points_req as points_req, node.enrolment_req as enrolment_req, COLLECT(revised_req) as unit_req, node.incompatible_units as incompatibilities, corequisites
         ORDER BY level
         """
 
     # --------------------------------------------------------------------------------------
+        # placeholder variables for now 
+        year = 2023
+        if major == "SP-ESOFT":
+            year = 2022
+
         query = f"""
-        MATCH (u:Unit) 
-        MATCH (m:Major)
-        WHERE  ( (u)-[:CORE_OF]-> (m)) AND m.major = "{major}" OR {unit_conditions}
-        OPTIONAL MATCH (u)-[:REQUIRES]->(r)
-        OPTIONAL MATCH (u)-[:COREQUIRES]->(c)
-        WITH u, COLLECT(DISTINCT r.unitcode) as unit_req, COLLECT(DISTINCT c.unitcode) as corequisites
-        RETURN u.unitcode as unitcode, u.unitname as unitname, u.type as type, u.semester as semester, u.major as major, u.level as level, u.credit_points as credit_points, u.points_req as points_req, u.enrolment_req as enrolment_req, unit_req, u.incompatible_units as incompatibilities, corequisites
+        MATCH ((u:Unit)-[a:CORE_OF]->(m:Major))
+        WHERE m.major = "{major}" AND a.year = "{year}"
+        OPTIONAL MATCH (bridge:Unit)
+        WHERE {unit_conditions}
+        WITH COLLECT(DISTINCT u) + COLLECT(DISTINCT bridge) AS combined
+        UNWIND combined as node
+        OPTIONAL MATCH (node)-[rr:REQUIRES]->(r)
+        WHERE rr.year = "{year}"
+        OPTIONAL MATCH (node)-[cc:COREQUIRES]->(c)
+        WHERE cc.year = "{year}"
+        WITH node, COLLECT(DISTINCT r.unitcode) as unit_req, COLLECT(DISTINCT c.unitcode) as corequisites
+        RETURN node.unitcode as unitcode, node.unitname as unitname, node.type as type, node.semester as semester, node.major as major, node.level as level, node.credit_points as credit_points, node.points_req as points_req, node.enrolment_req as enrolment_req, unit_req, node.incompatible_units as incompatibilities, corequisites
         ORDER BY level
         """ 
         results = session.run(query)
@@ -102,7 +129,7 @@ def get_option_units(major):
     with driver.session() as session:
         query = f"""
         MATCH (u:Unit) -[rel:GROUP_A_OF|GROUP_B_OF]-> (m:Major)
-        WHERE m.major = "{major}"
+        WHERE m.major = "{major}" 
         OPTIONAL MATCH (u)-[:REQUIRES]->(r)
         OPTIONAL MATCH (u)-[:COREQUIRES]->(c)
         WITH u, COLLECT(DISTINCT r.unitcode) as unit_req, COLLECT(DISTINCT c.unitcode) as corequisites
@@ -118,24 +145,61 @@ def get_option_combos(major):
      with driver.session() as session:
         query = f"""MATCH (u:Unit) -[rel:GROUP_A_OF|GROUP_B_OF]-> (m:Major)
         WHERE m.major = "{major}"
-        RETURN COLLECT(DISTINCT u.unitcode) as options"""
+        RETURN COLLECT(DISTINCT u.unitcode) as options, TYPE(rel) as group_type"""
 
         results = session.run(query)
-        options = results.single()['options']
+        result_list = [dict(record) for record in results]
+        print(result_list)
 
-        # one 12-point unit + one 6-point 
-        combos_1 = []
-        if ("GENG4411" in options) and ("GENG4412" in options):
-            combos_1 = [["GENG4411", "GENG4412", unit] for unit in options if (unit != "GENG4411") and (unit != "GENG4412")]
+        # lists of different option units
+        if(major != "SP-ESOFT"):
+            options_a = result_list[0]['options']
+            options_b = result_list[1]['options']
+            both = options_a+options_b
 
-        # three 6-point units
-        exclude = ["GENG4411", "GENG4412"]
-        filtered_options = [x for x in options if x not in exclude]
-        combos_2 = list(itertools.combinations(filtered_options, 3))
-        combos_2 = [list(combination) for combination in combos_2]
+        combinations = []
+        # FOR MECH ENGINEERING
+        if major == "SP-EMECH":
+            # one 12-point unit (from Group A) + one 6-point (from any group)
+            combos_1 = []
+            if ("GENG4411" in options_a) and ("GENG4412" in options_a):
+                combos_1 = [["GENG4411", "GENG4412", unit] for unit in both if (unit != "GENG4411") and (unit != "GENG4412")]
 
-        # combine two types of combinations
-        combinations = combos_1 + combos_2
+            # three 6-point units - must have AT LEAST ONE Group A unit
+            group_b = list(itertools.combinations(options_b, 2))
+            combos_2 = []
+            for combination in group_b:
+                valid_combo = list(combination) 
+                valid_combo.append("MECH5552")
+                combos_2.append(valid_combo)
+            # combine two types of combinations
+            combinations = combos_1 + combos_2
+            print(combinations)
+
+        # FOR CHEM ENGINEERING
+        if major == "SP-ECHEM":
+            # two Group A units
+            group_a = list(itertools.combinations(options_a, 2))
+            combos_1 = [list(combination) for combination in group_a]
+
+            # two Group B units
+            group_b = list(itertools.combinations(options_b, 2))
+            combos_2 = [list(combination) for combination in group_b]
+
+            # combine both groups and do cartesian product
+            chem_ab = itertools.product(combos_1, combos_2)
+
+            # cleans up the tuple by removing lists within the combo - returns just four units in the combination
+            for c in chem_ab: 
+                finalised = []
+                g_A = c[0]
+                g_B = c[1]
+                for i in range(2):
+                    finalised.append(g_A[i])
+                    finalised.append(g_B[i])
+                combinations.append(finalised)
+            print(combinations)
+
         return jsonify(combinations)
      
 

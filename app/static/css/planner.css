@@ -13,6 +13,14 @@
     box-shadow: 3px 3px 5px lightblue;
 }
 
+.option {
+    border: 1px solid #FE6100;
+}
+
+.zeroPoint {
+    border: 1px dashed black;
+}
+
 .heading h3{
     margin: 0px;
 
@@ -67,10 +75,14 @@ table div{
 }
 
 .dragover {
-    border: 1px dashed red;
+    border: 1px dashed #DC267F;
 }
 
 .hide {
+    display: none;
+}
+
+.otherHide {
     display: none;
 }
 
@@ -78,39 +90,42 @@ h2 {
     text-align: center;
 }
 
-/* NEED TO CHANGE TO NAME OF COLOUR FOR CLEANER CODE */
-.NS{
-    background-color: tomato;
+
+/* 
+Using IBM colour pallete
+https://davidmathlogic.com/colorblind/#%23648FFF-%23785EF0-%23DC267F-%23FE6100-%23FFB000*/
+.magenta{
+    background-color: #DC267F;
 }
 
-.S1 {
-    background-color: aqua;
+.blue {
+    background-color: #648FFF;
 }
 
-.S2 {
-    background-color: lightgreen;
+.purple {
+    background-color: #785EF0;
 }
 
-.S1S2 {
-    background-color: yellow;
+.yellow {
+    background-color: #FFB000;
 }
 
 .grey {
     background-color: lightgray;
 }
 
-.redGreenStripe{
-    background-image: linear-gradient(45deg, lightgreen 25%, tomato 25%, tomato 50%, lightgreen 50%, lightgreen 75%, tomato 75%, tomato 100%);
+.redPurpleStripe{
+    background-image: linear-gradient(45deg, #785EF0 25%, #DC267F 25%, #DC267F 50%, #785EF0 50%, #785EF0 75%, #DC267F 75%, #DC267F 100%);
     background-size: 56.57px 56.57px;    
 }
 
 .redBlueStripe{
-    background-image: linear-gradient(45deg, aqua 25%, tomato 25%, tomato 50%, aqua 50%, aqua 75%, tomato 75%, tomato 100%);
+    background-image: linear-gradient(45deg, #648FFF 25%, #DC267F 25%, #DC267F 50%, #648FFF 50%, #648FFF 75%, #DC267F 75%, #DC267F 100%);
     background-size: 56.57px 56.57px;    
 }
 
 .redYellowStripe{
-    background-image: linear-gradient(45deg, yellow 25%, tomato 25%, tomato 50%, yellow 50%, yellow 75%, tomato 75%, tomato 100%);
+    background-image: linear-gradient(45deg, #FFB000 25%, #DC267F 25%, #DC267F 50%, #FFB000 50%, #FFB000 75%, #DC267F 75%, #DC267F 100%);
     background-size: 56.57px 56.57px;    
 }
 
@@ -131,15 +146,40 @@ h2 {
 }
 
 #optionsBar table {
-    display: block;
-    width: 120px;
+    display: inline-block;
+
+    /* if content shown table size is 120
+    otherwise it's nothing. */
+    max-width: 120px;
+    min-width: none;
+
+    /* so button doesn't go in front of units */
+    margin-left: 51px;
+    margin-top: 0px;
+    margin-bottom: 0px;
+
+    /* nice modern look */
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+    box-shadow: 3px 3px 5px lightgrey;
+    background-color: white;
+    border: 2px solid black;
+    border-right: 0px;
+    border-top: 0px;
+
+    padding-right: 10px;
+    padding-left: 10px;
 }
 
 #options tr div {
     display: block;
     max-width: 100px;
-    min-width: 0px;
+    min-width: 100px;
     padding-bottom: 50px;
+}
+
+#options {
+    padding-top: 50px;
 }
 
 #options tr{
@@ -148,8 +188,55 @@ h2 {
     min-height: 72px;
 }
 
-#optionsBar{
+.leftArrow {
+    border: solid black;
+    border-width: 0 3px 3px 0;
+    display: inline-block;
+    padding: 3px;
+    
+    transform: rotate(-45deg);
+    -webkit-transform: rotate(-45deg);
+}
+
+.rightArrow {
+    border: solid black;
+    border-width: 0 3px 3px 0;
+    display: inline-block;
+    padding: 3px;
+    
+    transform: rotate(135deg);
+    -webkit-transform: rotate(135deg);
+}
+
+#optionsBar h3 {
+    margin-top: 0px;
+    position: fixed;
     background-color: white;
+    max-width: 118px;
+    min-width: 118px;
+    margin-left: 53px;
+    border-top: 2px solid black;
+    text-align: center;
+}
+
+#optionsBar button.noMargin{ 
+    padding: 20px;
+    height: fit-content;
+    display: inline-block;
+    position: fixed;
+}
+
+
+#optionsBar button.leftMargin {
+    padding: 20px;
+    height: fit-content;
+    display: inline-block;
+    position: fixed;
+    margin-left: 20px;
+}
+
+#optionsBar{
+    /* background-color: white; */
     margin: auto;
     position: fixed;
     overflow-y: auto;
@@ -172,7 +259,36 @@ h2 {
     overflow-wrap: break-word;
 
     /* modern curved look */
-    border-top-right-radius: 5px;
+
+}
+
+/* ------------------------------- STATUS BAR CSS --------------------------- */
+
+#statusBar {
+    background-color: white;
+    margin: auto;
+    position: fixed;
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    text-align: center;
+
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 900;
+
+    /* if info bar empty it will shrink into nothingness */
+    max-height: 20%;
+    max-width: 25%;
+    min-height: 0px;
+    min-width: 0px;
+
+    /* stops text overflow */
+    overflow-wrap: break-word;
+
+    /* modern curved look */
+    border-bottom-left-radius: 5px;
     border-bottom-right-radius: 5px;
     box-shadow: 3px 3px 5px lightgrey;
 }
