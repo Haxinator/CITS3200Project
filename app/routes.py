@@ -45,6 +45,18 @@ driver = GraphDatabase.driver(
 )
 
 @app.route("/unitInformation/<string:major>/bridging=<string:bridging>", methods=["GET"])
+def get_majors():
+    with driver.session() as session:
+        query = """
+        MATCH (m:Major)
+        WHERE (m)--()
+        RETURN m.major
+        """
+        results = session.run(query)
+        data = results.data()
+        return jsonify(data)
+
+@app.route("/unitInformation/<string:major>/bridging=<string:bridging>", methods=["GET"])
 def send_unit_information(major, bridging):
     with driver.session() as session:
         units = bridging.split(",") 
