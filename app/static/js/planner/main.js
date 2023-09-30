@@ -245,7 +245,7 @@ function fetchCourseRequirementsAndBuildPlanner() {
     }
 
     const xhttp = new XMLHttpRequest();
-    let server = '/unitInformation/'.concat(major,"/bridging=",bridging);
+    let server = '/unitInformation/'.concat(major,"/bridging=",bridging,"/year=", yearLevel);
     xhttp.open("GET", server, true);
     xhttp.onload = function (e) {
         let response = JSON.parse(xhttp.responseText);
