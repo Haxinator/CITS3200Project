@@ -60,12 +60,6 @@ def get_majors(year):
         RETURN m.major as major, m.name as name
         """
 
-        # alt query
-        """
-        MATCH (m:Major)
-        WHERE (m)--()
-        RETURN m.major as major, m.year_offered as year_offered
-        """
         results = session.run(query)
         data = results.data()
         return jsonify(data)
@@ -92,17 +86,15 @@ def send_unit_information(major, bridging, year):
         WHERE {unit_conditions}
         WITH COLLECT(DISTINCT u) + COLLECT(DISTINCT bridge) AS combined
         UNWIND combined as node
-        OPTIONAL MATCH (node)-[rr:REQUIRES]->(r)
-        WHERE rr.year = "{year}"
+        OPTIONAL MATCH (node)-[or:REQUIRES]->(r_or)
+        WHERE or.year = "{year}" AND or.type = "OR"
+        OPTIONAL MATCH (node)-[and:REQUIRES]->(r_and)
+        WHERE and.year = "{year}" AND and.type = "AND"
         OPTIONAL MATCH (node)-[cc:COREQUIRES]->(c)
         WHERE cc.year = "{year}"
-        WITH node, COLLECT(DISTINCT r.unitcode) as unit_req, COLLECT(DISTINCT c.unitcode) as corequisites
-        WITH node, rr, corequisites,  REDUCE( s = '', node IN unit_req | 
-        CASE WHEN rr.type IS NOT NULL 
-            THEN s + ' ' + node + '_' + rr.type
-            ELSE s + ' ' + node
-        END) as revised_req
-        RETURN node.unitcode as unitcode, node.unitname as unitname, node.type as type, node.semester as semester, node.major as major, node.level as level, node.credit_points as credit_points, node.points_req as points_req, node.enrolment_req as enrolment_req, COLLECT(revised_req) as unit_req, node.incompatible_units as incompatibilities, corequisites
+        WITH node, COLLECT(DISTINCT r_or.unitcode) as or_req, COLLECT(DISTINCT r_and.unitcode) as and_req, COLLECT(DISTINCT c.unitcode) as corequisites
+        WITH node, or_req, and_req, [or_req,and_req] as unit_req, corequisites
+        RETURN node.unitcode as unitcode, node.unitname as unitname, node.type as type, node.semester as semester, node.major as major, node.level as level, node.credit_points as credit_points, node.points_req as points_req, node.enrolment_req as enrolment_req, or_req, and_req, unit_req, node.incompatible_units as incompatibilities, corequisites
         ORDER BY level
         """
 
