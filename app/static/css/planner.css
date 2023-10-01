@@ -21,6 +21,10 @@
     border: 1px dashed black;
 }
 
+.twelvePoint {
+    min-width: 200px;
+}
+
 .heading h3{
     margin: 0px;
 

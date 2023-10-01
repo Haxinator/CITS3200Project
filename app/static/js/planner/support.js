@@ -7,14 +7,17 @@
  * Any questions ask Josh.
 */
 
-import { optionsTable, planner } from "./main.js";
+import { optionsTable, optionsBar, planner, statusBar } from "./main.js";
+import { unitConditionsMet } from "./checks.js";
+import { infoBar } from "./classes.js";
 
 export function creditPointsInPeriod(semester) {
-    totalCreditPoints = 0;
+    let totalCreditPoints = 0;
 
-    for(unitElement of semester.getElementByTagName("*"))
+    for(let unitElement of semester.children)
     {
-        totalCreditPoints += getUnitInformation(unitElement.id).creditPoints
+        //get unit credit points and convert it to int. Add to total.
+        totalCreditPoints += parseInt(getUnitInformation(unitElement.id).creditPoints);
     }
 
     return totalCreditPoints;
@@ -189,6 +192,8 @@ export function clearHighlighting()
         {
             // if zero point unit add back styling.
             unitElement.setAttribute("class", "unit zeroPoint");            
+        } else if (unit.creditPoints == 12) {
+            unitElement.setAttribute("class", "unit twelvePoint");
         } else {
             unitElement.setAttribute("class", "unit");            
         }
@@ -225,7 +230,71 @@ export function clearHighlighting()
             if(unit.creditPoints == 0)
             {
                 unitElement.classList.add("zeroPoint");
+            } else if (unit.creditPoints == 12) {
+                unitElement.setAttribute("class", "unit twelvePoint");
             }
         }
     }
+}
+
+//searches planner and looks for any problems
+//problems being prerequisites not met, credit points not met, etc.
+export function checkPlannerForErrors()
+{
+    // Check for problems.
+
+    let conditionMet = true;
+
+    //check if prerequisites met for all units.
+    for(let unit of planner.unitInformation.values())
+    {
+        let item = getById(unit.unitCode);
+
+        if(!unitConditionsMet(item.id, item.parentElement)){
+            conditionMet = false;
+        }
     }
+
+    // color option units if problems, if they're in the planner
+    for(let unit of optionsTable.unitInformation.values())
+    {
+        let item = getById(unit.unitCode);
+
+        // if unit conditions not met and unit is not in option bar.
+        if(!item.parentElement.id.includes("op"))
+        {
+            // if option unit in planner.
+            if(!unitConditionsMet(item.id, item.parentElement)){
+                conditionMet = false;
+            }
+        } else {
+            // clear problems if option unit placed back into options bar.
+            item.classList.remove("magenta");
+            unit.problems = [];
+        }
+        
+    }
+
+    //clear info bar if prerequisites met.
+    if(conditionMet && !infoBar.messageToDisplay)
+    {
+        infoBar.clearInfo();
+    }
+    
+    //for updating status bar.
+    if(optionsBar.optionsDone)
+    {
+        if(conditionMet)
+        {
+            statusBar.updateStatus("Done");
+            // PUT SHOW EXPORT TO PDF BUTTON HERE.
+        } else {
+            statusBar.updateStatus("Fix Problems");
+        }
+    } else {
+        statusBar.updateStatus("Add Option Units");
+    }
+
+    infoBar.display();
+
+}

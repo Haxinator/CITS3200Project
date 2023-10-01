@@ -26,7 +26,7 @@
 */
 
 
-import { enrollInPeroid, addToRoot, updateInfoBar, allUnitsNotAdded, removeFromArray, getById } from "./support.js";
+import { enrollInPeroid, addToRoot, updateInfoBar, allUnitsNotAdded, removeFromArray, getById, unitExists } from "./support.js";
 import { unitConditionsMet, canEnrollInPeriod } from "./checks.js";
 import { addUnitEvents, addContainerEvents, addSensorEvents, optionButtonEvent} from "./events.js";
 import { optionsTable } from "./main.js";
@@ -35,7 +35,6 @@ import { optionsTable } from "./main.js";
 //------------------- PROTOTYPES ----------------------------------//
 
 export var infoBar;
-export var statusBar;
 
 export class sideBar {
     constructor(){
@@ -153,7 +152,7 @@ export class sideBar {
         }
 
         // only one match if done
-        if(matches.length == 1) {
+        if(matches.length < 2) {
             this.optionsDone = true;
         } else {
             this.optionsDone = false;
@@ -308,13 +307,16 @@ export class Table {
     // makes a unit cell
     makeUnit(unitCode) {
         let unit = this.makeCell(unitCode);
+        let unitInformation = this.unitInformation.get(unitCode);
 
         unit.setAttribute("id", unitCode);
         addUnitEvents(unit);
 
-        if(this.unitInformation.get(unitCode).creditPoints == 0)
+        if(unitInformation.creditPoints == 0)
         {
             unit.classList.add("zeroPoint");
+        } else if (unitInformation.creditPoints == 12) {
+            unit.classList.add("TwelvePoint");
         }
 
         return unit;
@@ -498,10 +500,8 @@ export class Table {
         let table = document.createElement("table");
         let iterations = 0;
         infoBar = new sideBar();
-        statusBar = new sideBar();
 
         infoBar.makeInfoBar();
-        statusBar.makeStatusBar();
 
         this.extractInformation(response);
         table.setAttribute("id", "table");
@@ -523,8 +523,6 @@ export class Table {
         addToRoot(table);
         addToRoot(this.makeSensor());
         infoBar.clearInfo();
-
-        statusBar.updateStatus("Add option Units");
     }
 
     //for the option units side bar.

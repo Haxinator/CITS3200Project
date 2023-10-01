@@ -16,6 +16,7 @@ import {Table, sideBar} from "./classes.js";
 export var planner;
 export var optionsTable;
 export var optionsBar;
+export var statusBar;
 
 //------------------- INSTANCE FUNCTIONS -------------------------//
 
@@ -192,14 +193,26 @@ function fetchOptionUnits() {
         let response = JSON.parse(xhttp.responseText);
         optionsBar = new sideBar();
         optionsTable = new Table();
-        
+        statusBar = new sideBar();
+
         console.log(response);
+        statusBar.makeStatusBar();
 
-        //get legal option unit combinations and store them.
-        fetchOptionUnitCombinations();
+        // if there are option units make the options bar.
+        if(response.length != 0)
+        {
+            //get legal option unit combinations and store them.
+            fetchOptionUnitCombinations();
 
-        //make the options bar.
-        optionsBar.makeOptionsBar(optionsTable, response);
+            //make the options bar.
+            optionsBar.makeOptionsBar(optionsTable, response);
+            statusBar("Add Options");
+        } else {
+            //set options done to true. (since there are no options)
+            optionsBar.optionsDone = true;
+            
+            statusBar.updateStatus("Done");
+        }
     }
     xhttp.send();
 

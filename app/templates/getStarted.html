@@ -26,17 +26,17 @@
 
         <div class="form-group">
             <select class="form-control" name="specialization" id="specialization" required>
-                <option value="" disabled selected>Loading...</option>
-                <!-- <option value="" disabled selected>Select Specialization</option> -->
-                <!-- <option value="SP-EBIOM">Biomedical Engineering</option>
+                <option value="" disabled selected>Commencement Year must be selected to continue</option>
+                <!-- <option value="" disabled selected>Select Specialization</option>
+                <option value="SP-EBIOM">Biomedical Engineering</option>
                 <option value="SP-ECHEM">Chemical Engineering</option>
                 <option value="SP-ECIVI">Civil Engineering</option>
                 <option value="SP-EELEC">Electrical and Electronic Engineering</option>
                 <option value="SP-EENVI">Environmental Engineering</option>
                 <option value="SP-EMECH">Mechanical Engineering</option>
                 <option value="SP-EMINI">Mining Engineering</option>
-                <option value="SP-ESOFT">Software Engineering</option>
-                 -->
+                <option value="SP-ESOFT">Software Engineering</option> -->
+                
             </select>
         </div>
 
@@ -181,7 +181,7 @@
                 
                 console.log(response);
 
-                generateList(response);
+                generateList(response, year);
             }
 
             //send request
@@ -189,24 +189,39 @@
         }
     }
 
-    function generateList(responseJSON)
+    //generate new drop down list from response.
+    function generateList(responseJSON, year)
     {
+        console.log(responseJSON);
         specialization = document.getElementById("specialization");
+        
+        //remove previous options in list.
+        while (specialization.lastElementChild) {
+            specialization.removeChild(specialization.lastElementChild);
+        }
 
+        //make new placeholder.
+        let placeholder = document.createElement("option");
+        placeholder.setAttribute("value" , "");
+        placeholder.setAttribute("disabled" , "");
+        placeholder.setAttribute("Selected" , "");
+        placeholder.innerHTML = `Select Specialization for ${year}`;
+        specialization.appendChild(placeholder);
+
+        //add new options.
         for(major of responseJSON)
         {
             console.log(major);
 
-            let majorCode = major["m.major"];
+            let majorCode = major.major;
+            let majorName = major.name;
+
             let option = document.createElement("option");
-            option.innerHTML = majorCode;
+            option.innerHTML = majorName;
 
             option.setAttribute("value", majorCode);
             specialization.appendChild(option);
         }
-
-        //update place holder to remove "loading..."
-        specialization.firstElementChild.innerHTML = "Select Specialization";
         
     }
 

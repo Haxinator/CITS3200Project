@@ -12,9 +12,9 @@
 */
 
 import {canEnrollInPeriod, unitConditionsMet} from "./checks.js";
-import { updateInfoBar, getPeriodOffered, getById, getByPeriod, enrollInPeroid, clearHighlighting, unitExists, getUnitInformation, isOption, creditPointsInPeriod } from "./support.js";
-import { optionsBar, optionsTable, planner } from "./main.js";
-import { infoBar, statusBar } from "./classes.js";
+import { updateInfoBar, getPeriodOffered, getById, getByPeriod, enrollInPeroid, clearHighlighting, unitExists, getUnitInformation, isOption, creditPointsInPeriod, checkPlannerForErrors } from "./support.js";
+import { optionsBar, statusBar, optionsTable, planner } from "./main.js";
+import { infoBar } from "./classes.js";
 
 
 //to add events to unit cells.
@@ -235,9 +235,9 @@ function drop(e)
     //if hovering over container
     if(e.currentTarget == e.target)
     {
-        //only add to sem if less than 4 units.
+        //only add to sem if less than 24 points
         //and semester is valid
-        if(e.currentTarget.childElementCount < 4 && 
+        if(creditPointsInPeriod(e.currentTarget) < 24 && 
             canEnrollInPeriod(id, e.currentTarget))
         {
             // e.target.appendChild(item);
@@ -270,7 +270,7 @@ function drop(e)
                 if(e.currentTarget.id != item.parentElement.id)
                 {
                     // BUG NOT PRINTING FOR SOME REASON
-                    infoBar.addInfo(`${e.currentTarget.id} is full`);
+                    infoBar.addInfo(`${e.currentTarget.id} is full <br> A maximum of 24 credit points can be taken per semester (unless approval is granted to overload).`);
                 } else {
                     // don't print error if unit is already enrolled in period
                     //else append to end of row.
@@ -347,67 +347,10 @@ function drop(e)
             infoBar.addInfo(`${id} only available in ${getPeriodOffered(id)} <br>
                             ${e.target.id} only available in ${getPeriodOffered(e.target.id)}`);
         }
-    }
+    }    
 
-    var conditionMet = true;
-    //check if prerequisites met for all units.
-    for(let unit of planner.unitInformation.values())
-    {
-        item = getById(unit.unitCode);
-
-        if(!unitConditionsMet(item.id, item.parentElement)){
-            conditionMet = false;
-        }
-    }
-
-    // color option units if problems, if they're in the planner
-    for(let unit of optionsTable.unitInformation.values())
-    {
-        item = getById(unit.unitCode);
-
-        // if unit conditions not met and unit is not in option bar.
-        if(!item.parentElement.id.includes("op"))
-        {
-            // if option unit in planner.
-            if(!unitConditionsMet(item.id, item.parentElement)){
-                conditionMet = false;
-            }
-        } else {
-            // clear problems if unit placed back into options bar.
-            item.classList.remove("magenta");
-            unit.problems = [];
-        }
-        
-    }
-
-    // removes invalid semester from info bar hence why its commented.
-    //clear info bar if prerequisites met.
-    if(conditionMet && !infoBar.messageToDisplay)
-    {
-        infoBar.clearInfo();
-    }
-
-    console.log(optionsBar.optionsDone);
-
-
-    //for updating status.
-    if(optionsBar.optionsDone)
-    {
-        if(conditionMet)
-        {
-            statusBar.updateStatus("Done");
-            // PUT SHOW EXPORT TO PDF BUTTON HERE.
-        } else {
-            statusBar.updateStatus("Fix Problems");
-        }
-    } else {
-        statusBar.updateStatus("Add Option Units");
-    }
-
-    infoBar.display();
-
-    //adjust options bar
-    
+    //check and alert user to any errors.
+    checkPlannerForErrors();
 
     //show item
     item.classList.remove("hide");
@@ -445,57 +388,8 @@ function appendRow(e)
             recordUnit(unitCode);
         }
 
-        if(optionsBar.optionsDone)
-        {
-            if(getUnitInformation(unitCode))
-            {
-                statusBar.updateStatus("Done");
-            } else {
-                statusBar.updateStatus("Fix Problems");
-            }
-        } else {
-            statusBar.updateStatus("Add Option Units");
-        }
-
-
-        // problem checking.
-        var conditionMet = true;
-        //check if prerequisites met for all units.
-        for(let unit of planner.unitInformation.values())
-        {
-            item = getById(unit.unitCode);
-    
-            if(!unitConditionsMet(item.id, item.parentElement)){
-                conditionMet = false;
-            }
-        }
-    
-        // color option units if problems, if they're in the planner
-        for(let unit of optionsTable.unitInformation.values())
-        {
-            item = getById(unit.unitCode);
-    
-            // if unit conditions not met and unit is not in option bar.
-            if(!item.parentElement.id.includes("op"))
-            {
-                // if option unit in planner.
-                if(!unitConditionsMet(item.id, item.parentElement)){
-                    conditionMet = false;
-                }
-            } else {
-                // clear problems if unit placed back into options bar.
-                item.classList.remove("magenta");
-                unit.problems = [];
-            }
-            
-        }
-    
-        // removes invalid semester from info bar hence why its commented.
-        //clear info bar if prerequisites met.
-        if(conditionMet && !infoBar.messageToDisplay)
-        {
-            infoBar.clearInfo();
-        }
+        //check planner for invalid unit placements.
+        checkPlannerForErrors();
 
     } else {
         updateInfoBar("Course duration is a maximum of 10 years!");
