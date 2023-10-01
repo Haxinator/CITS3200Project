@@ -144,14 +144,21 @@
     }
 
     $(document).ready(function() {
-        // Set the initial state of "No" buttons to blue
-        $('.btn-group-toggle label:contains("No")').addClass('active').css('background-color', 'rgb(50, 50, 228)');
+        // Set the initial state of both buttons to gray
+        $('.btn-group-toggle label:contains("No")').addClass('active').css('background-color', 'gray');
+        $('.btn-group-toggle label:contains("Yes")').addClass('active').css('background-color', 'gray');
 
         // Toggle the active state and background color when a button is clicked
         $('.btn-group-toggle label').click(function() {
-            $(this).addClass('active').css('background-color', 'rgb(50, 50, 228)').siblings().removeClass('active').css('background-color', 'lightgray');
+            $(this).addClass('active').css('background-color', 'rgb(50, 50, 228)').siblings().removeClass('active').css('background-color', 'darkgray');
         });
+
+        //query database to get list of majors.
+
     });
+
+    //put xhttp request HERE
+    
 </script>
 
 
