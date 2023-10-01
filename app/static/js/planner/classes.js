@@ -35,7 +35,6 @@ import { optionsTable } from "./main.js";
 //------------------- PROTOTYPES ----------------------------------//
 
 export var infoBar;
-export var statusBar;
 
 export class sideBar {
     constructor(){
@@ -153,7 +152,7 @@ export class sideBar {
         }
 
         // only one match if done
-        if(matches.length == 1) {
+        if(matches.length < 2) {
             this.optionsDone = true;
         } else {
             this.optionsDone = false;
@@ -501,10 +500,8 @@ export class Table {
         let table = document.createElement("table");
         let iterations = 0;
         infoBar = new sideBar();
-        statusBar = new sideBar();
 
         infoBar.makeInfoBar();
-        statusBar.makeStatusBar();
 
         this.extractInformation(response);
         table.setAttribute("id", "table");
@@ -526,8 +523,6 @@ export class Table {
         addToRoot(table);
         addToRoot(this.makeSensor());
         infoBar.clearInfo();
-
-        statusBar.updateStatus("Add option Units");
     }
 
     //for the option units side bar.
