@@ -235,9 +235,9 @@ function drop(e)
     //if hovering over container
     if(e.currentTarget == e.target)
     {
-        //only add to sem if less than 4 units.
+        //only add to sem if less than 24 points
         //and semester is valid
-        if(e.currentTarget.childElementCount < 4 && 
+        if(creditPointsInPeriod(e.currentTarget) < 24 && 
             canEnrollInPeriod(id, e.currentTarget))
         {
             // e.target.appendChild(item);
@@ -270,7 +270,7 @@ function drop(e)
                 if(e.currentTarget.id != item.parentElement.id)
                 {
                     // BUG NOT PRINTING FOR SOME REASON
-                    infoBar.addInfo(`${e.currentTarget.id} is full`);
+                    infoBar.addInfo(`${e.currentTarget.id} is full <br> A maximum of 24 credit points can be taken per semester (unless approval is granted to overload).`);
                 } else {
                     // don't print error if unit is already enrolled in period
                     //else append to end of row.

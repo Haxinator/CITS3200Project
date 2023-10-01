@@ -10,11 +10,12 @@
 import { optionsTable, planner } from "./main.js";
 
 export function creditPointsInPeriod(semester) {
-    totalCreditPoints = 0;
+    let totalCreditPoints = 0;
 
-    for(unitElement of semester.getElementByTagName("*"))
+    for(let unitElement of semester.children)
     {
-        totalCreditPoints += getUnitInformation(unitElement.id).creditPoints
+        //get unit credit points and convert it to int. Add to total.
+        totalCreditPoints += parseInt(getUnitInformation(unitElement.id).creditPoints);
     }
 
     return totalCreditPoints;
@@ -189,6 +190,8 @@ export function clearHighlighting()
         {
             // if zero point unit add back styling.
             unitElement.setAttribute("class", "unit zeroPoint");            
+        } else if (unit.creditPoints == 12) {
+            unitElement.setAttribute("class", "unit twelvePoint");
         } else {
             unitElement.setAttribute("class", "unit");            
         }
@@ -225,6 +228,8 @@ export function clearHighlighting()
             if(unit.creditPoints == 0)
             {
                 unitElement.classList.add("zeroPoint");
+            } else if (unit.creditPoints == 12) {
+                unitElement.setAttribute("class", "unit twelvePoint");
             }
         }
     }

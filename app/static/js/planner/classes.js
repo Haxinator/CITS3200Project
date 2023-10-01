@@ -26,7 +26,7 @@
 */
 
 
-import { enrollInPeroid, addToRoot, updateInfoBar, allUnitsNotAdded, removeFromArray, getById } from "./support.js";
+import { enrollInPeroid, addToRoot, updateInfoBar, allUnitsNotAdded, removeFromArray, getById, unitExists } from "./support.js";
 import { unitConditionsMet, canEnrollInPeriod } from "./checks.js";
 import { addUnitEvents, addContainerEvents, addSensorEvents, optionButtonEvent} from "./events.js";
 import { optionsTable } from "./main.js";
@@ -308,13 +308,16 @@ export class Table {
     // makes a unit cell
     makeUnit(unitCode) {
         let unit = this.makeCell(unitCode);
+        let unitInformation = this.unitInformation.get(unitCode);
 
         unit.setAttribute("id", unitCode);
         addUnitEvents(unit);
 
-        if(this.unitInformation.get(unitCode).creditPoints == 0)
+        if(unitInformation.creditPoints == 0)
         {
             unit.classList.add("zeroPoint");
+        } else if (unitInformation.creditPoints == 12) {
+            unit.classList.add("TwelvePoint");
         }
 
         return unit;
