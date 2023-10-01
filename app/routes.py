@@ -57,7 +57,7 @@ def get_majors(year):
         query = f"""
         MATCH (m:Major)
         WHERE (m)--() AND m.year_offered CONTAINS "{year}"
-        RETURN m.major as major
+        RETURN m.major as major, m.name as name
         """
 
         # alt query
