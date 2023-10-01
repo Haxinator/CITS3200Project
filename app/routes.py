@@ -56,8 +56,15 @@ def get_majors(year):
     with driver.session() as session:
         query = f"""
         MATCH (m:Major)
-        WHERE (m)--() AND m.year_offered CONTAINS {year}
-        RETURN m.major
+        WHERE (m)--() AND m.year_offered CONTAINS "{year}"
+        RETURN m.major as major, m.name as name
+        """
+
+        # alt query
+        """
+        MATCH (m:Major)
+        WHERE (m)--()
+        RETURN m.major as major, m.year_offered as year_offered
         """
         results = session.run(query)
         data = results.data()
