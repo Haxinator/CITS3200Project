@@ -184,11 +184,6 @@ export function unitPreRequisitiesMet(unitCode, container)
 
     let orMet = orPrerequisites.length > 0? false : true; 
 
-    console.log(unit);
-    console.log(orPrerequisites);
-    console.log(andPrerequisites);
-
-
     //needs to be revised for AND OR.
     
     //AND requirements
@@ -245,7 +240,6 @@ export function unitPreRequisitiesMet(unitCode, container)
         }
     }
 
-    console.log("prereqs for: " + unitCode);
     let noUnitCount = 0;
     let orErrorMessage = "Either";
 
@@ -256,10 +250,6 @@ export function unitPreRequisitiesMet(unitCode, container)
         let prerequisiteUnit = getUnitInformation(prerequisite);
 
         if (prerequisiteUnit != undefined){
-            console.log(prerequisite);
-            console.log(prerequisiteUnit.enrollmentPeriod);
-            console.log(container.id);
-            console.log(prerequisiteUnit.enrollmentPeriod < container.id);
 
             if(prerequisiteUnit.enrollmentPeriod < container.id && 
                     prerequisiteUnit.enrollmentPeriod.length == container.id.length) {
@@ -316,9 +306,6 @@ export function unitPreRequisitiesMet(unitCode, container)
         infoBar.addInfo(orErrorMessage + ` must be done before ${unitCode}!`); 
         unit.problems.push(orErrorMessage + `must be done before ${unitCode}!`);
     }
-
-    console.log(prerequisitesMet)
-    console.log(orMet)
 
     return prerequisitesMet && orMet;
 }

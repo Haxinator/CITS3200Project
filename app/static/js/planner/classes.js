@@ -101,9 +101,10 @@ export class sideBar {
 
     //add unit to list
     pushUnit(unitCode){
-        //if not in the list and list is not full.
-        if(this.currentOptionCombo.indexOf(unitCode) == -1 &&
-            this.currentOptionCombo.length < 3)
+        //if not in the list
+        //used to check if full, but don't know in advance how many option units
+        //needed.
+        if(this.currentOptionCombo.indexOf(unitCode) == -1)
         {
             //add unit to end of list.
             this.currentOptionCombo.push(unitCode);
@@ -127,6 +128,9 @@ export class sideBar {
         // console.log(this.currentOptionCombo);
         let matches = [];
 
+        // console.log(this.optionCombinations);
+        console.log(this.currentOptionCombo);
+
 
         for(let combination of this.optionCombinations)
         {
@@ -146,7 +150,7 @@ export class sideBar {
             // print matching combinations
             if(match)
             {
-                // console.log(combination);
+                console.log(combination);
                 matches.push(combination);
             }
         }

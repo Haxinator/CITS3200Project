@@ -267,7 +267,8 @@ function drop(e)
             // if option unit record change.
             if(isOption(id))
             {
-                console.log(getById("GENG5514"));
+                // console.log(getById("GENG5514"));
+                // console.log(getById("ENVE4401"));
 
                 recordUnit(id);
             }
@@ -461,7 +462,6 @@ function formatInfo(label, info)
 //turns prerequisite list into an easy to read string.
 function formatPrerequisites(prerequisitesList)
 {
-    console.log(prerequisitesList);
     let andList = prerequisitesList[1];
     let orList = prerequisitesList[0];
     let string = "";
