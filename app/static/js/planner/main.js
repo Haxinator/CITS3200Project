@@ -37,6 +37,10 @@ getById("root").parentElement.parentElement.addEventListener("click", (e) =>{
         //removing highlighting and info bar text.
         updateInfoBar("");
 
+        //display current status.
+        statusBar.displayStatus();
+
+        //clear all highlighting.
         clearHighlighting();
     }
     
@@ -79,7 +83,13 @@ getById("SemesterFilter").addEventListener("click", () => {
             item.classList.toggle("yellow");
         }
     }
-        updateInfoBar("Legend: <br>Blue - S1, Purple - S2, Yellow - S1/S2, magenta - NS");
+        let legend = new Map([
+        ["S1", "blue"],
+        ["S2", "purple"],
+        ["S1/S2", "yellow"], 
+        ["NS", "magenta"]]);
+
+        statusBar.displayLegend(legend);
 });
 
 getById("corequisiteFilter").addEventListener("click", () =>
@@ -111,7 +121,11 @@ getById("corequisiteFilter").addEventListener("click", () =>
         }
     }
 
-    updateInfoBar("Legend: Blue - Unit has Corequisites");
+    let legend = new Map([
+        ["Unit has Corequisites", "blue"]
+    ]);
+
+    statusBar.displayLegend(legend);
 });
 
 getById("prequisiteFilter").addEventListener("click", () =>
@@ -143,7 +157,11 @@ getById("prequisiteFilter").addEventListener("click", () =>
         }
     }
 
-    updateInfoBar("Legend: Yellow - Unit has Prequisites");
+    let legend = new Map([
+        ["Unit has Prerequisites", "yellow"]
+    ]);
+
+    statusBar.displayLegend(legend);
 });
 
 getById("pointRequirementsFilter").addEventListener("click", () =>
@@ -173,7 +191,12 @@ getById("pointRequirementsFilter").addEventListener("click", () =>
             item.classList.remove("yellow");
         }
     }
-    updateInfoBar("Legend: Yellow - Unit has point requirements");
+
+    let legend = new Map([
+        ["Unit has Point Requirements", "yellow"]
+    ]);
+
+    statusBar.displayLegend(legend);
 });
 
 // --------------------------- XHTTP ---------------------------------//
@@ -206,7 +229,7 @@ function fetchOptionUnits() {
 
             //make the options bar.
             optionsBar.makeOptionsBar(optionsTable, response);
-            statusBar.updateStatus("Add Options");
+            statusBar.updateStatus("Add Option Units");
         } else {
             //set options done to true. (since there are no options)
             optionsBar.optionsDone = true;

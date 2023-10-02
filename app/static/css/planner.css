@@ -94,6 +94,25 @@ h2 {
     text-align: center;
 }
 
+.colourBox {
+    display: inline-block;
+    padding: 10px;
+    border: solid 1px black;
+    vertical-align: middle;
+    margin-left: 5px;
+}
+
+.pair {
+    display: inline-block;
+    margin: 10px;
+}
+
+.pair p {
+    margin: 0px;
+    display: inline-block;
+    vertical-align: middle;
+}
+
 
 /* 
 Using IBM colour pallete
@@ -125,6 +144,11 @@ https://davidmathlogic.com/colorblind/#%23648FFF-%23785EF0-%23DC267F-%23FE6100-%
 
 .purpleStripe{
     background-image: linear-gradient(45deg, #785EF0 25%, white 25%, white 50%, #785EF0 50%, #785EF0 75%, white 75%, white 100%);
+    background-size: 56.57px 56.57px;    
+}
+
+.yellowStripe{
+    background-image: linear-gradient(45deg, #FFB000 25%, white 25%, white 50%, #FFB000 50%, #FFB000 75%, white 75%, white 100%);
     background-size: 56.57px 56.57px;    
 }
 
@@ -267,8 +291,6 @@ https://davidmathlogic.com/colorblind/#%23648FFF-%23785EF0-%23DC267F-%23FE6100-%
     /* stops text overflow */
     overflow-wrap: break-word;
 
-    /* modern curved look */
-
 }
 
 /* ------------------------------- STATUS BAR CSS --------------------------- */
@@ -288,8 +310,8 @@ https://davidmathlogic.com/colorblind/#%23648FFF-%23785EF0-%23DC267F-%23FE6100-%
     z-index: 900;
 
     /* if info bar empty it will shrink into nothingness */
-    max-height: 20%;
-    max-width: 25%;
+    max-height: 30%;
+    max-width: 100%;
     min-height: 0px;
     min-width: 0px;
 
@@ -310,6 +332,7 @@ https://davidmathlogic.com/colorblind/#%23648FFF-%23785EF0-%23DC267F-%23FE6100-%
     position: fixed;
     overflow-y: auto;
     overflow-x: hidden;
+    border: black solid 1px;
 
     /* Muslim happy :) */
     bottom: 0;

@@ -198,8 +198,12 @@ function printInfo(e)
     //highlight all units where this unit is a prerequisite
     for(let otherUnit of planner.unitInformation.values())
     {
+        console.log(otherUnit);
+        let andPrerequisites = otherUnit.prerequisites[1];
+        let orPrerequisites = otherUnit.prerequisites[0];
+
         //highlight if unit clicked on is required for this unit.
-        if(otherUnit.prerequisites.includes(unitCode))
+        if(andPrerequisites.includes(unitCode))
         {
             let unitElement = getById(otherUnit.unitCode);
 
@@ -209,8 +213,32 @@ function printInfo(e)
             } else {
                 unitElement.classList.add("yellow");
             }
+        } else if(orPrerequisites.includes(unitCode)) {
+            let unitElement = getById(otherUnit.unitCode);
+
+            if(otherUnit.hasProblems())
+            {
+                unitElement.classList.add("redYellowStripe");
+            } else {
+                unitElement.classList.add("yellowStripe");
+            }
         }
     }
+
+    //maybe if planner doesn't have problems don't display legend for it.
+    let legend = new Map([
+        ["Prerequisite", "purple"],
+        ["Or Prerequisite", "purpleStripe"],
+        ["Corequisite", "blue"],
+        ["Required for", "yellow"], //maybe come up with concise name
+        ["or Unit for", "yellowStripe"],
+        ["Prerequisite with Problem", "redPurpleStripe"],
+        ["Corequisite with Problem", "redBlueStripe"],
+        ["Prerequisite for with problem", "redYellowStripe"]
+    ]);
+
+    statusBar.displayLegend(legend);
+
 }
 
 //--------------------- EVENT LISTENER FUNCTIONS -------------------------//
@@ -465,8 +493,6 @@ function printUnitInfo(unitCode)
     str += formatInfo("Prerequisites", formatPrerequisites(unit.prerequisites));
     str += formatInfo("Corequisites", unit.corequisites); //previously or concurrently.
     str += formatInfo("Point Requirements", unit.pointRequirements);
-    str += formatInfo("Enrollment Requirements", unit.enrollmentRequirements);
-    str += "Legend: <br> green - prerequisite,<br> blue - corequisite, <br>yellow - unit is prerequisite for"
 
     return str;
 }

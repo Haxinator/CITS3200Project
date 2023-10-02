@@ -43,6 +43,7 @@ export class sideBar {
         this.messageToDisplay = false;
         this.innerHTML = "";
         this.optionsDone = false;
+        this.lastStatus = "";
     }
 
     // for updating content of info bar.
@@ -70,7 +71,59 @@ export class sideBar {
     }
 
     updateStatus(innerHTML) {
-        getById("statusBar").firstElementChild.innerHTML = innerHTML;
+        this.clearStatus();
+
+        let text = document.createElement("p");
+        text.innerHTML = innerHTML;
+        getById("statusBar").append(text);
+        this.lastStatus = innerHTML;
+    }
+
+    //displays last status bar update.
+    //clears previous.
+    displayStatus()
+    {
+        this.clearStatus();
+
+        let text = document.createElement("p");
+        text.innerHTML = this.lastStatus;
+        getById("statusBar").append(text);
+    }
+
+    //clears all text/legend from status bar.
+    clearStatus()
+    {
+        //remove previous text/legend from status bar.
+        while(getById("statusBar").lastChild)
+        {
+            getById("statusBar").lastChild.remove();
+        }
+    }
+
+    //displays legend in status bar.
+    //@param dictionary is a map containing the legend.
+    displayLegend(dictionary) {
+
+        this.clearStatus();
+
+        for(let key of dictionary.keys())
+        {
+            let pair = document.createElement("span");
+            let box = document.createElement("div");
+            let text = document.createElement("p");
+
+            box.classList.add("colourBox");
+            // box.setAttribute("style", "backgroundcolor:" + dictionary.get(key));
+            box.classList.add(dictionary.get(key));
+            text.classList.add("key");
+            text.innerHTML = key;
+
+            pair.classList.add("pair");
+            pair.appendChild(text);
+            pair.appendChild(box);
+
+            getById("statusBar").appendChild(pair);
+        }
     }
 
     makeStatusBar() {
