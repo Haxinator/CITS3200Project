@@ -301,3 +301,5 @@ function fetchCourseRequirementsAndBuildPlanner() {
     }
     xhttp.send();
 }
+
+

@@ -32,14 +32,10 @@ def preferences():
     specialization = request.form['specialization']
     yearLevel = request.form['yearLevel']
     #prints out unit code SP-ECHEM
+    #Create vars to pass to preferences page
     mathSpecialist = request.form['mathSpecialist']
     chemistry = request.form['chemistry']
     physics = request.form['physics']
-    print(specialization)
-    # Hold responses as yes or no strings.
-
-    # Do something with the form data (e.g., save to the database)
-
     return render_template('preferences.html', title='Preferences', specialization = specialization, mathSpecialist = mathSpecialist, chemistry = chemistry, physics = physics, yearLevel = yearLevel) # Render the preferences page
 
 
