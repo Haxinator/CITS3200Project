@@ -72,6 +72,9 @@ function hideOptionBar() {
 function recordUnit(unitCode)
 {
     let unitElement = getById(unitCode);
+
+    console.log(unitCode);
+
     //if in placed in option container
     if(unitElement.parentElement.id.includes("op"))
     {
@@ -258,17 +261,26 @@ function drop(e)
     {
         //only add to sem if less than 24 points
         //and semester is valid
+
+        console.log("at this line");
+
+        //BUG
+        //SHOULD ENTER HERE BUT IT DOESN'T!!!!
         if(creditPointsInPeriod(e.currentTarget) < 24 && 
             canEnrollInPeriod(id, e.currentTarget))
         {
             // e.target.appendChild(item);
             enrollInPeroid(item, e.target);
+            console.log("at this line");
+
 
             // if option unit record change.
             if(isOption(id))
             {
                 // console.log(getById("GENG5514"));
                 // console.log(getById("ENVE4401"));
+                console.log("at this line");
+
 
                 recordUnit(id);
             }
@@ -276,8 +288,17 @@ function drop(e)
         } else {
 
             if (e.currentTarget.id.includes("op")) {
-                //if option bar
+
                 enrollInPeroid(item, e.target);
+
+                //adding option unit back to option container.
+                if(isOption(id))
+                {
+                    recordUnit(id);
+                }
+                //if option bar
+
+                //should record unit for option bar here
             }
             // BUG THAT I NEED TO FIX.
             // should check number of credit points instead

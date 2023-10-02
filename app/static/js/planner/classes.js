@@ -150,7 +150,7 @@ export class sideBar {
             // print matching combinations
             if(match)
             {
-                console.log(combination);
+                // console.log(combination);
                 matches.push(combination);
             }
         }
