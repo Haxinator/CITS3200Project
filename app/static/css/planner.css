@@ -296,16 +296,20 @@ https://davidmathlogic.com/colorblind/#%23648FFF-%23785EF0-%23DC267F-%23FE6100-%
 /* ---------------------------------- INFO BAR  CSS --------------------------- */
 
 #infoBar {
-    background-color: white;
+    background-color: rgb(32, 31, 31);
+    /* padding-left: 10px; */
     margin: auto;
     position: fixed;
+    font-family: 'Roboto', sans-serif;
+    color: #edebeb;
+    scale: 1.05;
     overflow-y: auto;
     overflow-x: hidden;
+    /* padding: 15px; */
 
-    /* Muslim happy :) */
     bottom: 0;
     top: 0;
-    left: 0;
+    left: 10;
     z-index: 900;
 
     /* if info bar empty it will shrink into nothingness */
@@ -318,9 +322,30 @@ https://davidmathlogic.com/colorblind/#%23648FFF-%23785EF0-%23DC267F-%23FE6100-%
     overflow-wrap: break-word;
 
     /* modern curved look */
-    border-top-right-radius: 5px;
-    border-bottom-right-radius: 5px;
-    box-shadow: 3px 3px 5px lightgrey;
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+    box-shadow: 3px 3px 5px rgb(58, 58, 58);
+}
+#infoBar:hover {
+    transform: scale(1.01); /* scales the infoBar by 5% */
+    transition: transform 0.3s ease; /* smooth transition */
+}
+
+#infoBar h5 {
+    font-weight: 700;
+    font-size: 1.2em;
+    color: #d4d3d3;
+    margin-bottom: 10px;
+}
+
+#infoBar span {
+    font-weight: bold;
+}
+
+#infoBar p {
+    font-size: 1em;
+    line-height: 1.5em;
+    margin: 0;
 }
 
 /* --------------------------------------- treeview css -------------*/
@@ -336,4 +361,26 @@ https://davidmathlogic.com/colorblind/#%23648FFF-%23785EF0-%23DC267F-%23FE6100-%
 
 #tree_display {
     padding: 5%;
+}
+
+
+.button-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px; /* Adjust the space between buttons */
+}
+
+.button-container .button {
+    width: 250px; /* Fixed width */
+    height: 51px; /* Fixed height */
+    font-size: 14px; /* Adjust font size */
+    text-align: center;
+    overflow: hidden; /* Ensure content does not overflow the button */
+    transition: all 0.3s; /* Smooth transition */
+}
+
+.button-container .button:hover {
+    transform: scale(1.05); /* Increase the size of the button */
+    cursor: pointer;
 }

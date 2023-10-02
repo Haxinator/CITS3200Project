@@ -504,9 +504,8 @@ function appendRow(e)
 
 
 //formats unit information
-function printUnitInfo(unitCode)
-{
-    let unit = getUnitInformation(unitCode);
+function printUnitInfo(unitCode) {
+    let unit = planner.unitInformation.get(unitCode);
     let str = "";
 
     str += `<h5>${unit.name}</h5>`;
@@ -515,19 +514,24 @@ function printUnitInfo(unitCode)
     str += formatInfo("Semester", unit.semester);
     str += formatInfo("Credit Points", unit.creditPoints);
     str += formatInfo("Prerequisites", unit.prerequisites);
-    str += formatInfo("Corequisites", unit.corequisites); //previously or concurrently.
+    str += formatInfo("Corequisites", unit.corequisites);
     str += formatInfo("Point Requirements", unit.pointRequirements);
-    str += formatInfo("Enrollment Requirements", unit.enrollmentRequirements);
-    str += "Legend: <br> green - prerequisite,<br> blue - corequisite, <br>yellow - unit is prerequisite for"
+    // str += formatInfo("Enrollment Requirements", unit.enrollmentRequirements);
+    str += formatColorLegend("Legend", "<br>Green - Prerequisite <br>Blue - Corequisite<br>Yellow - Dependent Units");
 
     return str;
 }
-
 //@param label is the label (or name of unit information)
 //@param info is the unit information
 // formatInfo("Unit", unit.name)
 // `Unit: "${unit.name}"<br>`
-function formatInfo(label, info)
-{
+function formatInfo(label, info) {
     return `<span style="font-weight: bold;">${label}</span>: ${info}<br>`;
+}
+
+function formatColorLegend(label, info) {
+    let coloredInfo = info.replace("Green", '<span style="color: green;">Green</span>')
+                           .replace("Blue", '<span style="color: blue;">Blue</span>')
+                           .replace("Yellow", '<span style="color: yellow;">Yellow</span>');
+    return `<span style="font-weight: bold;">${label}</span>: ${coloredInfo}<br>`;
 }

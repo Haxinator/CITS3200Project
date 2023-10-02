@@ -260,3 +260,5 @@ function fetchCourseRequirementsAndBuildPlanner() {
     }
     xhttp.send();
 }
+
+

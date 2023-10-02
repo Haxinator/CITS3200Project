@@ -8,8 +8,6 @@ Is there are way to highlight or visualise prerequisite pathways A number of opt
 https://teaching.csse.uwa.edu.au/units/CITS3200/project/offered/Projects_2023/Hesterman_Visualising_prerequisites.html
 
 
-Any hours reported must be supported by github submissions.
-
 This Repo contains:
 - All the documentation for group admin.
 - Project Code.

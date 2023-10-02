@@ -28,14 +28,14 @@
             </div>
          </div>
          <hr>
-
-        <button id="SemesterFilter" class="button">Semesters Offered</button>
-        <!-- <button id="ProblemFilter" class="button">Problems</button> -->
-        <button id="corequisiteFilter" class="button">Units with Corequisites</button>
-        <button id="prequisiteFilter" class="button">Units with Prequisites</button>
-        <button id="pointRequirementsFilter" class="button">Units with Point Requirements</button>
-        <!-- <button onclick="get_option_units()">aaaa</button> -->
-        <!-- <div id="nodes"></div> -->
+            <div class="button-container">
+                <button id="SemesterFilter" class="button">Semesters Offered</button>
+                <!-- <button id="ProblemFilter" class="button">Problems</button> -->
+                <button id="corequisiteFilter" class="button">Units with Corequisites</button>
+                <button id="prequisiteFilter" class="button">Units with Prequisites</button>
+                <button id="pointRequirementsFilter" class="button">Units with Point Requirements</button>
+                <button id="exportPdf" class="button" onclick="exportToPDF()">Export to PDF</button>
+            </div>
     </main>
 
     <div id="treeview">
@@ -52,11 +52,7 @@
             <div id="err_msg_treeview"></div>
             <div id="unit_tree"></div>
         </div>
-        <!-- <h6 id="unitchosen"></h6>
-        <h6 id="prereqs_head"></h6>
-        <div id="prereqs"></div>
-        <h6 id="child_head"></h6>
-        <div id="child_units"></div> -->
+       
     </div>
         
     <script>
@@ -69,18 +65,41 @@
         var isChem = "{{ chemistry }}"
 
 
-        // Now you can use the specialization variable in your JavaScript code
-        // Example: Display a welcome message in an alert box
-        // alert("Welcome to the " + specialization + " program!");
-        // if (isSpec == "yes"){
-        //     alert("You have passed Maths specialist! well done!")
-        // }
-        // else{
-        //     alert("You have not completed or passed maths specialist. Unlucky Bud")
-        // }
+        // This function makes a clone of the current table div structure and pastes it within a new opened window
+        // It then adds the the css stylesheet and calls .print() method to print the page. If the user clicks print or cancel,
+        // it will close the new page and return you back to the current process. 
+        function exportToPDF() {
+            // Get the table element
+            var element = document.getElementById("table").outerHTML;
 
-        
+            // Open a new window
+            var printWindow = window.open('', '_blank');
+
+            // Write the element and link to the external stylesheet to the new window's document
+            printWindow.document.write(`
+                <html>
+                    <head>
+                        <title>Print</title>
+                        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/planner.css') }}">
+                    </head>
+                    <body>
+                        ${element}
+                    </body>
+                </html>
+            `);
+
+            // Call the print method
+            printWindow.document.close();
+            printWindow.print();
+
+            // Attempt to close the window after printing
+            printWindow.onafterprint = function() {
+                printWindow.close();
+            };
+        }
+                
     </script>
+    <!-- Add all the neccessary scripts -->
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script type="module" src="{{ url_for('static', filename='js/planner/main.js') }}"></script>
     <script type="text/javascript" src="{{ url_for('static', filename='js/treeview.js') }}"></script>
