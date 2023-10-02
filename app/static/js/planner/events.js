@@ -120,6 +120,8 @@ function printInfo(e)
 {
     let unitCode = e.currentTarget.id;
     let unit = getUnitInformation(unitCode);
+    let andPrerequisites = unit.prerequisites[1];
+    let orPrerequisites = unit.prerequisites[0];
 
     if(unit.hasProblems())
     {
@@ -133,8 +135,8 @@ function printInfo(e)
     //highlight unit selected
     e.currentTarget.classList.add("grey");
 
-    //highlight prerequisites
-    for(let prerequisite of unit.prerequisites)
+    //highlight and prerequisites
+    for(let prerequisite of andPrerequisites)
     {
         let prerequisiteUnit = getUnitInformation(prerequisite);
 
@@ -147,6 +149,25 @@ function printInfo(e)
                 unitElement.classList.add("redPurpleStripe");
             } else {
                 unitElement.classList.add("purple");
+            }
+            //it would be nice to add an arrow going from prerequiste to unit.
+        }
+    }
+
+    //highlight or prerequisites
+    for(let prerequisite of orPrerequisites)
+    {
+        let prerequisiteUnit = getUnitInformation(prerequisite);
+
+        if(unitExists(prerequisite))
+        {
+            let unitElement = getById(prerequisite);
+            
+            if(prerequisiteUnit.hasProblems())
+            {
+                unitElement.classList.add("redPurpleStripe");
+            } else {
+                unitElement.classList.add("purpleStripe");
             }
             //it would be nice to add an arrow going from prerequiste to unit.
         }
@@ -440,6 +461,7 @@ function formatInfo(label, info)
 //turns prerequisite list into an easy to read string.
 function formatPrerequisites(prerequisitesList)
 {
+    console.log(prerequisitesList);
     let andList = prerequisitesList[1];
     let orList = prerequisitesList[0];
     let string = "";

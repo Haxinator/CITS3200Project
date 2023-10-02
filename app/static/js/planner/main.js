@@ -206,7 +206,7 @@ function fetchOptionUnits() {
 
             //make the options bar.
             optionsBar.makeOptionsBar(optionsTable, response);
-            statusBar("Add Options");
+            statusBar.updateStatus("Add Options");
         } else {
             //set options done to true. (since there are no options)
             optionsBar.optionsDone = true;

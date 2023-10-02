@@ -123,6 +123,11 @@ https://davidmathlogic.com/colorblind/#%23648FFF-%23785EF0-%23DC267F-%23FE6100-%
     background-size: 56.57px 56.57px;    
 }
 
+.purpleStripe{
+    background-image: linear-gradient(45deg, #785EF0 25%, white 25%, white 50%, #785EF0 50%, #785EF0 75%, white 75%, white 100%);
+    background-size: 56.57px 56.57px;    
+}
+
 .redBlueStripe{
     background-image: linear-gradient(45deg, #648FFF 25%, #DC267F 25%, #DC267F 50%, #648FFF 50%, #648FFF 75%, #DC267F 75%, #DC267F 100%);
     background-size: 56.57px 56.57px;    
