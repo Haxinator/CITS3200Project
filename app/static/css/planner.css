@@ -369,3 +369,24 @@ https://davidmathlogic.com/colorblind/#%23648FFF-%23785EF0-%23DC267F-%23FE6100-%
 #tree_display {
     padding: 5%;
 }
+
+.button-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px; /* Adjust the space between buttons */
+}
+
+.button-container .button {
+    width: 250px; 
+    height: 51px; /* Fixed height */
+    font-size: 14px; 
+    text-align: center;
+    overflow: hidden; 
+    transition: all 0.3s; /* transition */
+}
+
+.button-container .button:hover {
+    transform: scale(1.05); /* noice */
+    cursor: pointer;
+}
