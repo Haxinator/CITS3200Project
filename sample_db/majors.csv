@@ -1,9 +1,9 @@
-major
-SP-EMECH
-SP-ESOFT
-SP-ECHEM
-SP-EBIOM
-SP-ECIVI
-SP-EELEC
-SP-EENVI
-SP-EMINI
+major,name,year_offered
+SP-EMECH,Mechanical Engineering,2023
+SP-ESOFT,Software Engineering,2023;2022
+SP-ECHEM,Chemical Engineering,2023
+SP-EBIOM,Biomedical Engineering,2023
+SP-ECIVI,Civil Engineering,2023
+SP-EELEC,Electrical Engineering,2023
+SP-EENVI,Environtal Engineering,2023
+SP-EMINI,Mining Engineering,2023
