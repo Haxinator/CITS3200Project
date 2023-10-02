@@ -79,7 +79,7 @@ def send_unit_information(major, bridging, year):
         # OR = not necessarily a must-have but can fill the requirements if one of them are taken
         # ATAR-type units have an "NA" (non-applicable) flag as they do not appear on the table
 
-        """
+        query = f"""
         MATCH ((u:Unit)-[a:CORE_OF]->(m:Major))
         WHERE m.major = "{major}" AND a.year = "{year}"
         OPTIONAL MATCH (bridge:Unit)
@@ -104,24 +104,24 @@ def send_unit_information(major, bridging, year):
         # if major == "SP-ESOFT":
         #     year = 2022
 
-        query = f"""
-        MATCH ((u:Unit)-[a:CORE_OF]->(m:Major))
-        WHERE m.major = "{major}" AND a.year = "{year}"
-        OPTIONAL MATCH (bridge:Unit)
-        WHERE {unit_conditions}
-        WITH COLLECT(DISTINCT u) + COLLECT(DISTINCT bridge) AS combined
-        UNWIND combined as node
-        OPTIONAL MATCH (node)-[or:REQUIRES]->(r_or)
-        WHERE or.year = "{year}" AND or.type = "OR"
-        OPTIONAL MATCH (node)-[and:REQUIRES]->(r_and)
-        WHERE and.year = "{year}" AND and.type = "AND"
-        OPTIONAL MATCH (node)-[cc:COREQUIRES]->(c)
-        WHERE cc.year = "{year}"
-        WITH node, COLLECT(DISTINCT r_or.unitcode) as or_req, COLLECT(DISTINCT r_and.unitcode) as and_req, COLLECT(DISTINCT c.unitcode) as corequisites
-        WITH node, or_req, and_req, [or_req,and_req] as unit_req, corequisites
-        RETURN node.unitcode as unitcode, node.unitname as unitname, node.type as type, node.semester as semester, node.major as major, node.level as level, node.credit_points as credit_points, node.points_req as points_req, node.enrolment_req as enrolment_req, or_req, and_req, unit_req, node.incompatible_units as incompatibilities, corequisites
-        ORDER BY level
-        """ 
+        # query = f"""
+        # MATCH ((u:Unit)-[a:CORE_OF]->(m:Major))
+        # WHERE m.major = "{major}" AND a.year = "{year}"
+        # OPTIONAL MATCH (bridge:Unit)
+        # WHERE {unit_conditions}
+        # WITH COLLECT(DISTINCT u) + COLLECT(DISTINCT bridge) AS combined
+        # UNWIND combined as node
+        # OPTIONAL MATCH (node)-[or:REQUIRES]->(r_or)
+        # WHERE or.year = "{year}" AND or.type = "OR"
+        # OPTIONAL MATCH (node)-[and:REQUIRES]->(r_and)
+        # WHERE and.year = "{year}" AND and.type = "AND"
+        # OPTIONAL MATCH (node)-[cc:COREQUIRES]->(c)
+        # WHERE cc.year = "{year}"
+        # WITH node, COLLECT(DISTINCT r_or.unitcode) as or_req, COLLECT(DISTINCT r_and.unitcode) as and_req, COLLECT(DISTINCT c.unitcode) as corequisites
+        # WITH node, or_req, and_req, [or_req,and_req] as unit_req, corequisites
+        # RETURN node.unitcode as unitcode, node.unitname as unitname, node.type as type, node.semester as semester, node.major as major, node.level as level, node.credit_points as credit_points, node.points_req as points_req, node.enrolment_req as enrolment_req, or_req, and_req, unit_req, node.incompatible_units as incompatibilities, corequisites
+        # ORDER BY level
+        # """ 
         results = session.run(query)
         data = results.data()
         return jsonify(data)

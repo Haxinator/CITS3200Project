@@ -261,15 +261,20 @@ function fetchCourseRequirementsAndBuildPlanner() {
     let server = '/unitInformation/'.concat(major,"/bridging=",bridging,"/year=", yearLevel);
     xhttp.open("GET", server, true);
     xhttp.onload = function (e) {
-        let response = JSON.parse(xhttp.responseText);
-        planner = new Table();
-        planner.maxBroadening -= (6*bridgingCount);
+        if (this.readyState == 4 && this.status == 200) {
+            //if no error
+            let response = JSON.parse(xhttp.responseText);
+            planner = new Table();
+            planner.maxBroadening -= (6*bridgingCount);
 
-        planner.makeTable(response);
-        addUnitOptions(response);
+            planner.makeTable(response);
+            addUnitOptions(response);
 
-        // to prevent async problems fetch options after.
-        fetchOptionUnits();
+            // to prevent async problems fetch options after.
+            fetchOptionUnits();
+        } else {
+            alert(`Internal Sever Error! \nTry again later.\nSorry for the inconvience.`);
+        }
     }
     xhttp.send();
 }

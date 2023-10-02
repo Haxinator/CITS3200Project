@@ -270,6 +270,7 @@ export class Table {
     // extracts unit information from database response.
     // adds it to unitInformation field.
     extractInformation(unitInfo) {
+
         console.log(unitInfo);
 
         for (let i in unitInfo) {
@@ -331,7 +332,7 @@ export class Table {
         addUnitEvents(unit);
 
         this.unitInformation.set(code,
-            new Unit(innerHTML, code, 6, innerHTML,"BOTH", [],[],null,null));
+            new Unit(innerHTML, code, 6, innerHTML,"BOTH", [[],[]],[],null,null));
 
         this.nextID++;
 
@@ -365,7 +366,7 @@ export class Table {
             let unitCode = unit.unitCode;
 
             //check if unit placed in valid teaching period
-            if (unitConditionsMet(unitCode, container, this) && !unit.isEnrolled()) {
+            if (!unit.isEnrolled() && unitConditionsMet(unitCode, container, this)) {
                 // enroll then subtract credit points from those available for the semester.
                 enrollInPeroid(this.makeUnit(unitCode), container);
                 creditPointsAvailable -= unit.creditPoints;

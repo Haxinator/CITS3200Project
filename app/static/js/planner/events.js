@@ -285,7 +285,12 @@ function drop(e)
                 {
                     infoBar.addInfo(`${id} isn't an option unit! It can't be added to the side bar.`);
                 } else {
-                    infoBar.addInfo(`${id} only available in ${getPeriodOffered(id)}!`);
+                    if(getPeriodOffered(id).includes("BOTH"))
+                    {
+                        infoBar.addInfo(`${id} only available in S1 or S2!`);                        
+                    } else {
+                        infoBar.addInfo(`${id} only available in ${getPeriodOffered(id)}!`);                        
+                    }
                 }
             }
         }
@@ -406,9 +411,15 @@ function printUnitInfo(unitCode)
     str += `<h5>${unit.name}</h5>`;
     str += formatInfo("Unit Code", unit.unitCode);
     str += formatInfo("Type", unit.type);
-    str += formatInfo("Semester", unit.semester);
+    if(unit.semester.includes("BOTH"))
+    {
+        str += formatInfo("Semester", "S1 or S2");
+
+    } else {
+        str += formatInfo("Semester", unit.semester);
+    }
     str += formatInfo("Credit Points", unit.creditPoints);
-    str += formatInfo("Prerequisites", unit.prerequisites);
+    str += formatInfo("Prerequisites", formatPrerequisites(unit.prerequisites));
     str += formatInfo("Corequisites", unit.corequisites); //previously or concurrently.
     str += formatInfo("Point Requirements", unit.pointRequirements);
     str += formatInfo("Enrollment Requirements", unit.enrollmentRequirements);
@@ -424,4 +435,44 @@ function printUnitInfo(unitCode)
 function formatInfo(label, info)
 {
     return `<span style="font-weight: bold;">${label}</span>: ${info}<br>`;
+}
+
+//turns prerequisite list into an easy to read string.
+function formatPrerequisites(prerequisitesList)
+{
+    let andList = prerequisitesList[1];
+    let orList = prerequisitesList[0];
+    let string = "";
+
+    for(let i = 0; i< andList.length; i ++)
+    {
+        string += andList[i];
+
+        if(i < andList.length-1)
+        {
+            string += " and ";
+        }
+    }
+
+    if(andList.length > 0 && orList.length > 0)
+    {
+        string += " and (";
+    }
+
+    for(let i = 0; i< orList.length; i ++)
+    {
+        string += orList[i];
+
+        if(i != orList.length-1)
+        {
+            string += " or ";
+        }
+    }
+
+    if(andList.length > 0 && orList.length > 0)
+    {
+        string += ")";
+    }
+
+    return string;
 }
