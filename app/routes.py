@@ -126,27 +126,32 @@ def send_unit_information(major, bridging, year):
         data = results.data()
         return jsonify(data)
 
-@app.route("/option_units=<string:major>", methods=["GET"])
-def get_option_units(major):
+@app.route("/option_units=<string:major>/year=<string:year>", methods=["GET"])
+def get_option_units(major, year):
     with driver.session() as session:
         query = f"""
-        MATCH (u:Unit) -[rel:GROUP_A_OF|GROUP_B_OF]-> (m:Major)
-        WHERE m.major = "{major}" 
-        OPTIONAL MATCH (u)-[:REQUIRES]->(r)
-        OPTIONAL MATCH (u)-[:COREQUIRES]->(c)
-        WITH u, COLLECT(DISTINCT r.unitcode) as unit_req, COLLECT(DISTINCT c.unitcode) as corequisites
-        RETURN u.unitcode as unitcode, u.unitname as unitname, u.type as type, u.semester as semester, u.major as major, u.level as level, u.credit_points as credit_points, u.points_req as points_req, u.enrolment_req as enrolment_req, unit_req, u.incompatible_units as incompatibilities, corequisites
+        MATCH ((u:Unit)-[a:GROUP_A_OF|GROUP_B_OF]->(m:Major))
+        WHERE m.major = "{major}" AND a.year = "{year}"
+        OPTIONAL MATCH (u)-[or:REQUIRES]->(r_or)
+        WHERE or.year = "{year}" AND or.type = "OR"
+        OPTIONAL MATCH (u)-[and:REQUIRES]->(r_and)
+        WHERE and.year = "{year}" AND and.type = "AND"
+        OPTIONAL MATCH (u)-[cc:COREQUIRES]->(c)
+        WHERE cc.year = "{year}"
+        WITH u, COLLECT(DISTINCT r_or.unitcode) as or_req, COLLECT(DISTINCT r_and.unitcode) as and_req, COLLECT(DISTINCT c.unitcode) as corequisites
+        WITH u, or_req, and_req, [or_req,and_req] as unit_req, corequisites
+        RETURN u.unitcode as unitcode, u.unitname as unitname, u.type as type, u.semester as semester, u.major as major, u.level as level, u.credit_points as credit_points, u.points_req as points_req, u.enrolment_req as enrolment_req, or_req, and_req, unit_req, u.incompatible_units as incompatibilities, corequisites
         ORDER BY level
         """
         results = session.run(query)
         data = results.data()
         return jsonify(data)
 
-@app.route("/option_combos=<string:major>", methods=["GET"])  
-def get_option_combos(major): 
+@app.route("/option_combos=<string:major>/year=<string:year>", methods=["GET"])  
+def get_option_combos(major, year): 
      with driver.session() as session:
         query = f"""MATCH (u:Unit) -[rel:GROUP_A_OF|GROUP_B_OF]-> (m:Major)
-        WHERE m.major = "{major}"
+        WHERE m.major = "{major}" AND rel.year = "{year}"
         RETURN COLLECT(DISTINCT u.unitcode) as options, TYPE(rel) as group_type"""
 
         results = session.run(query)

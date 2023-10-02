@@ -186,7 +186,7 @@ getById("pointRequirementsFilter").addEventListener("click", () =>
 function fetchOptionUnits() {
     let major = specialization;
     const xhttp = new XMLHttpRequest();
-    let url = `/option_units=${major}`;
+    let url = `/option_units=${major}/year=${yearLevel}`;
 
     xhttp.open('GET', url, true);
     xhttp.onload = (e) => {
@@ -223,7 +223,7 @@ function fetchOptionUnits() {
 function fetchOptionUnitCombinations() {
     let major = specialization;
     const xhttp = new XMLHttpRequest();
-    let url = `/option_combos=${major}`;
+    let url = `/option_combos=${major}/year=${yearLevel}`;
 
     xhttp.open('GET', url, true);
     xhttp.onload = (e) => {
