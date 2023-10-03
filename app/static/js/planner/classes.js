@@ -26,7 +26,7 @@
 */
 
 
-import { enrollInPeroid, addToRoot, updateInfoBar, allUnitsNotAdded, removeFromArray, getById, unitExists } from "./support.js";
+import { enrollInPeroid, addToRoot, allUnitsNotAdded, removeFromArray, getById, } from "./support.js";
 import { unitConditionsMet, canEnrollInPeriod } from "./checks.js";
 import { addUnitEvents, addContainerEvents, addSensorEvents, optionButtonEvent} from "./events.js";
 import { optionsTable } from "./main.js";
@@ -187,10 +187,6 @@ export class sideBar {
         // console.log(this.currentOptionCombo);
         let matches = [];
 
-        // console.log(this.optionCombinations);
-        console.log(this.currentOptionCombo);
-
-
         for(let combination of this.optionCombinations)
         {
             let match = true;
@@ -320,11 +316,11 @@ export class Unit {
 //Table prototype contains all the functions necessary for making
 //the unit planner.
 export class Table {
-    constructor() {
+    constructor(maxBroadening) {
         this.year = 0; //may improve somehow.
         this.numberOfUnits = 0; //Number of units in the planner
         this.creditPointsRequired = 192;
-        this.maxBroadening = 24; // credit points
+        this.maxBroadening = maxBroadening; // credit points
         this.unitInformation = new Map();
         this.hasNSUnits = false;
         this.nextID = 0;

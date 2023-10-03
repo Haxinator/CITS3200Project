@@ -2,8 +2,8 @@
  * This file contains all the button event listeners and their application.
 */
 
-import {getById, updateInfoBar, clearHighlighting, getUnitInformation} from "./support.js";
-import { planner, optionsTable, statusBar } from "./main.js";
+import {getById, updateInfoBar, clearHighlighting, getUnitInformation, getAllUnitInfo} from "./support.js";
+import { statusBar } from "./main.js";
 
 export function makeExportPDFButton()
 {
@@ -182,6 +182,7 @@ function exportToPDF() {
 
     body {
         text-align: center;
+        font-family: "Source Sans Pro", Arial, sans-serif;
     }
 
     table {
@@ -191,7 +192,6 @@ function exportToPDF() {
 
     th,td {
         border: solid black 1px;
-        font-family: "Source Sans Pro", Arial, sans-serif;
     }
 
     tr th {
@@ -266,21 +266,6 @@ function exportToPDF() {
     `
     printWindow.document.body.appendChild(style);
 
-    // units = table.getElementsByClassName("unit");
-
-    // Write the element and link to the external stylesheet to the new window's document
-    // printWindow.document.write(`
-    //     <html>
-    //         <head>
-    //             <title>Print</title>
-    //             <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/planner.css') }}">
-    //         </head>
-    //         <body>
-    //             ${element}
-    //         </body>
-    //     </html>
-    // `);
-
     // Call the print method
     printWindow.document.close();
     printWindow.print();
@@ -296,7 +281,7 @@ getById("SemesterFilter").addEventListener("click", () => {
     //clear last previous filters()
     clearHighlighting();
 
-    for(let unit of planner.unitInformation.values())
+    for(let unit of getAllUnitInfo().values())
     {
         let item = getById(unit.unitCode);
 
@@ -312,22 +297,6 @@ getById("SemesterFilter").addEventListener("click", () => {
         }
     }
 
-    //filter option units.
-    for(let unit of optionsTable.unitInformation.values())
-    {
-        let item = getById(unit.unitCode);
-
-        if(unit.semester == "S1")
-        {
-            item.classList.toggle("blue");
-        } else if(unit.semester == "S2"){
-            item.classList.toggle("purple");
-        } else if(unit.semester == "NS"){
-            item.classList.toggle("magenta")
-        }else {
-            item.classList.toggle("yellow");
-        }
-    }
         let legend = new Map([
         ["S1", "blue"],
         ["S2", "purple"],
@@ -341,20 +310,7 @@ getById("corequisiteFilter").addEventListener("click", () =>
 {
     clearHighlighting();
 
-    for(let unit of planner.unitInformation.values())
-    {
-        let item = getById(unit.unitCode);
-
-        if(unit.corequisites.length > 0)
-        {
-            item.classList.toggle("blue");
-        } else {
-            item.classList.remove("blue");
-        }
-    }
-
-    //option units
-    for(let unit of optionsTable.unitInformation.values())
+    for(let unit of getAllUnitInfo().values())
     {
         let item = getById(unit.unitCode);
 
@@ -377,20 +333,7 @@ getById("prequisiteFilter").addEventListener("click", () =>
 {
     clearHighlighting();
 
-    for(let unit of planner.unitInformation.values())
-    {
-        let item = getById(unit.unitCode);
-
-        if(unit.prerequisites.length > 0)
-        {
-            item.classList.toggle("yellow");
-        } else {
-            item.classList.remove("yellow");
-        }
-    }
-
-    //options
-    for(let unit of optionsTable.unitInformation.values())
+    for(let unit of getAllUnitInfo().values())
     {
         let item = getById(unit.unitCode);
 
@@ -413,19 +356,7 @@ getById("pointRequirementsFilter").addEventListener("click", () =>
 {
     clearHighlighting();
 
-    for(let unit of planner.unitInformation.values())
-    {
-        let item = getById(unit.unitCode);
-
-        if(unit.pointRequirements.length > 0)
-        {
-            item.classList.toggle("yellow");
-        } else {
-            item.classList.remove("yellow");
-        }
-    }
-
-    for(let unit of optionsTable.unitInformation.values())
+    for(let unit of getAllUnitInfo().values())
     {
         let item = getById(unit.unitCode);
 

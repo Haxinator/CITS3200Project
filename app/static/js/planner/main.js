@@ -21,7 +21,8 @@ export var statusBar;
 
 //------------------- INSTANCE FUNCTIONS -------------------------//
 
-fetchCourseRequirementsAndBuildPlanner();
+fetchMaxBroadening();
+// fetchCourseRequirementsAndBuildPlanner();
 
 // --------------------------- XHTTP ---------------------------------//
 
@@ -39,7 +40,7 @@ function fetchOptionUnits() {
     xhttp.onload = (e) => {
         let response = JSON.parse(xhttp.responseText);
         optionsBar = new sideBar();
-        optionsTable = new Table();
+        optionsTable = new Table(0);
         statusBar = new sideBar();
 
         console.log(response);
@@ -82,11 +83,34 @@ function fetchOptionUnitCombinations() {
     xhttp.send();
 }
 
+function fetchMaxBroadening(){
+    let major = specialization;
+
+    const xhttp = new XMLHttpRequest();
+    let server =`/get_max_broadening=${major}`;
+
+    xhttp.open("GET", server, true);
+    xhttp.onload = function (e) {
+        if (this.readyState == 4 && this.status == 200) {
+            //if no error
+            let response = JSON.parse(xhttp.responseText);
+            // console.log(response[0]["max_broadening_pts"]);
+
+            fetchCourseRequirementsAndBuildPlanner(response[0]["max_broadening_pts"]);
+        } else {
+            //If server responded with error code.
+            alert(`Internal Sever Error! \nTry again later.\nSorry for the inconvience.`);
+        }
+    }
+
+    xhttp.send();
+}
+
 //LOL MY FUNCTIO NOW!
 //Sends request to 4j for some awesome unit info.
 //mmmm unit info.
 //Creates a the planner based on that info.
-function fetchCourseRequirementsAndBuildPlanner() {
+function fetchCourseRequirementsAndBuildPlanner(maxBroadening) {
     let major = specialization;
     let bridging = "NONE,";
     let bridgingCount = 0; 
@@ -112,7 +136,7 @@ function fetchCourseRequirementsAndBuildPlanner() {
         if (this.readyState == 4 && this.status == 200) {
             //if no error
             let response = JSON.parse(xhttp.responseText);
-            planner = new Table();
+            planner = new Table(maxBroadening);
             planner.maxBroadening -= (6*bridgingCount);
 
             planner.makeTable(response);
