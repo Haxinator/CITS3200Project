@@ -30,6 +30,7 @@ import { enrollInPeroid, addToRoot, updateInfoBar, allUnitsNotAdded, removeFromA
 import { unitConditionsMet, canEnrollInPeriod } from "./checks.js";
 import { addUnitEvents, addContainerEvents, addSensorEvents, optionButtonEvent} from "./events.js";
 import { optionsTable } from "./main.js";
+import { makeExportPDFButton } from "./buttons.js";
 
 
 //------------------- PROTOTYPES ----------------------------------//
@@ -88,6 +89,11 @@ export class sideBar {
         let text = document.createElement("p");
         text.innerHTML = this.lastStatus;
         getById("statusBar").append(text);
+
+        if(this.lastStatus.includes("Done"))
+        {
+            makeExportPDFButton();
+        }
     }
 
     //clears all text/legend from status bar.

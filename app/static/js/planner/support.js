@@ -10,6 +10,7 @@
 import { optionsTable, optionsBar, planner, statusBar } from "./main.js";
 import { unitConditionsMet } from "./checks.js";
 import { infoBar } from "./classes.js";
+import { makeExportPDFButton } from "./buttons.js";
 
 export function creditPointsInPeriod(semester) {
     let totalCreditPoints = 0;
@@ -287,6 +288,7 @@ export function checkPlannerForErrors()
         if(conditionMet)
         {
             statusBar.updateStatus("Done");
+            makeExportPDFButton();
             // PUT SHOW EXPORT TO PDF BUTTON HERE.
         } else {
             statusBar.updateStatus("Fix Problems");

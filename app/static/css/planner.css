@@ -290,7 +290,10 @@ https://davidmathlogic.com/colorblind/#%23648FFF-%23785EF0-%23DC267F-%23FE6100-%
 
     /* stops text overflow */
     overflow-wrap: break-word;
+}
 
+#exportPdf {
+    scale: 0.8;
 }
 
 /* ------------------------------- STATUS BAR CSS --------------------------- */
