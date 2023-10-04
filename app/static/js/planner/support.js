@@ -10,6 +10,7 @@
 import { optionsTable, optionsBar, planner, statusBar } from "./main.js";
 import { unitConditionsMet } from "./checks.js";
 import { infoBar } from "./classes.js";
+import { makeExportPDFButton } from "./buttons.js";
 
 export function creditPointsInPeriod(semester) {
     let totalCreditPoints = 0;
@@ -287,6 +288,7 @@ export function checkPlannerForErrors()
         if(conditionMet)
         {
             statusBar.updateStatus("Done");
+            makeExportPDFButton();
             // PUT SHOW EXPORT TO PDF BUTTON HERE.
         } else {
             statusBar.updateStatus("Fix Problems");
@@ -297,4 +299,77 @@ export function checkPlannerForErrors()
 
     infoBar.display();
 
+}
+
+//returns unit information of all units, option and planner units.
+export function getAllUnitInfo()
+{
+    if(optionsTable == undefined)
+    {
+        //if optionTable hasn't been rendered
+        return planner.unitInformation;
+    } else {
+        //merges planner and option table unit information maps.
+        var map = new Map([...planner.unitInformation, ...optionsTable.unitInformation]);
+        return map;
+    }
+}
+
+//determines which period comes first.
+//-1 if 1 comes first, 1 if 2 comes first or 0 if they're in the same period.
+export function comparePeriods(period1, period2)
+{
+    if(period1.length == period2.length)
+    {
+        //if both NS or both standard sem.
+        if(period1 < period2)
+        {
+            //if period 1 less then 2 return -1.
+            return -1;
+        } if(period1 > period2)
+        {
+            // if period1 greater then 2 return 1
+            return 1;
+        } else {
+            //if the same return 0
+            return 0;
+        }
+    } else{
+
+        //else one period is NS and the other isn't
+
+        //unit we're checking is in NS period.
+        //extract year and semester, and compare.
+        let period1Year = period1.substring(1,2);
+        let period1Period = getLastCharacter(period1);
+        let period2Year = period2.substring(1,2);
+        let period2Period = getLastCharacter(period2);
+
+        //if prerequisite comes before unit in year.
+        if(period1Year < period2Year)
+        {
+            //period 1 comes before period 2.
+            return -1;
+        } else if(period1Year > period2Year) {
+            //period1 comes after 2.
+            return 1;
+        }else if (period1Period < period2Period)
+        {
+            //period 1 comes before 2.
+            return -1;
+        } else if((period1Period > period2Period)){
+            //period 2 comes before 1.
+            return 1;
+        } else {
+            //depending on which one is NS, depends on which comes first.
+            if(period1.length > period2.length)
+            {
+                //1 is NS. So it comes after period 2.
+                return 1;
+            } else {
+                //else 2 is NS, so 1 comes first.
+                return -1;
+            }
+        }
+    }
 }

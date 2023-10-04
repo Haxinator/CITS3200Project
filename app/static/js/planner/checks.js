@@ -13,9 +13,9 @@
  * This file can be hard to understand. Best to ask Josh.
 */
 
-import { planner } from "./main.js";
+import { getAllUnitInfo } from "./support.js";
 import { infoBar } from "./classes.js";
-import { updateInfoBar, highlightIfUnitHasProblems, isAlpha, inDOM, getLastCharacter, getUnitInformation, isOption } from "./support.js";
+import { highlightIfUnitHasProblems, isAlpha, inDOM, getLastCharacter, getUnitInformation, isOption, comparePeriods } from "./support.js";
 
 // --------------- Prerequisite Met Functions ----------------//
 
@@ -81,15 +81,19 @@ export function pointRequirementsMet(unitCode, container)
 
     //I cri.
     //IT WORKSS
-    for(let otherUnit of planner.unitInformation.values())
+    for(let otherUnit of getAllUnitInfo().values())
+    //doesn't look at option units added to planner.
+    //need to change to loop over the planner instead of unit info.
     {
         let otherUnitCode = otherUnit.unitCode;
 
+        //also need to take into account NS.
+        //same bug most likely in prerequisite unit checking.
+        //which will give incorrect results.
         //if in planner and before current enrollment period
-        if(otherUnit.isEnrolled() &&
-            otherUnit.enrollmentPeriod < container.id)
+        //BUG won't look at NS units.
+        if(otherUnit.isEnrolled() && comparePeriods(otherUnit.enrollmentPeriod, container.id) == -1)
         {
-
             //pass last letter in, if it has unit point requirements
             if(unitType(otherUnitCode, typeIdentifier))
             {
@@ -97,7 +101,7 @@ export function pointRequirementsMet(unitCode, container)
             }
 
             pointCount += parseInt(otherUnit.creditPoints);
-
+            console.log(pointCount);
         }
     }
 
@@ -201,47 +205,20 @@ export function unitPreRequisitiesMet(unitCode, container)
                 //if prerequisite isn't in planner (planner still generating).
                 prerequisitesMet = false;
 
-            } else if(prerequisiteUnit.enrollmentPeriod >= container.id && 
-                    prerequisiteUnit.enrollmentPeriod.length == container.id.length) {
-
-                    infoBar.addInfo(`${prerequisite} must be done before ${unitCode}!`);
-                    
-                    unit.problems.push(`${prerequisite} must be done before ${unitCode}!`);
-
-                    //if prerequisite is in this period or greater.
-                    prerequisitesMet = false;
-            } else if(container.id.includes("NS"))
+            } else if(comparePeriods(prerequisiteUnit.enrollmentPeriod, container.id) != -1)        
             {
-                //unit we're checking is in NS period.
-                //extract year and semester, and compare.
-                let prerequisiteYear = prerequisiteUnit.enrollmentPeriod.substring(1,2);
-                let prerequisitePeriod = getLastCharacter(prerequisiteUnit.enrollmentPeriod);
-                let unitYear = container.id.substring(1,2);
-                let unitPeriod = getLastCharacter(container.id);
-
-                //if prerequisite comes before unit in year.
-                if(prerequisiteYear < unitYear)
-                {
-                    prerequisitesMet = true;
-                } else if (prerequisiteYear == unitYear && prerequisitePeriod <= unitPeriod)
-                {
-                    // if same year, if prerequisite is before or equal to period 
-                    //(NS2 comes after S2 so only works for NS unit prereq checking.
-                    prerequisitesMet = true;
-                } else {
-
-                    //else prerequisite wasn't done.
-                    infoBar.addInfo(`${prerequisite} must be done before ${unitCode}!`);
+                infoBar.addInfo(`${prerequisite} must be done before ${unitCode}!`);
                     
-                    unit.problems.push(`${prerequisite} must be done before ${unitCode}!`);
-                    prerequisitesMet = false;
-                }
+                unit.problems.push(`${prerequisite} must be done before ${unitCode}!`);
+
+                //if prerequisite is in this period or greater.
+                prerequisitesMet = false;
             }
         }
     }
 
     let noUnitCount = 0;
-    let orErrorMessage = "Either";
+    let orErrorMessage = "";
 
     //OR requirements
     //BUG caused by bridging units or units not existing in planner.
@@ -251,34 +228,11 @@ export function unitPreRequisitiesMet(unitCode, container)
 
         if (prerequisiteUnit != undefined){
 
-            if(prerequisiteUnit.enrollmentPeriod < container.id && 
-                    prerequisiteUnit.enrollmentPeriod.length == container.id.length) {
-
-                    //if prerequisite is before this period
-                    // prerequisitesMet = true;
-                    orMet = true;
-            } else if(container.id.includes("NS") && prerequisiteUnit.enrollmentPeriod != null)
+            if(prerequisiteUnit.isEnrolled() &&
+                comparePeriods(prerequisiteUnit.enrollmentPeriod, container.id) == -1)
             {
-                //unit we're checking is in NS period.
-                //extract year and semester, and compare.
-                let prerequisiteYear = prerequisiteUnit.enrollmentPeriod.substring(1,2);
-                let prerequisitePeriod = getLastCharacter(prerequisiteUnit.enrollmentPeriod);
-                let unitYear = container.id.substring(1,2);
-                let unitPeriod = getLastCharacter(container.id);
-
-                //if prerequisite comes before unit in year.
-                if(prerequisiteYear < unitYear)
-                {
-                    orMet = true;
-                } else if (prerequisiteYear == unitYear && prerequisitePeriod <= unitPeriod)
-                {
-                    // if same year, if prerequisite is before or equal to period 
-                    //(NS2 comes after S2 so only works for NS unit prereq checking.
-                    orMet = true;
-                } else {
-                    //else prerequisite wasn't done.
-                    orErrorMessage += ` ${prerequisite} or`;
-                }
+                //if prerequisite is before this period
+                orMet = true;
             } else {
                 orErrorMessage += ` ${prerequisite} or`;
             }

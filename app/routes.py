@@ -59,6 +59,20 @@ def get_majors(year):
         results = session.run(query)
         data = results.data()
         return jsonify(data)
+    
+    
+@app.route("/get_max_broadening=<string:major>", methods=["GET"])
+def get_broadening_pts(major):
+    with driver.session() as session:
+        query = f"""
+        MATCH (m:Major)
+        WHERE m.major = "{major}"
+        RETURN m.max_broadening_pts as max_broadening_pts
+        """
+        results = session.run(query)
+        data = results.data()
+        return jsonify(data)
+    
 
 @app.route("/unitInformation/<string:major>/bridging=<string:bridging>/year=<string:year>", methods=["GET"])
 def send_unit_information(major, bridging, year):

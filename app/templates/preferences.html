@@ -46,7 +46,6 @@
                 <button id="corequisiteFilter" class="button">Units with Corequisites</button>
                 <button id="prequisiteFilter" class="button">Units with Prequisites</button>
                 <button id="pointRequirementsFilter" class="button">Units with Point Requirements</button>
-                <button id="exportPdf" class="button" onclick="exportToPDF()">Export to PDF</button>
             </div>
     </main>
 
@@ -77,39 +76,7 @@
         var isChem = "{{ chemistry }}"
 
 
-        // This function makes a clone of the current table div structure and pastes it within a new opened window
-        // It then adds the the css stylesheet and calls .print() method to print the page. If the user clicks print or cancel,
-        // it will close the new page and return you back to the current process. 
-        function exportToPDF() {
-            // Get the table element
-            var element = document.getElementById("table").outerHTML;
-
-            // Open a new window
-            var printWindow = window.open('', '_blank');
-
-            // Write the element and link to the external stylesheet to the new window's document
-            printWindow.document.write(`
-                <html>
-                    <head>
-                        <title>Print</title>
-                        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/planner.css') }}">
-                    </head>
-                    <body>
-                        ${element}
-                    </body>
-                </html>
-            `);
-
-            // Call the print method
-            printWindow.document.close();
-            printWindow.print();
-
-            // Attempt to close the window after printing
-            printWindow.onafterprint = function() {
-                printWindow.close();
-            };
-        }
-                
+                       
     </script>
     <!-- Add all the neccessary scripts -->
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>

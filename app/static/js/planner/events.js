@@ -11,9 +11,9 @@
  * direct them to Josh.
 */
 
-import {canEnrollInPeriod, unitConditionsMet} from "./checks.js";
-import { updateInfoBar, getPeriodOffered, getById, getByPeriod, enrollInPeroid, clearHighlighting, unitExists, getUnitInformation, isOption, creditPointsInPeriod, checkPlannerForErrors } from "./support.js";
-import { optionsBar, statusBar, optionsTable, planner } from "./main.js";
+import {canEnrollInPeriod} from "./checks.js";
+import { updateInfoBar, getPeriodOffered, getById, getByPeriod, enrollInPeroid, clearHighlighting, unitExists, getUnitInformation, isOption, creditPointsInPeriod, checkPlannerForErrors, getAllUnitInfo } from "./support.js";
+import { optionsBar, statusBar, planner } from "./main.js";
 import { infoBar } from "./classes.js";
 
 
@@ -72,8 +72,6 @@ function hideOptionBar() {
 function recordUnit(unitCode)
 {
     let unitElement = getById(unitCode);
-
-    console.log(unitCode);
 
     //if in placed in option container
     if(unitElement.parentElement.id.includes("op"))
@@ -196,9 +194,8 @@ function printInfo(e)
     }
 
     //highlight all units where this unit is a prerequisite
-    for(let otherUnit of planner.unitInformation.values())
+    for(let otherUnit of getAllUnitInfo().values())
     {
-        console.log(otherUnit);
         let andPrerequisites = otherUnit.prerequisites[1];
         let orPrerequisites = otherUnit.prerequisites[0];
 
@@ -290,8 +287,6 @@ function drop(e)
         //only add to sem if less than 24 points
         //and semester is valid
 
-        console.log("at this line");
-
         //BUG
         //SHOULD ENTER HERE BUT IT DOESN'T!!!!
         if(creditPointsInPeriod(e.currentTarget) < 24 && 
@@ -299,17 +294,11 @@ function drop(e)
         {
             // e.target.appendChild(item);
             enrollInPeroid(item, e.target);
-            console.log("at this line");
 
 
             // if option unit record change.
             if(isOption(id))
             {
-                // console.log(getById("GENG5514"));
-                // console.log(getById("ENVE4401"));
-                console.log("at this line");
-
-
                 recordUnit(id);
             }
 
