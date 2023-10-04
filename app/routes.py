@@ -32,14 +32,10 @@ def preferences():
     specialization = request.form['specialization']
     yearLevel = request.form['yearLevel']
     #prints out unit code SP-ECHEM
+    #Create vars to pass to preferences page
     mathSpecialist = request.form['mathSpecialist']
     chemistry = request.form['chemistry']
     physics = request.form['physics']
-    print(specialization)
-    # Hold responses as yes or no strings.
-
-    # Do something with the form data (e.g., save to the database)
-
     return render_template('preferences.html', title='Preferences', specialization = specialization, mathSpecialist = mathSpecialist, chemistry = chemistry, physics = physics, yearLevel = yearLevel) # Render the preferences page
 
 
@@ -63,6 +59,20 @@ def get_majors(year):
         results = session.run(query)
         data = results.data()
         return jsonify(data)
+    
+    
+@app.route("/get_max_broadening=<string:major>", methods=["GET"])
+def get_broadening_pts(major):
+    with driver.session() as session:
+        query = f"""
+        MATCH (m:Major)
+        WHERE m.major = "{major}"
+        RETURN m.max_broadening_pts as max_broadening_pts
+        """
+        results = session.run(query)
+        data = results.data()
+        return jsonify(data)
+    
 
 @app.route("/unitInformation/<string:major>/bridging=<string:bridging>/year=<string:year>", methods=["GET"])
 def send_unit_information(major, bridging, year):

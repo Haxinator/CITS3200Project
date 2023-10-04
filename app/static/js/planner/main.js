@@ -5,13 +5,14 @@
 *
 * It fetches the course requirements and makes the entire planner.
 *
-* This file also contains all the event listeners for the buttons.
+* Contains XMLHTTP requests for the planner.
 *
 * As always, for anything confusing ask Josh.
 */
 
-import {getById, updateInfoBar, clearHighlighting} from "./support.js";
 import {Table, sideBar} from "./classes.js";
+import "./buttons.js"
+import { makeExportPDFButton } from "./buttons.js";
 
 export var planner;
 export var optionsTable;
@@ -20,192 +21,16 @@ export var statusBar;
 
 //------------------- INSTANCE FUNCTIONS -------------------------//
 
-fetchCourseRequirementsAndBuildPlanner();
-
-// fetchOptionUnitCombinations();
-// makeInfoBar();
-
-// -------------------- FILTERS ----------------------------- //
-
-//change highlighting with zebra strips if unit has problems.
-//get entire page if clicked on remove highlight and info bar.
-getById("root").parentElement.parentElement.addEventListener("click", (e) =>{
-
-    //if a unit wasn't clicked
-    if(!e.target.classList.contains("unit") && !e.target.classList.contains("button"))
-    {
-        //removing highlighting and info bar text.
-        updateInfoBar("");
-
-        //display current status.
-        statusBar.displayStatus();
-
-        //clear all highlighting.
-        clearHighlighting();
-    }
-    
-})
-
-getById("SemesterFilter").addEventListener("click", () => {
-
-    //clear last previous filters()
-    clearHighlighting();
-
-    for(let unit of planner.unitInformation.values())
-    {
-        let item = getById(unit.unitCode);
-
-        if(unit.semester == "S1")
-        {
-            item.classList.toggle("blue");
-        } else if(unit.semester == "S2"){
-            item.classList.toggle("purple");
-        } else if(unit.semester == "NS"){
-            item.classList.toggle("magenta")
-        }else {
-            item.classList.toggle("yellow");
-        }
-    }
-
-    //filter option units.
-    for(let unit of optionsTable.unitInformation.values())
-    {
-        let item = getById(unit.unitCode);
-
-        if(unit.semester == "S1")
-        {
-            item.classList.toggle("blue");
-        } else if(unit.semester == "S2"){
-            item.classList.toggle("purple");
-        } else if(unit.semester == "NS"){
-            item.classList.toggle("magenta")
-        }else {
-            item.classList.toggle("yellow");
-        }
-    }
-        let legend = new Map([
-        ["S1", "blue"],
-        ["S2", "purple"],
-        ["S1/S2", "yellow"], 
-        ["NS", "magenta"]]);
-
-        statusBar.displayLegend(legend);
-});
-
-getById("corequisiteFilter").addEventListener("click", () =>
-{
-    clearHighlighting();
-
-    for(let unit of planner.unitInformation.values())
-    {
-        let item = getById(unit.unitCode);
-
-        if(unit.corequisites.length > 0)
-        {
-            item.classList.toggle("blue");
-        } else {
-            item.classList.remove("blue");
-        }
-    }
-
-    //option units
-    for(let unit of optionsTable.unitInformation.values())
-    {
-        let item = getById(unit.unitCode);
-
-        if(unit.corequisites.length > 0)
-        {
-            item.classList.toggle("blue");
-        } else {
-            item.classList.remove("blue");
-        }
-    }
-
-    let legend = new Map([
-        ["Unit has Corequisites", "blue"]
-    ]);
-
-    statusBar.displayLegend(legend);
-});
-
-getById("prequisiteFilter").addEventListener("click", () =>
-{
-    clearHighlighting();
-
-    for(let unit of planner.unitInformation.values())
-    {
-        let item = getById(unit.unitCode);
-
-        if(unit.prerequisites.length > 0)
-        {
-            item.classList.toggle("yellow");
-        } else {
-            item.classList.remove("yellow");
-        }
-    }
-
-    //options
-    for(let unit of optionsTable.unitInformation.values())
-    {
-        let item = getById(unit.unitCode);
-
-        if(unit.prerequisites.length > 0)
-        {
-            item.classList.toggle("yellow");
-        } else {
-            item.classList.remove("yellow");
-        }
-    }
-
-    let legend = new Map([
-        ["Unit has Prerequisites", "yellow"]
-    ]);
-
-    statusBar.displayLegend(legend);
-});
-
-getById("pointRequirementsFilter").addEventListener("click", () =>
-{
-    clearHighlighting();
-
-    for(let unit of planner.unitInformation.values())
-    {
-        let item = getById(unit.unitCode);
-
-        if(unit.pointRequirements.length > 0)
-        {
-            item.classList.toggle("yellow");
-        } else {
-            item.classList.remove("yellow");
-        }
-    }
-
-    for(let unit of optionsTable.unitInformation.values())
-    {
-        let item = getById(unit.unitCode);
-
-        if(unit.pointRequirements.length > 0)
-        {
-            item.classList.toggle("yellow");
-        } else {
-            item.classList.remove("yellow");
-        }
-    }
-
-    let legend = new Map([
-        ["Unit has Point Requirements", "yellow"]
-    ]);
-
-    statusBar.displayLegend(legend);
-});
+fetchMaxBroadening();
+// fetchCourseRequirementsAndBuildPlanner();
 
 // --------------------------- XHTTP ---------------------------------//
 
 
 //get option units
-//PLAN
-//list all option units, when user selects one, look at combinations to view possible next unit
-//combinations.
+//list all option units, when user selects one, 
+//look at combinations to show user next legal unit
+//for that combination.
 function fetchOptionUnits() {
     let major = specialization;
     const xhttp = new XMLHttpRequest();
@@ -215,7 +40,7 @@ function fetchOptionUnits() {
     xhttp.onload = (e) => {
         let response = JSON.parse(xhttp.responseText);
         optionsBar = new sideBar();
-        optionsTable = new Table();
+        optionsTable = new Table(0);
         statusBar = new sideBar();
 
         console.log(response);
@@ -235,14 +60,14 @@ function fetchOptionUnits() {
             optionsBar.optionsDone = true;
             
             statusBar.updateStatus("Done");
+            makeExportPDFButton();
         }
     }
-    xhttp.send();
 
+    xhttp.send();
 }
 
 //get option unit combinations.
-//MY PLAN
 function fetchOptionUnitCombinations() {
     let major = specialization;
     const xhttp = new XMLHttpRequest();
@@ -254,6 +79,30 @@ function fetchOptionUnitCombinations() {
         console.log(response);
         optionsBar.addOptionCombinations(response);
     }
+
+    xhttp.send();
+}
+
+function fetchMaxBroadening(){
+    let major = specialization;
+
+    const xhttp = new XMLHttpRequest();
+    let server =`/get_max_broadening=${major}`;
+
+    xhttp.open("GET", server, true);
+    xhttp.onload = function (e) {
+        if (this.readyState == 4 && this.status == 200) {
+            //if no error
+            let response = JSON.parse(xhttp.responseText);
+            // console.log(response[0]["max_broadening_pts"]);
+
+            fetchCourseRequirementsAndBuildPlanner(response[0]["max_broadening_pts"]);
+        } else {
+            //If server responded with error code.
+            alert(`Internal Sever Error! \nTry again later.\nSorry for the inconvience.`);
+        }
+    }
+
     xhttp.send();
 }
 
@@ -261,7 +110,7 @@ function fetchOptionUnitCombinations() {
 //Sends request to 4j for some awesome unit info.
 //mmmm unit info.
 //Creates a the planner based on that info.
-function fetchCourseRequirementsAndBuildPlanner() {
+function fetchCourseRequirementsAndBuildPlanner(maxBroadening) {
     let major = specialization;
     let bridging = "NONE,";
     let bridgingCount = 0; 
@@ -287,7 +136,7 @@ function fetchCourseRequirementsAndBuildPlanner() {
         if (this.readyState == 4 && this.status == 200) {
             //if no error
             let response = JSON.parse(xhttp.responseText);
-            planner = new Table();
+            planner = new Table(maxBroadening);
             planner.maxBroadening -= (6*bridgingCount);
 
             planner.makeTable(response);
@@ -296,8 +145,12 @@ function fetchCourseRequirementsAndBuildPlanner() {
             // to prevent async problems fetch options after.
             fetchOptionUnits();
         } else {
+            //If server responded with error code.
             alert(`Internal Sever Error! \nTry again later.\nSorry for the inconvience.`);
         }
     }
+
     xhttp.send();
 }
+
+
