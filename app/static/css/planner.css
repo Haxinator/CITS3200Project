@@ -8,9 +8,11 @@
 
     /* give all cells consistent size*/
     min-width: 100px;
+    max-height: 50px;
 
     /* nice shadow */
     box-shadow: 3px 3px 5px lightblue;
+    overflow: hidden;
 }
 
 .option {
@@ -113,6 +115,31 @@ h2 {
     vertical-align: middle;
 }
 
+.watermark{
+    position: relative;
+    display: block;
+    /* stops it from blocking event listener. */
+    pointer-events: none; 
+    text-align: start;
+    opacity: 0.5;
+    color: gray;
+    font-weight: bolder;
+    font-size: 50px;
+    margin: -10px;
+    z-index: 100px;
+}
+
+.sensor h2 {
+    margin: 0px;
+    text-decoration:underline;
+}
+
+
+/* make export pdf button smaller. */
+#exportPdf {
+    scale: 0.8;
+}
+
 
 /* 
 Using IBM colour pallete
@@ -162,12 +189,6 @@ https://davidmathlogic.com/colorblind/#%23648FFF-%23785EF0-%23DC267F-%23FE6100-%
     background-size: 56.57px 56.57px;    
 }
 
-.sensor h2 {
-    margin: 0px;
-    text-decoration:underline;
-}
-
-
 /* pad left without adding white line */
 /* #infoBar p{
     padding-left: 10px;
@@ -212,7 +233,7 @@ https://davidmathlogic.com/colorblind/#%23648FFF-%23785EF0-%23DC267F-%23FE6100-%
 }
 
 #options {
-    padding-top: 50px;
+    margin-top: 50px;
 }
 
 #options tr{
@@ -250,6 +271,8 @@ https://davidmathlogic.com/colorblind/#%23648FFF-%23785EF0-%23DC267F-%23FE6100-%
     margin-left: 53px;
     border-top: 2px solid black;
     text-align: center;
+    z-index: -999px;
+    
 }
 
 #optionsBar button.noMargin{ 
@@ -292,9 +315,6 @@ https://davidmathlogic.com/colorblind/#%23648FFF-%23785EF0-%23DC267F-%23FE6100-%
     overflow-wrap: break-word;
 }
 
-#exportPdf {
-    scale: 0.8;
-}
 
 /* ------------------------------- STATUS BAR CSS --------------------------- */
 
