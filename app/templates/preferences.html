@@ -12,7 +12,8 @@
     <main id = "root">
         <div class= "boxed" style="border: none;">
             <div class="feature-box" style="padding: 0 20px;">
-                <h3 style="text-align: center;">How to Utilize This Feature?</h3>
+                <button class="collapsible" style="text-align: center;"><h4>How to Utilize This Feature?</h4> <span class="arrow">&#x25BC;</span></button>
+                <div class="content">
                 <p>Welcome to your custom course study planner - a tool designed to be user-friendly, intuitive, and engaging. Here's a quick guide to help you navigate:</p>
                 <p>Displayed below are the unit numbers corresponding to all the units in your selected course. You can click on any unit number to view detailed information including its name, semester offerings, prerequisites, corequisites, and dependent units.</p>
                 <p>Additionally, you have access to several helpful functionalities through the buttons below:
@@ -36,7 +37,8 @@
                 <p>Your major may require specific option units, like Group A or Group B electives. These units are showcased in the options bar. Drag them to your preferred location on the timetable. As you place each unit, it will disappear from the options bar. The course planner will immediately showcase any configuration issues in red, helping you make necessary adjustments.</p>
                 <p>An ever-present InfoBar at the top provides essential guidance. It may prompt you to 'Add option units', 'Fix existing problems', or when all requirements are met, it will display 'Done'.</p>
                 <p>Furthermore, at the bottom of the page, you'll find a section titled "Need to see the importance of a unit?". Utilizing the dropdown menu in this section allows you to select a unit and visualize a tree structure showcasing the interconnected relationships between units. This feature highlights the significance of the selected unit in your course planning by displaying all the units that require it, as well as its prerequisites, offering a comprehensive view of how this unit influences future studies.</p>
-                <p>The table below is interactive, allowing you to customize your course structure freely. If you wish to extend your course duration, simply drag a unit below the final year displayed to add another year. Once you are satisfied with your course structure, use the 'Print' button to export your plan as a PDF. Happy planning!</p>
+                <p>The table below is interactive, allowing you to customize your course structure freely. If you wish to extend your course duration, simply drag a unit below the final year displayed to add another year. Happy planning!</p>
+                </div>
             </div>
          </div>
          <hr>
@@ -74,6 +76,24 @@
         var isMeth = "{{ mathMethods }}"
         var isPhys = "{{ physics }}"
         var isChem = "{{ chemistry }}"
+
+        var coll = document.getElementsByClassName("collapsible");
+        var i;
+
+        for (i = 0; i < coll.length; i++) {
+            coll[i].addEventListener("click", function() {
+                this.classList.toggle("active");
+                var content = this.nextElementSibling;
+                if (content.style.maxHeight){
+                    content.style.maxHeight = null;
+                    this.querySelector('.arrow').innerHTML = "&#x25BC;";
+                } else {
+                    content.style.maxHeight = content.scrollHeight + "px";
+                    this.querySelector('.arrow').innerHTML = "&#x25B2;";
+                } 
+            });
+        }
+
 
 
                        
