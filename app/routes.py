@@ -24,6 +24,12 @@ def staffLogin():
     # Render the staff Login template with the title
     return render_template('staffLogin.html', title='Staff Login')
 
+# UnitUpload
+@app.route('/unitUpload/')
+def unitUpload():
+    # Render the unit upload template
+    return render_template('unitUpload.html', title='Unit Upload')
+
 
 
 @app.route('/preferences', methods=['POST'])
