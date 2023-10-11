@@ -104,7 +104,7 @@ def send_unit_information(major, bridging, year):
         WHERE cc.year = "{year}"
         WITH node, COLLECT(DISTINCT r_or.unitcode) as or_req, COLLECT(DISTINCT r_and.unitcode) as and_req, COLLECT(DISTINCT c.unitcode) as corequisites
         WITH node, or_req, and_req, [or_req,and_req] as unit_req, corequisites
-        RETURN node.unitcode as unitcode, node.unitname as unitname, node.type as type, node.semester as semester, node.major as major, node.level as level, node.credit_points as credit_points, node.points_req as points_req, node.enrolment_req as enrolment_req, or_req, and_req, unit_req, node.incompatible_units as incompatibilities, corequisites
+        RETURN node.unitcode as unitcode, node.unitname as unitname, node.type as type, node.semester as semester, node.major as major, node.level as level, node.credit_points as credit_points, node.points_req as points_req, or_req, and_req, unit_req, node.incompatible_units as incompatibilities, corequisites, node.notes = notes
         ORDER BY level
         """
         
@@ -126,7 +126,7 @@ def get_option_units(major, year):
         WHERE cc.year = "{year}"
         WITH u, COLLECT(DISTINCT r_or.unitcode) as or_req, COLLECT(DISTINCT r_and.unitcode) as and_req, COLLECT(DISTINCT c.unitcode) as corequisites
         WITH u, or_req, and_req, [or_req,and_req] as unit_req, corequisites
-        RETURN u.unitcode as unitcode, u.unitname as unitname, u.type as type, u.semester as semester, u.major as major, u.level as level, u.credit_points as credit_points, u.points_req as points_req, u.enrolment_req as enrolment_req, or_req, and_req, unit_req, u.incompatible_units as incompatibilities, corequisites
+        RETURN u.unitcode as unitcode, u.unitname as unitname, u.type as type, u.semester as semester, u.major as major, u.level as level, u.credit_points as credit_points, u.points_req as points_req, or_req, and_req, unit_req, u.incompatible_units as incompatibilities, corequisites, u.notes = notes
         ORDER BY level
         """
         results = session.run(query)
