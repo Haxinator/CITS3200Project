@@ -202,8 +202,8 @@ def get_option_combos(major, year):
 def get_prereq_units(chosen_unit, major):
     with driver.session() as session:
         query = """
-        MATCH (u:Unit {unitcode: chosen_unit})
-        MATCH (m:Major {major: major})
+        MATCH (u:Unit {unitcode: $chosen_unit})
+        MATCH (m:Major {major: $major})
         CALL apoc.path.expandConfig(u, {relationshipFilter: "REQUIRES>", minLevel: 1, maxLevel: 5})
         YIELD path
         RETURN [node IN nodes(path) WHERE ((node)-[:CORE_OF|GROUP_A_OF|GROUP_B_OF]->(m) OR (node.type = "ATAR") OR (node.type = "BRIDGING")) | node.unitcode] AS prerequisites  
@@ -217,8 +217,8 @@ def get_prereq_units(chosen_unit, major):
 def get_child_units(chosen_unit, major):
     with driver.session() as session:
         query = """
-        MATCH (u:Unit {unitcode: chosen_unit})
-        MATCH (m:Major {major: major})
+        MATCH (u:Unit {unitcode: $chosen_unit})
+        MATCH (m:Major {major: $major})
         CALL apoc.path.expandConfig(u, {relationshipFilter: "<REQUIRES", minLevel: 1, maxLevel: 5})
         YIELD path
         RETURN [node IN nodes(path) WHERE ((node)-[:CORE_OF|GROUP_A_OF|GROUP_B_OF]->(m) OR (node.type = "ATAR") OR (node.type = "BRIDGING")) | node.unitcode] AS child_units

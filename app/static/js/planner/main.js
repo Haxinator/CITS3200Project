@@ -39,6 +39,9 @@ function fetchOptionUnits() {
     xhttp.open('GET', url, true);
     xhttp.onload = (e) => {
         let response = JSON.parse(xhttp.responseText);
+        //add option units as choices for treeview
+        addUnitOptions(response);
+        
         optionsBar = new sideBar();
         optionsTable = new Table(0);
         statusBar = new sideBar();
