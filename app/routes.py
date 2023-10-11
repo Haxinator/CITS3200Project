@@ -107,31 +107,7 @@ def send_unit_information(major, bridging, year):
         RETURN node.unitcode as unitcode, node.unitname as unitname, node.type as type, node.semester as semester, node.major as major, node.level as level, node.credit_points as credit_points, node.points_req as points_req, node.enrolment_req as enrolment_req, or_req, and_req, unit_req, node.incompatible_units as incompatibilities, corequisites
         ORDER BY level
         """
-
-    # --------------------------------------------------------------------------------------
-        # placeholder variables for now 
-        # year = 2023
-        # if major == "SP-ESOFT":
-        #     year = 2022
-
-        # query = f"""
-        # MATCH ((u:Unit)-[a:CORE_OF]->(m:Major))
-        # WHERE m.major = "{major}" AND a.year = "{year}"
-        # OPTIONAL MATCH (bridge:Unit)
-        # WHERE {unit_conditions}
-        # WITH COLLECT(DISTINCT u) + COLLECT(DISTINCT bridge) AS combined
-        # UNWIND combined as node
-        # OPTIONAL MATCH (node)-[or:REQUIRES]->(r_or)
-        # WHERE or.year = "{year}" AND or.type = "OR"
-        # OPTIONAL MATCH (node)-[and:REQUIRES]->(r_and)
-        # WHERE and.year = "{year}" AND and.type = "AND"
-        # OPTIONAL MATCH (node)-[cc:COREQUIRES]->(c)
-        # WHERE cc.year = "{year}"
-        # WITH node, COLLECT(DISTINCT r_or.unitcode) as or_req, COLLECT(DISTINCT r_and.unitcode) as and_req, COLLECT(DISTINCT c.unitcode) as corequisites
-        # WITH node, or_req, and_req, [or_req,and_req] as unit_req, corequisites
-        # RETURN node.unitcode as unitcode, node.unitname as unitname, node.type as type, node.semester as semester, node.major as major, node.level as level, node.credit_points as credit_points, node.points_req as points_req, node.enrolment_req as enrolment_req, or_req, and_req, unit_req, node.incompatible_units as incompatibilities, corequisites
-        # ORDER BY level
-        # """ 
+        
         results = session.run(query)
         data = results.data()
         return jsonify(data)
@@ -226,10 +202,11 @@ def get_option_combos(major, year):
 def get_prereq_units(chosen_unit, major):
     with driver.session() as session:
         query = """
-        MATCH (u:Unit {unitcode: $chosen_unit})
+        MATCH (u:Unit {unitcode: chosen_unit})
+        MATCH (m:Major {major: major})
         CALL apoc.path.expandConfig(u, {relationshipFilter: "REQUIRES>", minLevel: 1, maxLevel: 5})
         YIELD path
-        RETURN [node IN nodes(path) WHERE (node.major CONTAINS $major) OR (node.major IS NULL) | node.unitcode] AS prerequisites
+        RETURN [node IN nodes(path) WHERE ((node)-[:CORE_OF|GROUP_A_OF|GROUP_B_OF]->(m) OR (node.type = "ATAR") OR (node.type = "BRIDGING")) | node.unitcode] AS prerequisites  
         """
         x = {"chosen_unit": chosen_unit, "major": major}
         results = session.run(query, x)
@@ -240,10 +217,11 @@ def get_prereq_units(chosen_unit, major):
 def get_child_units(chosen_unit, major):
     with driver.session() as session:
         query = """
-        MATCH (u:Unit {unitcode: $chosen_unit})
+        MATCH (u:Unit {unitcode: chosen_unit})
+        MATCH (m:Major {major: major})
         CALL apoc.path.expandConfig(u, {relationshipFilter: "<REQUIRES", minLevel: 1, maxLevel: 5})
         YIELD path
-        RETURN [node IN nodes(path) WHERE (node.major CONTAINS $major) OR (node.major IS NULL) | node.unitcode] AS child_units
+        RETURN [node IN nodes(path) WHERE ((node)-[:CORE_OF|GROUP_A_OF|GROUP_B_OF]->(m) OR (node.type = "ATAR") OR (node.type = "BRIDGING")) | node.unitcode] AS child_units
         """
         x = {"chosen_unit": chosen_unit, "major": major}
         results = session.run(query, x)
