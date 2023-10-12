@@ -123,8 +123,10 @@ export function getPeriodOffered(id)
 // update the text contents of the info bar to the
 // info provided.
 export function updateInfoBar(info){
-    getById("infoBar").firstElementChild.innerHTML = info;
-    
+    if(getById("infoBar") != undefined)
+    {
+        getById("infoBar").firstElementChild.innerHTML = info;
+    }    
 }
 
 // is the unit in unitInformation param.

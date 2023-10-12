@@ -382,8 +382,14 @@ export class Table {
     //makes a cell which represent a unit.
     makeCell(innerHTML) {
         let data = document.createElement("td");
+        let text = document.createElement("p");
+
+
+        text.classList.add("unitText");
         
-        data.innerHTML = innerHTML;
+        text.innerHTML = innerHTML;
+        // data.innerHTML = innerHTML;
+        data.appendChild(text);
         data.setAttribute("draggable", "true");
         data.classList.add("unit");
 

@@ -461,12 +461,13 @@ function printUnitInfo(unitCode)
     let unit = getUnitInformation(unitCode);
     let str = "";
 
-    console.log(unit.prerequisites);
-    console.log(unit.prerequisites.length);
+    let targetSpec = `_${specialization}`;
+    let position = unit.type.search(targetSpec)-1;
+    let optionCode = unit.type[position];
 
     str += `<h5>${unit.name}</h5>`;
     str += unitCode.length < 8? formatInfo("Unit Code", "None"): formatInfo("Unit Code", unit.unitCode);
-    str += isOption(unitCode)? formatInfo("Type", "Option"): formatInfo("Type", "Core");
+    str += isOption(unitCode)? formatInfo("Type", "Option " + optionCode): formatInfo("Type", "Core");
     str += unit.semester.includes("BOTH")? formatInfo("Semester", "S1 or S2"): formatInfo("Semester", unit.semester);
     str += formatInfo("Credit Points", unit.creditPoints);
     str += unit.prerequisites[0].length == 0 && unit.prerequisites[1].length == 0? formatInfo("Prerequisites", "None"): formatInfo("Prerequisites", formatPrerequisites(unit.prerequisites));
