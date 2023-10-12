@@ -99,7 +99,7 @@ function exportToPDF() {
             for(let unit of unitsList)
             {
                 let data = document.createElement("td");
-                data.innerHTML = unit.innerHTML;
+                data.innerHTML = unit.textContent;
 
                 if(data.innerHTML.includes("Broadening"))
                 {
@@ -144,7 +144,7 @@ function exportToPDF() {
                     for(let NSunit of unitsNS)
                     {
                         // let data = document.createElement("td");
-                        data.innerHTML += NSunit.innerHTML;
+                        data.innerHTML += NSunit.textContent;
                         data.innerHTML += " " + getUnitInformation(NSunit.id).name + " ";
 
 
