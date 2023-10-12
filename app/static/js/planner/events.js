@@ -461,20 +461,18 @@ function printUnitInfo(unitCode)
     let unit = getUnitInformation(unitCode);
     let str = "";
 
-    str += `<h5>${unit.name}</h5>`;
-    str += formatInfo("Unit Code", unit.unitCode);
-    str += formatInfo("Type", unit.type);
-    if(unit.semester.includes("BOTH"))
-    {
-        str += formatInfo("Semester", "S1 or S2");
+    console.log(unit.prerequisites);
+    console.log(unit.prerequisites.length);
 
-    } else {
-        str += formatInfo("Semester", unit.semester);
-    }
+    str += `<h5>${unit.name}</h5>`;
+    str += unitCode.length < 8? formatInfo("Unit Code", "None"): formatInfo("Unit Code", unit.unitCode);
+    str += isOption(unitCode)? formatInfo("Type", "Option"): formatInfo("Type", "Core");
+    str += unit.semester.includes("BOTH")? formatInfo("Semester", "S1 or S2"): formatInfo("Semester", unit.semester);
     str += formatInfo("Credit Points", unit.creditPoints);
-    str += formatInfo("Prerequisites", formatPrerequisites(unit.prerequisites));
-    str += formatInfo("Corequisites", unit.corequisites); //previously or concurrently.
-    str += formatInfo("Point Requirements", unit.pointRequirements);
+    str += unit.prerequisites[0].length == 0 && unit.prerequisites[1].length == 0? formatInfo("Prerequisites", "None"): formatInfo("Prerequisites", formatPrerequisites(unit.prerequisites));
+    str += unit.corequisites.length == 0? formatInfo("Corerequisites", "None"): formatInfo("Corequisites", unit.corequisites);
+    str += unit.pointRequirements.length == 0? formatInfo("Point Requirements", "None"): formatInfo("Point Requirements", unit.pointRequirements);
+    str += unit.notes.length == 0? formatInfo("Notes", "None"): formatInfo("Notes", unit.notes);
 
     return str;
 }

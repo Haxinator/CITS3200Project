@@ -308,7 +308,7 @@ export class sideBar {
 }
 
 export class Unit {
-    constructor(name, code, creditPoints, type, semester, prerequisites, enrollmentReq, pointReq, corequisites) {
+    constructor(name, code, creditPoints, type, semester, prerequisites, enrollmentReq, pointReq, corequisites, note) {
         this.name = name;
         this.unitCode = code;
         this.creditPoints = creditPoints;
@@ -323,6 +323,7 @@ export class Unit {
         //split coreqs, as coreqs are a string. This makes me a bit sad. I'm sorry.
         this.corequisites = corequisites == null ? [] : corequisites;
         this.problems = [];
+        this.notes = note == null ? "" : note;
     }
     
     //true if user is enrolled, false otherwise.
@@ -372,7 +373,8 @@ export class Table {
                     unitInfo[i].unit_req,
                     unitInfo[i].enrolment_req,
                     unitInfo[i].points_req,
-                    unitInfo[i].corequisites));
+                    unitInfo[i].corequisites,
+                    unitInfo[i].notes));
 
         }
     }
@@ -492,7 +494,7 @@ export class Table {
             if(this.maxBroadening > 0)
             {
                 this.maxBroadening -= 6;
-                enrollInPeroid(this.makeDummyUnit("B","Broadening"), container);
+                enrollInPeroid(this.makeDummyUnit("Broad","Broadening"), container);
             } else {
                 // Adding electives break things atm when options units
                 // get added to the planner credit points go into negatives.
