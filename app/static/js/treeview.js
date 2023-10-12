@@ -1,46 +1,3 @@
-// function createSequenceofUnits(units) {
-//     let seq = "";
-//     for (let u in units) {
-//         seq.concat(units[u], " ");
-//     }
-//     console.log(seq);
-//     return seq
-// }
-
-if (specialization == "SP-EMECH") {
-    get_option_units();
-    get_option_combos();
-}
-
-
-//--------------------------Placeholder for now because these don't work on other js files hELP---------------------------
-//retrieve option units
-function get_option_units() {
-    let major = specialization;
-
-    const xhttp = new XMLHttpRequest();
-    let server = '/option_units='.concat(major);
-    xhttp.open("GET", server, true);
-    xhttp.onload = function (e) {
-        response = JSON.parse(xhttp.responseText);
-        addUnitOptions(response);
-    }
-    xhttp.send();
-}
-
-function get_option_combos() {
-    let major = specialization;
-    let server = '/option_combos='.concat(major);
-
-    const xhttp = new XMLHttpRequest();
-    xhttp.open("GET", server, true);
-    xhttp.onload = function (e) {
-        console.log(xhttp.responseText);
-        //let response = JSON.parse(xhttp.responseText);
-    }
-    xhttp.send();
-}
-//--------------------------------------------------------------------------------------------------------------------------
 
 //make trEEEEEEEEEEEEEEEEEE 
 google.charts.load('current', {packages:['wordtree']});
@@ -51,7 +8,7 @@ function drawUnitPaths(array, display_type) {
     let options = {
         width: 600,
         height: 295,
-        maxFontSize: 20,
+        maxFontSize: 10,
         wordtree: {
             format: 'implicit',
             type: display_type,
