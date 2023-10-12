@@ -101,7 +101,7 @@ export function pointRequirementsMet(unitCode, container)
             }
 
             pointCount += parseInt(otherUnit.creditPoints);
-            console.log(pointCount);
+            // console.log(pointCount);
         }
     }
 
@@ -163,9 +163,9 @@ export function corequisitesMet(unitCode, container)
                 //if corequisite in name list then it isn't in planner
                 return false;
     
-            } else if(corequisiteUnit.enrollmentPeriod > container.id && 
-                    corequisiteUnit.enrollmentPeriod.length == container.id.length)
+            } else if(comparePeriods(corequisiteUnit.enrollmentPeriod, container.id) == 1)
                     {
+                        //if corequsite is after current period.
                         infoBar.addInfo(`${corequisite} must be done concurrently or prior to commencing ${unitCode}!`);
                         
                         unit.problems.push(`${corequisite} must be done concurrently or prior to commencing ${unitCode}`);

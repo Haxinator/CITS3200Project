@@ -304,7 +304,7 @@ function drop(e)
 
         } else {
 
-            if (e.currentTarget.id.includes("op")) {
+            if (isOption(id) && e.currentTarget.id.includes("op")) {
 
                 enrollInPeroid(item, e.target);
 
@@ -316,30 +316,7 @@ function drop(e)
                 //if option bar
 
                 //should record unit for option bar here
-            }
-            // BUG THAT I NEED TO FIX.
-            // should check number of credit points instead
-            // else if(e.currentTarget.childElementCount > 3)
-            // get all children
-            // else if (e.currentTarget.getElementByTagName("*"))
-
-            // there can only be 24 credit points in a semester
-            else if (creditPointsInPeriod(e.currentTarget) >= 24)
-            {
-                //if unit not already enrolled in this period
-                if(e.currentTarget.id != item.parentElement.id)
-                {
-                    // BUG NOT PRINTING FOR SOME REASON
-                    infoBar.addInfo(`${e.currentTarget.id} is full <br> A maximum of 24 credit points can be taken per semester (unless approval is granted to overload).`);
-                } else {
-                    // don't print error if unit is already enrolled in period
-                    //else append to end of row.
-                    enrollInPeroid(item, e.target);
-                }
-            }
-
-            if(!canEnrollInPeriod(id, e.currentTarget))
-            {
+            } else if(!canEnrollInPeriod(id, e.currentTarget)) {
                 // trying to put option unit in option bar.
                 if(!isOption(id) && e.currentTarget.id.includes("op"))
                 {
@@ -351,6 +328,17 @@ function drop(e)
                     } else {
                         infoBar.addInfo(`${id} only available in ${getPeriodOffered(id)}!`);                        
                     }
+                }
+            } else if (creditPointsInPeriod(e.currentTarget) >= 24) {
+                //if unit not already enrolled in this period
+                if(e.currentTarget.id != item.parentElement.id)
+                {
+                    // BUG NOT PRINTING FOR SOME REASON
+                    infoBar.addInfo(`${e.currentTarget.id} is full <br> A maximum of 24 credit points can be taken per semester (unless approval is granted to overload).`);
+                } else {
+                    // don't print error if unit is already enrolled in period
+                    //else append to end of row.
+                    enrollInPeroid(item, e.target);
                 }
             }
         }
@@ -405,8 +393,13 @@ function drop(e)
             itemUnit.enrollmentPeriod = itemClone.parentElement.id;
     } else {
 
-        if(isOption(id) || isOption(e.target.id))
-        {
+        if(!canEnrollInPeriod(e.target.id, item.parentElement) && !canEnrollInPeriod(id, e.currentTarget)) {
+
+            infoBar.addInfo(`Can't swap with ${id} with ${e.target.id}. 
+            <br><br> ${e.target.id} is only available in ${getPeriodOffered(e.target.id)} and 
+            ${id} is only available in ${getPeriodOffered(id)}.`);
+
+        } else if(item.parentElement.id.includes("op") || e.currentTarget.id.includes("op")) {
             infoBar.addInfo(`Only option units can be added to the side bar.`);
         } else {
             infoBar.addInfo(`${id} only available in ${getPeriodOffered(id)} <br>

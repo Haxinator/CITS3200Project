@@ -76,7 +76,7 @@ function fetchOptionUnitCombinations() {
     xhttp.open('GET', url, true);
     xhttp.onload = (e) => {
         let response = JSON.parse(xhttp.responseText);
-        console.log(response);
+        // console.log(response);
         optionsBar.addOptionCombinations(response);
     }
 
@@ -138,6 +138,8 @@ function fetchCourseRequirementsAndBuildPlanner(maxBroadening) {
             let response = JSON.parse(xhttp.responseText);
             planner = new Table(maxBroadening);
             planner.maxBroadening -= (6*bridgingCount);
+
+            console.log(response);
 
             planner.makeTable(response);
             addUnitOptions(response);

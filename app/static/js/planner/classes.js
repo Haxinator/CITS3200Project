@@ -526,8 +526,7 @@ export class Table {
                 let position = types.search(targetSpec)-1;
                 let optionCode = types[position];
 
-                console.log(position);
-        
+                // console.log(position);
 
                 let unitElement = this.makeOptionUnit(unitCode, optionCode);
 
@@ -586,10 +585,18 @@ export class Table {
     makePeriods(containerID, container) {
 
         if (this.hasNSUnits) {
-            container.appendChild(this.makeRow(containerID, "S1"));
-            container.appendChild(this.makeRow(containerID, "NS1"));
-            container.appendChild(this.makeRow(containerID, "S2"));
-            container.appendChild(this.makeRow(containerID, "NS2"));
+
+            if(container.id.includes("op"))
+            {
+                container.appendChild(this.makeRow(containerID, "S1"));
+                container.appendChild(this.makeRow(containerID, "S2"));
+                container.appendChild(this.makeRow(containerID, "NS"));
+            } else {
+                container.appendChild(this.makeRow(containerID, "S1"));
+                container.appendChild(this.makeRow(containerID, "NS1"));
+                container.appendChild(this.makeRow(containerID, "S2"));
+                container.appendChild(this.makeRow(containerID, "NS2"));
+            }
         } else {
             container.appendChild(this.makeRow(containerID, "S1"));
             container.appendChild(this.makeRow(containerID, "S2"));

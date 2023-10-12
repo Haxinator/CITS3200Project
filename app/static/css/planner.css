@@ -393,6 +393,12 @@ https://davidmathlogic.com/colorblind/#%23648FFF-%23785EF0-%23DC267F-%23FE6100-%
     padding: 5%;
 }
 
+/* ------------------BUTTON CSS---------------- */
+
+.buttonHeader {
+    text-align: center;
+}
+
 .button-container {
     display: flex;
     flex-wrap: wrap;
