@@ -56,7 +56,7 @@ function exportToPDF() {
     let tableHeading = document.createElement("h3");
     tableHeading.innerHTML =  `BH011 Bachelor of Engineering (Honours) - ${specialization}`;
     let subtitle = document.createElement("sub");
-    subtitle.innerHTML = `${duration} Year Course Study Plan - Commencing Semester 1 2023`;
+    subtitle.innerHTML = `${duration} Year Course Study Plan - Commencing Semester 1 ${yearLevel}`;
     subtitle.classList.add("sub");
 
     printWindow.document.body.appendChild(tableHeading);
@@ -91,7 +91,7 @@ function exportToPDF() {
             let periodContainer = document.createElement("tr");
             let units = getById(`Y${year}S${period}`);
             let unitsList = units.children;
-            periodHeader.innerHTML = `Semester ${period}, ${2023 + (year-1)}`; //resemble starting year
+            periodHeader.innerHTML = `Semester ${period}, ${parseInt(yearLevel) + (year-1)}`; //resemble starting year
 
 
             periodContainer.appendChild(periodHeader);
@@ -99,7 +99,7 @@ function exportToPDF() {
             for(let unit of unitsList)
             {
                 let data = document.createElement("td");
-                data.innerHTML = unit.innerHTML;
+                data.innerHTML = unit.textContent;
 
                 if(data.innerHTML.includes("Broadening"))
                 {
@@ -144,7 +144,7 @@ function exportToPDF() {
                     for(let NSunit of unitsNS)
                     {
                         // let data = document.createElement("td");
-                        data.innerHTML += NSunit.innerHTML;
+                        data.innerHTML += NSunit.textContent;
                         data.innerHTML += " " + getUnitInformation(NSunit.id).name + " ";
 
 

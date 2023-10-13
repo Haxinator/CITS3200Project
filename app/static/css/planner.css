@@ -8,9 +8,23 @@
 
     /* give all cells consistent size*/
     min-width: 100px;
+    height: 50px;
 
     /* nice shadow */
     box-shadow: 3px 3px 5px lightblue;
+    overflow: hidden;
+}
+
+.unitText {
+    position: relative;
+    margin: 0px;
+    z-index: 10;
+    font-weight: bold;
+    pointer-events: none; 
+    text-shadow: -1px 1px 0 white,
+				  1px 1px 0 white,
+				 1px -1px 0 white,
+				-1px -1px 0 white;
 }
 
 .option {
@@ -113,6 +127,33 @@ h2 {
     vertical-align: middle;
 }
 
+.watermark{
+    position: relative;
+    display: block;
+    /* stops it from blocking event listener. */
+    pointer-events: none; 
+    text-align: start;
+    opacity: 0.5;
+    color: gray;
+    font-weight: bolder;
+    font-size: 50px;
+    margin: -10px;
+    /* margin-bottom: 20px; */
+    z-index: 0;
+    line-height: 10px;
+}
+
+.sensor h2 {
+    margin: 0px;
+    text-decoration:underline;
+}
+
+
+/* make export pdf button smaller. */
+#exportPdf {
+    scale: 0.8;
+}
+
 
 /* 
 Using IBM colour pallete
@@ -162,12 +203,6 @@ https://davidmathlogic.com/colorblind/#%23648FFF-%23785EF0-%23DC267F-%23FE6100-%
     background-size: 56.57px 56.57px;    
 }
 
-.sensor h2 {
-    margin: 0px;
-    text-decoration:underline;
-}
-
-
 /* pad left without adding white line */
 /* #infoBar p{
     padding-left: 10px;
@@ -212,7 +247,7 @@ https://davidmathlogic.com/colorblind/#%23648FFF-%23785EF0-%23DC267F-%23FE6100-%
 }
 
 #options {
-    padding-top: 50px;
+    margin-top: 50px;
 }
 
 #options tr{
@@ -250,6 +285,8 @@ https://davidmathlogic.com/colorblind/#%23648FFF-%23785EF0-%23DC267F-%23FE6100-%
     margin-left: 53px;
     border-top: 2px solid black;
     text-align: center;
+    z-index: 1000;
+    
 }
 
 #optionsBar button.noMargin{ 
@@ -292,9 +329,6 @@ https://davidmathlogic.com/colorblind/#%23648FFF-%23785EF0-%23DC267F-%23FE6100-%
     overflow-wrap: break-word;
 }
 
-#exportPdf {
-    scale: 0.8;
-}
 
 /* ------------------------------- STATUS BAR CSS --------------------------- */
 
@@ -371,6 +405,12 @@ https://davidmathlogic.com/colorblind/#%23648FFF-%23785EF0-%23DC267F-%23FE6100-%
 
 #tree_display {
     padding: 5%;
+}
+
+/* ------------------BUTTON CSS---------------- */
+
+.buttonHeader {
+    text-align: center;
 }
 
 .button-container {

@@ -13,9 +13,10 @@
  * This file can be hard to understand. Best to ask Josh.
 */
 
-import { getAllUnitInfo } from "./support.js";
+import { getAllUnitInfo, getById, getByPeriod } from "./support.js";
 import { infoBar } from "./classes.js";
 import { highlightIfUnitHasProblems, isAlpha, inDOM, getLastCharacter, getUnitInformation, isOption, comparePeriods } from "./support.js";
+import { planner } from "./main.js";
 
 // --------------- Prerequisite Met Functions ----------------//
 
@@ -42,6 +43,44 @@ export function unitConditionsMet(unitCode, container)
         // colour magenta if problem found
         highlightIfUnitHasProblems(unit);
     }
+
+    //hardcode check if portfolio in right spot
+    if(unitCode.includes("GENG5010"))
+    {
+        //if in planner and planner in DOM.
+        if(unit.isEnrolled() && planner != undefined)
+        {
+            let lastYear = getById("table").lastElementChild.id[1];
+            let yearCorrect = lastYear == container.id[1];
+            console.log(getByPeriod(lastYear, "NS2").lastElementChild);
+            console.log(getByPeriod(lastYear, "S2").lastElementChild);
+
+            let semesterCorrect = container.id[4] == "2" || (getByPeriod(lastYear, "NS2").lastElementChild == null && getByPeriod(lastYear, "S2").lastElementChild == null);
+
+            if(yearCorrect && semesterCorrect)
+            {
+                return true;
+            } else {
+                unit.problems.push(`You can only enroll into ${unitCode} in your last semester of your last year!`);
+                infoBar.addInfo(`You can only enroll into ${unitCode} in your last semester of your last year!`);
+                highlightIfUnitHasProblems(unit);
+
+                return false;
+            }
+
+
+        } else {
+            for(let thatUnit of planner.unitInformation.values())
+            {
+                if(!thatUnit.isEnrolled() && thatUnit.unitCode != unitCode)
+                {
+                    return false;
+                }
+            }
+        }
+
+    }
+
 
     return correctSemester && correctPrequisites && correctCorequisites && correctPoints;
 }
@@ -101,7 +140,7 @@ export function pointRequirementsMet(unitCode, container)
             }
 
             pointCount += parseInt(otherUnit.creditPoints);
-            console.log(pointCount);
+            // console.log(pointCount);
         }
     }
 
@@ -163,9 +202,9 @@ export function corequisitesMet(unitCode, container)
                 //if corequisite in name list then it isn't in planner
                 return false;
     
-            } else if(corequisiteUnit.enrollmentPeriod > container.id && 
-                    corequisiteUnit.enrollmentPeriod.length == container.id.length)
+            } else if(comparePeriods(corequisiteUnit.enrollmentPeriod, container.id) == 1)
                     {
+                        //if corequsite is after current period.
                         infoBar.addInfo(`${corequisite} must be done concurrently or prior to commencing ${unitCode}!`);
                         
                         unit.problems.push(`${corequisite} must be done concurrently or prior to commencing ${unitCode}`);

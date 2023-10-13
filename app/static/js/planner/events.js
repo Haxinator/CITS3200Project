@@ -304,7 +304,7 @@ function drop(e)
 
         } else {
 
-            if (e.currentTarget.id.includes("op")) {
+            if (isOption(id) && e.currentTarget.id.includes("op")) {
 
                 enrollInPeroid(item, e.target);
 
@@ -316,30 +316,7 @@ function drop(e)
                 //if option bar
 
                 //should record unit for option bar here
-            }
-            // BUG THAT I NEED TO FIX.
-            // should check number of credit points instead
-            // else if(e.currentTarget.childElementCount > 3)
-            // get all children
-            // else if (e.currentTarget.getElementByTagName("*"))
-
-            // there can only be 24 credit points in a semester
-            else if (creditPointsInPeriod(e.currentTarget) >= 24)
-            {
-                //if unit not already enrolled in this period
-                if(e.currentTarget.id != item.parentElement.id)
-                {
-                    // BUG NOT PRINTING FOR SOME REASON
-                    infoBar.addInfo(`${e.currentTarget.id} is full <br> A maximum of 24 credit points can be taken per semester (unless approval is granted to overload).`);
-                } else {
-                    // don't print error if unit is already enrolled in period
-                    //else append to end of row.
-                    enrollInPeroid(item, e.target);
-                }
-            }
-
-            if(!canEnrollInPeriod(id, e.currentTarget))
-            {
+            } else if(!canEnrollInPeriod(id, e.currentTarget)) {
                 // trying to put option unit in option bar.
                 if(!isOption(id) && e.currentTarget.id.includes("op"))
                 {
@@ -351,6 +328,17 @@ function drop(e)
                     } else {
                         infoBar.addInfo(`${id} only available in ${getPeriodOffered(id)}!`);                        
                     }
+                }
+            } else if (creditPointsInPeriod(e.currentTarget) >= 24) {
+                //if unit not already enrolled in this period
+                if(e.currentTarget.id != item.parentElement.id)
+                {
+                    // BUG NOT PRINTING FOR SOME REASON
+                    infoBar.addInfo(`${e.currentTarget.id} is full <br> A maximum of 24 credit points can be taken per semester (unless approval is granted to overload).`);
+                } else {
+                    // don't print error if unit is already enrolled in period
+                    //else append to end of row.
+                    enrollInPeroid(item, e.target);
                 }
             }
         }
@@ -405,8 +393,13 @@ function drop(e)
             itemUnit.enrollmentPeriod = itemClone.parentElement.id;
     } else {
 
-        if(isOption(id) || isOption(e.target.id))
-        {
+        if(!canEnrollInPeriod(e.target.id, item.parentElement) && !canEnrollInPeriod(id, e.currentTarget)) {
+
+            infoBar.addInfo(`Can't swap with ${id} with ${e.target.id}. 
+            <br><br> ${e.target.id} is only available in ${getPeriodOffered(e.target.id)} and 
+            ${id} is only available in ${getPeriodOffered(id)}.`);
+
+        } else if(item.parentElement.id.includes("op") || e.currentTarget.id.includes("op")) {
             infoBar.addInfo(`Only option units can be added to the side bar.`);
         } else {
             infoBar.addInfo(`${id} only available in ${getPeriodOffered(id)} <br>
@@ -468,20 +461,19 @@ function printUnitInfo(unitCode)
     let unit = getUnitInformation(unitCode);
     let str = "";
 
-    str += `<h5>${unit.name}</h5>`;
-    str += formatInfo("Unit Code", unit.unitCode);
-    str += formatInfo("Type", unit.type);
-    if(unit.semester.includes("BOTH"))
-    {
-        str += formatInfo("Semester", "S1 or S2");
+    let targetSpec = `_${specialization}`;
+    let position = unit.type.search(targetSpec)-1;
+    let optionCode = unit.type[position];
 
-    } else {
-        str += formatInfo("Semester", unit.semester);
-    }
+    str += `<h5>${unit.name}</h5>`;
+    str += unitCode.length < 8? formatInfo("Unit Code", "None"): formatInfo("Unit Code", unit.unitCode);
+    str += isOption(unitCode)? formatInfo("Type", "Option " + optionCode): formatInfo("Type", "Core");
+    str += unit.semester.includes("BOTH")? formatInfo("Semester", "S1 or S2"): formatInfo("Semester", unit.semester);
     str += formatInfo("Credit Points", unit.creditPoints);
-    str += formatInfo("Prerequisites", formatPrerequisites(unit.prerequisites));
-    str += formatInfo("Corequisites", unit.corequisites); //previously or concurrently.
-    str += formatInfo("Point Requirements", unit.pointRequirements);
+    str += unit.prerequisites[0].length == 0 && unit.prerequisites[1].length == 0? formatInfo("Prerequisites", "None"): formatInfo("Prerequisites", formatPrerequisites(unit.prerequisites));
+    str += unit.corequisites.length == 0? formatInfo("Corerequisites", "None"): formatInfo("Corequisites", unit.corequisites);
+    str += unit.pointRequirements.length == 0? formatInfo("Point Requirements", "None"): formatInfo("Point Requirements", unit.pointRequirements);
+    str += unit.notes.length == 0? formatInfo("Notes", "None"): formatInfo("Notes", unit.notes);
 
     return str;
 }

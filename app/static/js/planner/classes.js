@@ -37,6 +37,7 @@ import { makeExportPDFButton } from "./buttons.js";
 
 export var infoBar;
 
+//Used for status, Info and option bars.
 export class sideBar {
     constructor(){
         this.optionCombinations = null;
@@ -211,11 +212,14 @@ export class sideBar {
         }
 
         // only one match if done
-        if(matches.length < 2) {
-            this.optionsDone = true;
-        } else {
-            this.optionsDone = false;
-        }
+        // if(matches.length < 2) {
+        //     this.optionsDone = true;
+        // } else {
+        //     this.optionsDone = false;
+        // }
+
+        //assume options are done
+        let done = true;
 
         // for each option unit
         for(let unit of optionsTable.unitInformation.values())
@@ -254,7 +258,24 @@ export class sideBar {
                 getById(unitCode).classList.add("otherHide");
             }
 
+            let unitElement = getById(unitCode);
+
+            // if option unit in option bar
+            if(unitElement.parentElement.id.includes("op"))
+            {
+                // if there is a unit that is not hidden
+                if(!unitElement.classList.contains("otherHide"))
+                {
+                    //this means the option combo isn't complete
+                    done = false;
+                }
+            }
+
         }
+
+        // update optionsDone
+        this.optionsDone = done;
+
     }
 
     //response is the options units json
@@ -264,10 +285,13 @@ export class sideBar {
         let tableElement = table.makeOptionsContainer(response);
         let arrow = document.createElement("div");
 
+        let headingContainer = document.createElement("div");
         let heading = document.createElement("h3");
 
         heading.innerHTML = "Options";
-        optionsBar.appendChild(heading);
+        headingContainer.appendChild(heading);
+
+        optionsBar.appendChild(headingContainer);
 
         arrow.classList.add("leftArrow");
         button.classList.add("noMargin");
@@ -284,7 +308,7 @@ export class sideBar {
 }
 
 export class Unit {
-    constructor(name, code, creditPoints, type, semester, prerequisites, enrollmentReq, pointReq, corequisites) {
+    constructor(name, code, creditPoints, type, semester, prerequisites, enrollmentReq, pointReq, corequisites, note) {
         this.name = name;
         this.unitCode = code;
         this.creditPoints = creditPoints;
@@ -299,6 +323,7 @@ export class Unit {
         //split coreqs, as coreqs are a string. This makes me a bit sad. I'm sorry.
         this.corequisites = corequisites == null ? [] : corequisites;
         this.problems = [];
+        this.notes = note == null ? "" : note;
     }
     
     //true if user is enrolled, false otherwise.
@@ -348,7 +373,8 @@ export class Table {
                     unitInfo[i].unit_req,
                     unitInfo[i].enrolment_req,
                     unitInfo[i].points_req,
-                    unitInfo[i].corequisites));
+                    unitInfo[i].corequisites,
+                    unitInfo[i].notes));
 
         }
     }
@@ -356,13 +382,43 @@ export class Table {
     //makes a cell which represent a unit.
     makeCell(innerHTML) {
         let data = document.createElement("td");
+        let text = document.createElement("p");
+
+
+        text.classList.add("unitText");
         
-        data.innerHTML = innerHTML;
+        text.innerHTML = innerHTML;
+        // data.innerHTML = innerHTML;
+        data.appendChild(text);
         data.setAttribute("draggable", "true");
         data.classList.add("unit");
 
         return data;
     };
+
+    makeOptionUnit(unitCode, optionCode)
+    {
+        let unit = this.makeCell(unitCode);
+        let unitInformation = this.unitInformation.get(unitCode);
+        let watermark = document.createElement("span");
+
+        watermark.classList.add("watermark");
+        watermark.innerHTML = optionCode;
+
+        unit.setAttribute("id", unitCode);
+        unit.appendChild(watermark);
+
+        addUnitEvents(unit);
+
+        if(unitInformation.creditPoints == 0)
+        {
+            unit.classList.add("zeroPoint");
+        } else if (unitInformation.creditPoints == 12) {
+            unit.classList.add("TwelvePoint");
+        }
+
+        return unit;
+    }
 
     // makes a unit cell
     makeUnit(unitCode) {
@@ -444,7 +500,7 @@ export class Table {
             if(this.maxBroadening > 0)
             {
                 this.maxBroadening -= 6;
-                enrollInPeroid(this.makeDummyUnit("B","Broadening"), container);
+                enrollInPeroid(this.makeDummyUnit("Broad","Broadening"), container);
             } else {
                 // Adding electives break things atm when options units
                 // get added to the planner credit points go into negatives.
@@ -472,7 +528,15 @@ export class Table {
 
             //check if unit placed in valid teaching period
             if (canEnrollInPeriod(unitCode, container) && !unit.isEnrolled()) {
-                let unitElement = this.makeUnit(unitCode);
+                let types = this.unitInformation.get(unitCode).type;
+                // get group code.
+                let targetSpec = `_${specialization}`;
+                let position = types.search(targetSpec)-1;
+                let optionCode = types[position];
+
+                // console.log(position);
+
+                let unitElement = this.makeOptionUnit(unitCode, optionCode);
 
                 unitElement.classList.add("option");
 
@@ -529,10 +593,18 @@ export class Table {
     makePeriods(containerID, container) {
 
         if (this.hasNSUnits) {
-            container.appendChild(this.makeRow(containerID, "S1"));
-            container.appendChild(this.makeRow(containerID, "NS1"));
-            container.appendChild(this.makeRow(containerID, "S2"));
-            container.appendChild(this.makeRow(containerID, "NS2"));
+
+            if(container.id.includes("op"))
+            {
+                container.appendChild(this.makeRow(containerID, "S1"));
+                container.appendChild(this.makeRow(containerID, "S2"));
+                container.appendChild(this.makeRow(containerID, "NS"));
+            } else {
+                container.appendChild(this.makeRow(containerID, "S1"));
+                container.appendChild(this.makeRow(containerID, "NS1"));
+                container.appendChild(this.makeRow(containerID, "S2"));
+                container.appendChild(this.makeRow(containerID, "NS2"));
+            }
         } else {
             container.appendChild(this.makeRow(containerID, "S1"));
             container.appendChild(this.makeRow(containerID, "S2"));
