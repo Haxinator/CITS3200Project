@@ -1,5 +1,7 @@
-#Functionality CheckList
-#Start Up
+# Functionality CheckList
+
+
+# Start Up
 - [x] Planner Generates without error.
 - [x] All units visible.
 - [x] Status bar is visible.
@@ -15,7 +17,7 @@
 - [x] The amount of broadening units decreases with each bridging unit the user takes.
 
 
-#Drag and Drop
+# Drag and Drop
 - [x] You can drag any unit and drop it in a teaching period the unit is offered in.
 - [x] You are prevented from dropping a unit into a teaching period it is not offered in.
 - [x] If you attempt to drop a unit into an incorrect teaching period the relevant error message is displayed on the info bar.
@@ -27,7 +29,7 @@
 - [x] If a year in the planner has no following years and has only one unit left and this unit is dragged and dropped into an earlier year, The empty year should disapear from the planner.
 
 
-#Display invalid enrollments
+# Display invalid enrollments
 - [x] If a unit prerequisite isn't met the unit is highlighted in red, and the info bar displays what prerequisite wasn't met.
 - [x] If a unit corequisite isn't met the unit is highlighted in red, and the info bar displays what corequisite wasn't met.
 - [x] If the user clicks elsewhere the info bar is cleared, but the unit is still highlighted.
@@ -43,7 +45,7 @@
 - [x] GENG5010 displays an error if it's not placed in the last enrolled period of the last year or in other words if another unit is enrolled in a later period.
 
 
-#Clicking on unit
+# Clicking on unit
 - [x] Clicking on Unit shows InfoBar
 - [x] InfoBar displays unit information correctly.
 - [x] Prerequisites are highlighted.
@@ -60,7 +62,7 @@
 - [x] If a unit is selected and if either it's corequistes, prerequisites, or contingent units has problems that need fixing, the highlighting should be a stripped pattern red and another colour depending on whether the unit is a corequisite, prerequisite or contingent unit.
 
 
-#Highlight Buttons
+# Highlight Buttons
 - [x] Clicking on a highlight button highlights the relevant units.
 - [x] Clicking on a highlight button shows the legend in the status bar.
 - [x] Clicking on something that isn't a highlight button or unit clears highlighting and the legend.
@@ -69,7 +71,7 @@
 - [x] If units are highlighted and another highlight button is selected, the legend is updated.
 
 
-#Option Bar
+# Option Bar
 - [x] An illegal combination of option units doesn't occur.
 - [x] When an option unit is added, the next legal units are displayed, and illegal ones are hidden.
 - [x] If an option requirement isn't met it shouldn't be displayed until it is added to the planner.
@@ -84,7 +86,7 @@
 - [x] If only one more option unit is required to create a valid combination, and the user drags the option unit over 'drag a unit here to add a row', a new row should be created, the option unit is placed in the correct semester,the status bar should change from 'add option units' to 'Done' (provided there are no problems to fix), AND the option bar should display no other units.
 
 
-#Print to PDF
+# Print to PDF
 - [x] If the status bar displays 'Done', the print to pdf button should appear.
 - [x] If the user clicks on the button a new tab is opened with a newly formated study planner.
 - [x] The print page displays the planner preview in Landscape.
@@ -100,4 +102,4 @@
 - [x] The heading at the top should update depending on the major selected.
 - [x] There should be two superscripts at the bottom of the table. Providing a key and a disclaimer.
 - [x] The pdf should be coloured correctly, matching the planner shown in the tab.
-- [] The pdf when saved should be as shown in the print screen.
+- [ ] The pdf when saved should be as shown in the print screen.
