@@ -29,14 +29,25 @@ def staffLogin():
 @app.route('/preferences', methods=['POST'])
 def preferences():
     # You can access form data using request.form
+    specAsName = {
+    "SP-EBIOM": "Biomedical Engineering",
+    "SP-ECHEM": "Chemical Engineering",
+    "SP-ECIVI": "Civil Engineering",
+    "SP-EELEC": "Electrical and Electronic Engineering",
+    "SP-EENVI": "Environmental Engineering",
+    "SP-EMECH": "Mechanical Engineering",
+    "SP-EMINI": "Mining Engineering",
+    "SP-ESOFT": "Software Engineering"
+    }
     specialization = request.form['specialization']
+    specialization_name = specAsName.get(specialization, "Unknown Specialization")
     yearLevel = request.form['yearLevel']
     #prints out unit code SP-ECHEM
     #Create vars to pass to preferences page
     mathSpecialist = request.form['mathSpecialist']
     chemistry = request.form['chemistry']
     physics = request.form['physics']
-    return render_template('preferences.html', title='Preferences', specialization = specialization, mathSpecialist = mathSpecialist, chemistry = chemistry, physics = physics, yearLevel = yearLevel) # Render the preferences page
+    return render_template('preferences.html', title='Preferences', specialization = specialization, mathSpecialist = mathSpecialist, chemistry = chemistry, physics = physics, yearLevel = yearLevel, specialization_name = specialization_name) # Render the preferences page
 
 
 # ------------------------------------- NEO4J QUERIES ------------------------------------------------
