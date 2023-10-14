@@ -42,6 +42,29 @@ getById("root").parentElement.parentElement.addEventListener("click", (e) =>{
     
 });
 
+//Highlights all units with notes.
+getById("noteFilter").addEventListener("click", () => {
+
+    //clear last previous filters()
+    clearHighlighting();
+
+    for(let unit of getAllUnitInfo().values())
+    {
+        let item = getById(unit.unitCode);
+
+        if(unit.notes.length > 0)
+        {
+            item.classList.toggle("blue");
+        }
+    }
+
+        //KEY   COLOUR
+        let legend = new Map([
+        ["Has Notes", "blue"]]);
+
+        statusBar.displayLegend(legend);
+});
+
 
 /**
  * This function creates a new table, copies the information from the 

@@ -251,6 +251,13 @@ function printInfo(e)
 //--------------------- EVENT LISTENER FUNCTIONS -------------------------//
 
 //if your cursor (whilst dragging unit) is over the row add magenta lines.
+function sensordragover(e)
+{
+    //prevent default to have drop cursor appear
+    e.preventDefault();
+}
+
+//if your cursor (whilst dragging unit) is over the row add magenta lines.
 function dragover(e)
 {
     //prevent default to have drop cursor appear

@@ -75,13 +75,26 @@ export function unitConditionsMet(unitCode, container)
 
 
         } else {
+
+            
             for(let thatUnit of planner.unitInformation.values())
             {
+                //if there exists an unenrolled unit that isn't GENG5010
                 if(!thatUnit.isEnrolled() && thatUnit.unitCode != unitCode)
                 {
-                    return false;
+                    return false
                 }
             }
+
+            //Should start in NS2.
+            if(container.id.includes("NS1"))
+            {
+                return false
+            }
+                // if(!thatUnit.isEnrolled() && thatUnit.unitCode != unitCode && container.id.includes("NS1"))
+                // {
+                //     return false;
+                // }
         }
 
     }
