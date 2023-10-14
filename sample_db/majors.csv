@@ -1,9 +1,10 @@
-major,name,year_offered
-SP-EMECH,Mechanical Engineering,2023
-SP-ESOFT,Software Engineering,2023;2022
-SP-ECHEM,Chemical Engineering,2023
-SP-EBIOM,Biomedical Engineering,2023
-SP-ECIVI,Civil Engineering,2023
-SP-EELEC,Electrical Engineering,2023
-SP-EENVI,Environtal Engineering,2023
-SP-EMINI,Mining Engineering,2023
+major,name,year_offered,max_broadening_pts,has_options
+SP-EMECH,Mechanical Engineering,2023,24,1
+SP-ESOFT,Software Engineering,2023;2022,24,0
+SP-ECHEM,Chemical Engineering,2023,12,1
+SP-EBIOM,Biomedical Engineering,2023,24,0
+SP-ECIVL,Civil Engineering,2023,24,1
+SP-EELEC,Electrical Engineering,2023,24,0
+SP-EENVI,Environmental Engineering,2023,24,0
+SP-EMINE,Mining Engineering,2023,24,0
+SP-EAUTO,Automation and Robotics Engineering,2023,24,0
