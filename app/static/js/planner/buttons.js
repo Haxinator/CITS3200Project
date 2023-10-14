@@ -85,7 +85,7 @@ function exportToPDF() {
     
     //table heading
     let tableHeading = document.createElement("h3");
-    tableHeading.innerHTML =  `BH011 Bachelor of Engineering (Honours) - ${specialization}`;
+    tableHeading.innerHTML =  `BH011 Bachelor of Engineering (Honours) - ${specialization_name} (${specialization})`;
     let subtitle = document.createElement("sub");
     subtitle.innerHTML = `${duration} Year Course Study Plan - Commencing Semester 1 ${yearLevel}`;
     subtitle.classList.add("sub");
