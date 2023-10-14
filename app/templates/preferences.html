@@ -1,19 +1,21 @@
 {% extends "base.html" %}
 {% block content %}
-
+    <!-- Include local and external stylesheets -->
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/planner.css') }}">
     <!-- Include Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     
-    
+    <!-- Main heading -->
     <h1>Welcome to the {{ specialization_name }} Program!</h1>
     
-
+    <!-- Main content area -->
     <main id = "root">
+        <!-- Collapsible instruction box -->
         <div class= "boxed" style="border: none;">
             <div class="feature-box" style="padding: 0 20px;">
                 <button class="collapsible" style="text-align: center;"><h4>How to Utilize This Feature?</h4> <span class="arrow">&#x25BC;</span></button>
                 <div class="content">
+                <!-- Instructions and guidelines for using the course planner tool -->
                 <p>Welcome to your custom course study planner - a tool designed to be user-friendly, intuitive, and engaging. Here's a quick guide to help you navigate:</p>
                 <p>Displayed below are the unit numbers corresponding to all the units in your selected course. You can click on any unit number to view detailed information including its name, semester offerings, prerequisites, corequisites, and dependent units.</p>
                 <p>Additionally, you have access to several helpful functionalities through the buttons below:
@@ -42,6 +44,7 @@
             </div>
          </div>
          <hr>
+         <!-- Highlighting options for course units -->
          <h4 class="buttonHeader">Highlight</h4>
             <div class="button-container">
                 <button id="SemesterFilter" class="button">Semesters Offered</button>
@@ -51,7 +54,7 @@
                 <button id="pointRequirementsFilter" class="button">Units with Point Requirements</button>
             </div>
     </main>
-
+     <!-- Tree view section to visualize unit dependencies -->
     <div id="treeview">
         <h3>Need to see the importance of the unit?</h3>
         <p>Select a unit and see dependencies on it. Once the tree is created, you can click on a unit if you wish to narrow down the pathways</p>
@@ -68,7 +71,7 @@
         </div>
        
     </div>
-        
+    <!-- JavaScript functionality for page interactions -->
     <script>
         // Access the variable in JavaScript
         var specialization = "{{ specialization }}";
@@ -78,6 +81,7 @@
         var isPhys = "{{ physics }}"
         var isChem = "{{ chemistry }}"
 
+        // Event listeners for collapsible content
         var coll = document.getElementsByClassName("collapsible");
         var i;
 
