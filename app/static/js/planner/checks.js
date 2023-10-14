@@ -2,11 +2,12 @@
  * checks.js is a big file, this is because it's responsible for checking if a unit's
  * prerequisites were met.
  * 
- * unitConditionsMet is the main file. It calls all the other functions:
+ * unitConditionsMet is the main function. It calls all the other functions:
  *      o Checks if unit can be enrolled in a given semester.
  *      o Checks if a unit's perequisites were met.
  *      o Checks if a unit's corequisites were met.
  *      o Checks if a unit's point requirements were met (including core unit points requirements).
+ *      o It also checks GENG5010 is enrolled in the last enrolled period of the last year .
  * If all of these functions return true, then the unit conditions were met and the
  * given unit can be enrolled in the semester provided. 
  * 
@@ -20,9 +21,13 @@ import { planner } from "./main.js";
 
 // --------------- Prerequisite Met Functions ----------------//
 
-//checks if all unit prerequisites met.
-// container is the teaching period.
-// unitCode is the unit code.
+/**
+ * Checks if all unit prerequisites met if the unit enrolls into
+ * The given teaching period.
+ * @param {*} unitCode unit code of a unit
+ * @param {*} container teaching period from DOM.
+ * @returns true if unit can be enrolled into this period false otherwise.
+ */
 export function unitConditionsMet(unitCode, container)
 {
     //empty here for cleaner code
@@ -85,9 +90,13 @@ export function unitConditionsMet(unitCode, container)
     return correctSemester && correctPrequisites && correctCorequisites && correctPoints;
 }
 
-//determines if unit belongs to the type identifier given
-//@param unit code is the unit code.
-//@param identifier is the unit type identifier.
+/**
+ * Determines if unit belongs to the type identifier given.
+ * In this case if it's a programming unit.
+ * @param {*} unitCode unitCode is the unit code.
+ * @param {*} identifier is the unit type identifier.
+ * @returns 
+ */
 export function unitType(unitCode, identifier)
 {
     if(identifier === "P" && unitCode.substring(0,4) === "CITS")
@@ -98,9 +107,13 @@ export function unitType(unitCode, identifier)
     return false;
 }
 
-//it works I think?
-//checks if unit has met its point requirements.
-//both the overall points and core unit points.
+/**
+ * Checks if unit has met its point requirements both the overall points and core unit points.
+ * Core unit points is programming units in this case.
+ * @param {*} unitCode unit code of a unit.
+ * @param {*} container Teaching period from DOM.
+ * @returns true if point requirements met, false otherwise.
+ */
 export function pointRequirementsMet(unitCode, container)
 {
     let unit = getUnitInformation(unitCode);
@@ -181,10 +194,13 @@ export function pointRequirementsMet(unitCode, container)
     return true;
 }
 
-//checks if corequisites for a given unit were met.
-//almost exactly the same as checking if prerequisites were met.
-//Haven't done indepth testing.
-//I hope this works. _/\_
+/**
+ * Checks if corequisites for a given unit were met.
+ * Almost exactly the same as checking if prerequisites were met.
+ * @param {*} unitCode unit code of the unit.
+ * @param {*} container teaching period from DOM.
+ * @returns true if corequisites were met, false otherwise.
+ */
 export function corequisitesMet(unitCode, container)
 {
     let unit = getUnitInformation(unitCode);
@@ -217,7 +233,12 @@ export function corequisitesMet(unitCode, container)
     return corequisitesMet;
 }
 
-//checks if unit prerequisites met
+/**
+ * Checks if given unit's prerequisites were met.
+ * @param {*} unitCode given unit code of the unit.
+ * @param {*} container teaching period from DOM.
+ * @returns true if prerequisites met, false otherwise.
+ */
 export function unitPreRequisitiesMet(unitCode, container)
 {
     let unit = getUnitInformation(unitCode);
@@ -303,9 +324,12 @@ export function unitPreRequisitiesMet(unitCode, container)
     return prerequisitesMet && orMet;
 }
 
-//checks if unit can enroll in a given teaching period
-//@param container is the teaching period
-//@param unitCode is the code of the unit
+/**
+ * checks if unit can enroll in a given teaching period.
+ * @param {*} unitCode is the code of the unit.
+ * @param {*} container is the teaching period from the DOM.
+ * @returns 
+ */
 export function canEnrollInPeriod(unitCode, container)
 {
     let unit = getUnitInformation(unitCode);

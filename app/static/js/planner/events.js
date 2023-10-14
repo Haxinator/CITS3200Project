@@ -17,7 +17,10 @@ import { optionsBar, statusBar, planner } from "./main.js";
 import { infoBar } from "./classes.js";
 
 
-//to add events to unit cells.
+/**
+ * Add events to a given unit element.
+ * @param {*} item unit element.
+ */
 export function addUnitEvents(item)
 {
     item.addEventListener("dragstart", dragstart);
@@ -25,7 +28,10 @@ export function addUnitEvents(item)
     item.addEventListener("click", printInfo);
 }
 
-//add events to given container
+/**
+ * Add events to given teaching period container.
+ * @param {*} container teaching period element.
+ */
 export function addContainerEvents(container)
 {
     container.addEventListener("dragover", dragover);
@@ -34,25 +40,28 @@ export function addContainerEvents(container)
     container.addEventListener("drop", drop);
 }
 
-//add events to given sensor
+/**
+ * add events to the sensor at the bottom of the table.
+ * @param {*} sensor sensor element.
+ */
 export function addSensorEvents(sensor)
 {
     sensor.addEventListener("dragover", sensordragover);
     sensor.addEventListener("drop", appendRow);
 }
 
-// //add option unit events
-// export function addOptionUnitEvents(optionUnitElement)
-// {
-//     //record to compare against combo.
-//     optionUnitElement.addEventListener("dragend", recordUnit);
-// }
-
+/**
+ * Adds event listner to button to collapse option bar on click.
+ * @param {*} button option bar button.
+ */
 export function optionButtonEvent(button)
 {
     button.addEventListener("click", hideOptionBar);
 }
 
+/**
+ * Used to hide the option bar.
+ */
 function hideOptionBar() {
     let arrow = getById("optionsBar").childNodes[1].firstChild;
     let heading = getById("optionsBar").firstElementChild;
@@ -67,8 +76,11 @@ function hideOptionBar() {
 
 }
 
-//record if unit was enrolled or unenrolled
-//to adjust options bar based on combo.
+/**
+ * Record if option unit was enrolled or unenrolled used 
+ * to adjust options bar based on combo.
+ * @param {*} unitCode unit code of unit that was enrolled or unenrolled.
+ */
 function recordUnit(unitCode)
 {
     let unitElement = getById(unitCode);
@@ -86,15 +98,13 @@ function recordUnit(unitCode)
     optionsBar.adjustOptionsBar();
 }
 
-//hide when dragging, the timeout ends hide when item released (or else hidden forever).
+//hide when dragging, the timeout ends hide when item released (prevents item being hidden forever).
 function dragstart(e)
 {
     e.dataTransfer.setData('text/plain', e.target.id);
 
     if(isOption(e.target.id))
     {
-        
-
         setTimeout(() => {
             e.target.classList.add("hide");
             e.target.classList.remove("unit");}, 0);
@@ -115,8 +125,8 @@ function dragend(e)
 }
 
 // Prints unit information.
-// highlights prerequisites and corequisites.
-// for clicking on unit event.
+// highlights prerequisites, corequisites, units 
+// contingent on the current one.
 function printInfo(e)
 {
     let unitCode = e.currentTarget.id;
@@ -241,14 +251,6 @@ function printInfo(e)
 //--------------------- EVENT LISTENER FUNCTIONS -------------------------//
 
 //if your cursor (whilst dragging unit) is over the row add magenta lines.
-function sensordragover(e)
-{
-    //prevent default to have drop cursor appear
-    e.preventDefault();
-    // e.target.classList.add("dragover");
-}
-
-//if your cursor (whilst dragging unit) is over the row add magenta lines.
 function dragover(e)
 {
     //prevent default to have drop cursor appear
@@ -270,7 +272,7 @@ function dragleave(e)
 }
 
 //When the item is dropped either place the unit in the row or swap it
-//if the row is full with the unit user is hovering over.
+//depending on where the unit was dropped.
 function drop(e)
 {
     //currentTarget used instead of target to prevent cells being dropped into cells.
@@ -286,15 +288,10 @@ function drop(e)
     {
         //only add to sem if less than 24 points
         //and semester is valid
-
-        //BUG
-        //SHOULD ENTER HERE BUT IT DOESN'T!!!!
         if(creditPointsInPeriod(e.currentTarget) < 24 && 
             canEnrollInPeriod(id, e.currentTarget))
         {
-            // e.target.appendChild(item);
             enrollInPeroid(item, e.target);
-
 
             // if option unit record change.
             if(isOption(id))
@@ -313,15 +310,14 @@ function drop(e)
                 {
                     recordUnit(id);
                 }
-                //if option bar
 
-                //should record unit for option bar here
             } else if(!canEnrollInPeriod(id, e.currentTarget)) {
-                // trying to put option unit in option bar.
+                // trying to put unit in option bar.
                 if(!isOption(id) && e.currentTarget.id.includes("op"))
                 {
                     infoBar.addInfo(`${id} isn't an option unit! It can't be added to the side bar.`);
                 } else {
+                    //trying to place unit in NS.
                     if(getPeriodOffered(id).includes("BOTH"))
                     {
                         infoBar.addInfo(`${id} only available in S1 or S2!`);                        
@@ -333,11 +329,10 @@ function drop(e)
                 //if unit not already enrolled in this period
                 if(e.currentTarget.id != item.parentElement.id)
                 {
-                    // BUG NOT PRINTING FOR SOME REASON
                     infoBar.addInfo(`${e.currentTarget.id} is full <br> A maximum of 24 credit points can be taken per semester (unless approval is granted to overload).`);
                 } else {
                     // don't print error if unit is already enrolled in period
-                    //else append to end of row.
+                    // and append to end of row.
                     enrollInPeroid(item, e.target);
                 }
             }
@@ -393,6 +388,7 @@ function drop(e)
             itemUnit.enrollmentPeriod = itemClone.parentElement.id;
     } else {
 
+        //if units can't be swapped.
         if(!canEnrollInPeriod(e.target.id, item.parentElement) && !canEnrollInPeriod(id, e.currentTarget)) {
 
             infoBar.addInfo(`Can't swap with ${id} with ${e.target.id}. 
@@ -417,10 +413,9 @@ function drop(e)
 //adds a new row underneath the last row in the table when item dropped beneath row.
 function appendRow(e)
 {
+    //dont allow user to add more then 10 years.
     if(planner.year < 10)
     {
-        //remove lines
-        // e.target.classList.remove("dragover");
         let table = document.getElementById("table");
 
         //get currently dragged unit.
@@ -442,6 +437,7 @@ function appendRow(e)
             enrollInPeroid(unit, NS);
         }
 
+        //if option record.
         if(isOption(unitCode)) {
             recordUnit(unitCode);
         }
@@ -455,7 +451,8 @@ function appendRow(e)
 }
 
 
-//formats unit information
+//formats unit information for a given unit.
+//@param unit code of given unit.
 function printUnitInfo(unitCode)
 {
     let unit = getUnitInformation(unitCode);
@@ -465,6 +462,7 @@ function printUnitInfo(unitCode)
     let position = unit.type.search(targetSpec)-1;
     let optionCode = unit.type[position];
 
+    //genuinely sorry.
     str += `<h5>${unit.name}</h5>`;
     str += unitCode.length < 8? formatInfo("Unit Code", "None"): formatInfo("Unit Code", unit.unitCode);
     str += isOption(unitCode)? formatInfo("Type", "Option " + optionCode): formatInfo("Type", "Core");
@@ -478,16 +476,16 @@ function printUnitInfo(unitCode)
     return str;
 }
 
+//consistently formats information to display on info bar.
 //@param label is the label (or name of unit information)
 //@param info is the unit information
-// formatInfo("Unit", unit.name)
-// `Unit: "${unit.name}"<br>`
 function formatInfo(label, info)
 {
     return `<span style="font-weight: bold;">${label}</span>: ${info}<br>`;
 }
 
-//turns prerequisite list into an easy to read string.
+// turns prerequisite list into an easy to read string.
+// @param prerequisitesList is the prerequisite list of the unit.
 function formatPrerequisites(prerequisitesList)
 {
     let andList = prerequisitesList[1];
