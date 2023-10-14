@@ -1,13 +1,14 @@
 /*
  * This file contains all the classes used for the planner.
- * It has two classes Unit and Table:
+ * It has three classes Unit, Table and Sidebar:
  *      o Unit stores the information for a unit.
  *      o Table creates the planner and stores information about the major. 
+ *      o Sidebar creates the status, info, and option bars.
  * 
  * The main function of table is makeTable, which uses all of its methods to create the planner.
- * majority of the functions in the table support it in it's ability to create the planner.
+ * majority of the functions in Table support it in it's ability to create the planner.
  * 
- * The table class is also used to store the option unit information and make
+ * The Table class is also used to store the option unit information and make
  * the options bar.
  * 
  * Unit's functions provide a clear way of checking unit information:
@@ -37,7 +38,14 @@ import { makeExportPDFButton } from "./buttons.js";
 
 export var infoBar;
 
-//Used for status, Info and option bars.
+/**
+ * Used for creating the status, info and option bars.
+ * Should really have been used as a super class for three other
+ * class specifically for status, info and options.
+ * 
+ * Right now the class is a mess containing functions that
+ * a status bar needs, but not an options bar, as an example.
+ */
 export class sideBar {
     constructor(){
         this.optionCombinations = null;
@@ -51,7 +59,6 @@ export class sideBar {
     // for updating content of info bar.
     addInfo(innerHTML) {
         // add message to storage.
-        // getById("infoBar").firstElementChild.innerHTML += innerHTML;
         this.innerHTML += innerHTML + "<br>";
         this.messageToDisplay = true;
     }
@@ -62,6 +69,7 @@ export class sideBar {
         getById("infoBar").firstElementChild.innerHTML = "";
     }
 
+    //displays info bar message.
     display() {
         if(this.messageToDisplay)
         {
@@ -72,6 +80,8 @@ export class sideBar {
         }
     }
 
+    //update status bar status.
+    //@param innerHTML is the text to display.
     updateStatus(innerHTML) {
         this.clearStatus();
 
@@ -133,6 +143,7 @@ export class sideBar {
         }
     }
 
+    //creates the status bar.
     makeStatusBar() {
         let statusBar = document.createElement("div");
         let text = document.createElement("p");
@@ -143,6 +154,7 @@ export class sideBar {
         addToRoot(statusBar);
     }
 
+    //creates the info bar.
     makeInfoBar() {
         let infoBar = document.createElement("div");
         let text = document.createElement("p");
@@ -153,13 +165,16 @@ export class sideBar {
         addToRoot(infoBar);
     }
 
-    //option bar functions
+    //--------------option bar functions----------------------//
 
+    //stores the option combinations fetched from neo4j.
+    //@param optionCombos the option combinations to store.
     addOptionCombinations(optionCombos) {
         this.optionCombinations = optionCombos;
     }
 
-    //add unit to list
+    //add unit to current option combination list
+    //@unitCode is the unit code of the unit to add.
     pushUnit(unitCode){
         //if not in the list
         //used to check if full, but don't know in advance how many option units
@@ -171,7 +186,8 @@ export class sideBar {
         }
     }
 
-    //remove unit from list
+    //remove unit from the current option combination.
+    //@param unitCode is the unit code to remove.
     removeUnit(unitCode){
         //in case drag ends but unit wasn't added to container.
         if(this.currentOptionCombo.indexOf(unitCode) > -1)
@@ -184,8 +200,6 @@ export class sideBar {
     //hide units that lead to an illegal combination.
     adjustOptionsBar() {
         //using currentCombo, see all valid next units.
-        // console.log(this.optionCombinations);
-        // console.log(this.currentOptionCombo);
         let matches = [];
 
         for(let combination of this.optionCombinations)
@@ -206,17 +220,9 @@ export class sideBar {
             // print matching combinations
             if(match)
             {
-                // console.log(combination);
                 matches.push(combination);
             }
         }
-
-        // only one match if done
-        // if(matches.length < 2) {
-        //     this.optionsDone = true;
-        // } else {
-        //     this.optionsDone = false;
-        // }
 
         //assume options are done
         let done = true;
@@ -228,14 +234,10 @@ export class sideBar {
             let unitCode = unit.unitCode;
 
             let match = false;
-            // console.log(unitCode)
 
             //for each combo current enrolled units match with
             for(let combo of matches)
             {
-                // console.log(combo);
-                // console.log(combo.includes(unitCode));
-
                 //if option unit is a valid next option
                 if(combo.includes(unitCode))
                 {
@@ -246,15 +248,11 @@ export class sideBar {
             //show if legal next option
             if(match)
             {
-                // getById(unitCode).classList.remove("hide");
                 getById(unitCode).classList.remove("otherHide");
                 getById(unitCode).classList.add("unit");
             } else {
                 //hide otherwise.
                 getById(unitCode).classList.remove("unit");
-                // getById(unitCode).classList.add("hide");
-                // amazingly doesn't work UNLESS it's not called "hide"?!??!?!
-                // took me 50 minutes to figure that out.
                 getById(unitCode).classList.add("otherHide");
             }
 
@@ -278,7 +276,11 @@ export class sideBar {
 
     }
 
-    //response is the options units json
+    /**
+     * Creates the options bar.
+     * @param {*} table the options table used for the options bar.
+     * @param {*} response the XMLhttp response from neo4j.
+     */
     makeOptionsBar(table, response) {
         let optionsBar = document.createElement("div");
         let button = document.createElement("button");
@@ -307,6 +309,10 @@ export class sideBar {
 
 }
 
+/**
+ * This class is used to convert the objects retrieved from Neo4j to a
+ * class that can be extended in JS if needed. To ensure data is formated as intended.
+ */
 export class Unit {
     constructor(name, code, creditPoints, type, semester, prerequisites, enrollmentReq, pointReq, corequisites, note) {
         this.name = name;
@@ -317,32 +323,34 @@ export class Unit {
         this.prerequisites = prerequisites;
         this.equivalences = []; //equivalent units to this one.
         this.enrollmentRequirements = enrollmentReq;
-        //split points, because they're a string. This makes me a bit sad. I'm sorry.
         this.pointRequirements = pointReq == null ? [] : pointReq.split(";");
         this.enrollmentPeriod = null;
-        //split coreqs, as coreqs are a string. This makes me a bit sad. I'm sorry.
         this.corequisites = corequisites == null ? [] : corequisites;
         this.problems = [];
         this.notes = note == null ? "" : note;
     }
     
-    //true if user is enrolled, false otherwise.
+    //true if unit is in the study plan. Useful for option units.
+    //also other applications.
     isEnrolled() { 
         return this.enrollmentPeriod != null; 
     }
 
     // if unit has problems returns true,
     // false otherwise.
+    // Problems being unmet requirements.
     hasProblems() {
         return this.problems.length > 0;
     }
 }
 
-//Table prototype contains all the functions necessary for making
-//the unit planner.
+/**
+ * Table prototype contains all the functions necessary for making
+ * the unit planner and the options bar.
+ */
 export class Table {
     constructor(maxBroadening) {
-        this.year = 0; //may improve somehow.
+        this.year = 0; //next available year.
         this.numberOfUnits = 0; //Number of units in the planner
         this.creditPointsRequired = 192;
         this.maxBroadening = maxBroadening; // credit points
@@ -351,8 +359,10 @@ export class Table {
         this.nextID = 0;
     }
 
-    // extracts unit information from database response.
-    // adds it to unitInformation field.
+    /**
+     * extracts unit information from database response adds it to unitInformation field.
+     * @param {*} unitInfo response from neo4j containing unit information.
+     */
     extractInformation(unitInfo) {
 
         console.log(unitInfo);
@@ -379,7 +389,11 @@ export class Table {
         }
     }
 
-    //makes a cell which represent a unit.
+    /**
+     * makes a cell in the table which represent a unit.
+     * @param {*} innerHTML text to show in the unit (unit code)
+     * @returns a table cell.
+     */
     makeCell(innerHTML) {
         let data = document.createElement("td");
         let text = document.createElement("p");
@@ -388,7 +402,6 @@ export class Table {
         text.classList.add("unitText");
         
         text.innerHTML = innerHTML;
-        // data.innerHTML = innerHTML;
         data.appendChild(text);
         data.setAttribute("draggable", "true");
         data.classList.add("unit");
@@ -396,6 +409,12 @@ export class Table {
         return data;
     };
 
+    /**
+     * Creates an option unit in the DOM.
+     * @param {*} unitCode unit code.
+     * @param {*} optionCode option unit A or B or etc.
+     * @returns option unit element.
+     */
     makeOptionUnit(unitCode, optionCode)
     {
         let unit = this.makeCell(unitCode);
@@ -420,7 +439,11 @@ export class Table {
         return unit;
     }
 
-    // makes a unit cell
+    /**
+     * Makes a core unit
+     * @param {*} unitCode unit code.
+     * @returns unit element.
+     */
     makeUnit(unitCode) {
         let unit = this.makeCell(unitCode);
         let unitInformation = this.unitInformation.get(unitCode);
@@ -438,7 +461,13 @@ export class Table {
         return unit;
     }
 
-    // creates a dummy unit, for electives and broadening.
+    /**
+     * Used for elective units and broadening units.
+     * Could be extended for some other dummy unit.
+     * @param {*} id used to identify the broadening unit.
+     * @param {*} innerHTML "Broadening" or "Elective".
+     * @returns A broadening or elective unit.
+     */
     makeDummyUnit(id, innerHTML) {
         let unit = this.makeCell(innerHTML);
         let code = id + this.nextID;
@@ -454,7 +483,7 @@ export class Table {
         return unit;
     }
 
-    //makes a year row.
+    //makes a year heading row.
     makeYearRow() {
         let row = document.createElement("tr");
         let head = document.createElement("th");
@@ -471,6 +500,11 @@ export class Table {
         return row;
     }
 
+    /**
+     * adds any unenrolled units into the teaching period if it's
+     * requirements are met.
+     * @param {*} container teaching period.
+     */
     addUnitsToPlanner(container) {
         //will loop through all units considered
         //and container is full.
@@ -509,6 +543,11 @@ export class Table {
         }
     }
 
+    /**
+     * enrolls a unit into a teaching period.
+     * @param {*} unit unit element.
+     * @param {*} container teaching period element.
+     */
     enrollInPeroid(unit, container)
     {
         let unitInfo = this.unitInformation.get(unit.id);
@@ -520,7 +559,10 @@ export class Table {
         container.append(unit);
     }
 
-    //adds option units to options bar
+    /**
+     * Adds option units to options bar
+     * @param {*} container Option bar.
+     */
     addUnitsToOptionsBar(container) {
         for(let unit of this.unitInformation.values())
         {
@@ -548,8 +590,12 @@ export class Table {
         }
     }
 
-    //makes a row
-    //containerID either year or options
+    /**
+     * Makes a row for either year or option units.
+     * @param {*} containerID id of the teaching period DOM container.
+     * @param {*} semester teaching period (NS1, NS2, S1, S2)
+     * @returns 
+     */
     makeRow(containerID, semester) {
         let row = document.createElement("tr");
         let container = document.createElement("div");
@@ -576,8 +622,11 @@ export class Table {
         return row;
     }
 
-    // makes the container for an entire year.
-    // creates S1,S2,N1,N2 and a year heading row.
+    /**
+     * makes the container for an entire year.
+     * creates S1,S2,NS1,NS2 DOM teaching periods and a year heading row.
+     * @returns element containing S1, S2, NS1, NS2, and the year header.
+     */
     makeYearContainer() {
         let container = document.createElement("div");
 
@@ -590,6 +639,11 @@ export class Table {
         return container;
     }
 
+    /**
+     * Creates the teaching period elements. For options bar and planner.
+     * @param {*} containerID distinguish between option and non-option container.
+     * @param {*} container teaching period element.
+     */
     makePeriods(containerID, container) {
 
         if (this.hasNSUnits) {
@@ -611,8 +665,10 @@ export class Table {
         }
     }
 
-    //makes a sensor
-    //the thing you drag units over to append a new row to the planner.
+    /**
+     * Makes a sensor. The thing you drag units over to append a new row to the planner.
+     * @returns the sensor element.
+     */
     makeSensor() {
         let sensor = document.createElement("div");
         let text = document.createElement("h2");
@@ -626,8 +682,10 @@ export class Table {
         return sensor;
     }
 
-    //The core function that ties all the above methods together.
-    //It creates the planner.
+    /**
+     * The core function that ties all the above methods together. It creates the planner.
+     * @param {*} response XMLHttp response containing unit information.
+     */
     makeTable(response) {
         let table = document.createElement("table");
         let iterations = 0;
@@ -657,7 +715,11 @@ export class Table {
         infoBar.clearInfo();
     }
 
-    //for the option units side bar.
+    /**
+     * To create the options bar and add option units to it.
+     * @param {*} response XMLHttp containing option unit information.
+     * @returns option bar element.
+     */
     makeOptionsContainer(response) {
         let table = document.createElement("table");
         let container = document.createElement("div");

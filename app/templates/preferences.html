@@ -48,10 +48,10 @@
          <h4 class="buttonHeader">Highlight</h4>
             <div class="button-container">
                 <button id="SemesterFilter" class="button">Semesters Offered</button>
-                <!-- <button id="ProblemFilter" class="button">Problems</button> -->
                 <button id="corequisiteFilter" class="button">Units with Corequisites</button>
                 <button id="prequisiteFilter" class="button">Units with Prequisites</button>
                 <button id="pointRequirementsFilter" class="button">Units with Point Requirements</button>
+                <button id="noteFilter" class="button">Units with Notes</button>
             </div>
     </main>
      <!-- Tree view section to visualize unit dependencies -->
@@ -75,6 +75,7 @@
     <script>
         // Access the variable in JavaScript
         var specialization = "{{ specialization }}";
+        var specialization_name = "{{ specialization_name }}"
         var yearLevel = "{{ yearLevel }}";
         var isSpec = "{{ mathSpecialist }}"
         var isMeth = "{{ mathMethods }}"

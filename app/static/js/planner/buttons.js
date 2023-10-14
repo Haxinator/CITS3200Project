@@ -1,10 +1,13 @@
 /*
- * This file contains all the button event listeners and their application.
+ * This file contains all the button event listeners and their creation.
 */
 
 import {getById, updateInfoBar, clearHighlighting, getUnitInformation, getAllUnitInfo} from "./support.js";
 import { statusBar } from "./main.js";
 
+/**
+ * Creates the export to PDF button.
+ */
 export function makeExportPDFButton()
 {
     let button = document.createElement("button");
@@ -18,8 +21,10 @@ export function makeExportPDFButton()
 
 // -------------------- FILTERS ----------------------------- //
 
-//change highlighting with zebra strips if unit has problems.
-//get entire page if clicked on remove highlight and info bar.
+/**
+ * If page clicked remove all highlight and clear the info bar.
+ * It allows the user to "deselect".
+ */
 getById("root").parentElement.parentElement.addEventListener("click", (e) =>{
 
     //if a unit wasn't clicked
@@ -37,12 +42,38 @@ getById("root").parentElement.parentElement.addEventListener("click", (e) =>{
     
 });
 
-// This function makes a clone of the current table div structure and pastes it within a new opened window
-// It then adds the the css stylesheet and calls .print() method to print the page. If the user clicks print or cancel,
-// it will close the new page and return you back to the current process. 
+//Highlights all units with notes.
+getById("noteFilter").addEventListener("click", () => {
+
+    //clear last previous filters()
+    clearHighlighting();
+
+    for(let unit of getAllUnitInfo().values())
+    {
+        let item = getById(unit.unitCode);
+
+        if(unit.notes.length > 0)
+        {
+            item.classList.toggle("blue");
+        }
+    }
+
+        //KEY   COLOUR
+        let legend = new Map([
+        ["Has Notes", "blue"]]);
+
+        statusBar.displayLegend(legend);
+});
+
+
+/**
+ * This function creates a new table, copies the information from the 
+ * planner into the table, applies CSS and then calls print() 
+ * to print the page. If the user clicks print or cancel,
+ * it will close the new page and return you back to the planner.
+ */
 function exportToPDF() {
     // Get the table element
-    // var element = document.getElementById("table").outerHTML;
     let plannerTable = getById("table");
     let hasNS = getById("Y1NS1") != undefined; //see if there are NS.
     let year = 1;
@@ -54,7 +85,7 @@ function exportToPDF() {
     
     //table heading
     let tableHeading = document.createElement("h3");
-    tableHeading.innerHTML =  `BH011 Bachelor of Engineering (Honours) - ${specialization}`;
+    tableHeading.innerHTML =  `BH011 Bachelor of Engineering (Honours) - ${specialization_name} (${specialization})`;
     let subtitle = document.createElement("sub");
     subtitle.innerHTML = `${duration} Year Course Study Plan - Commencing Semester 1 ${yearLevel}`;
     subtitle.classList.add("sub");
@@ -67,6 +98,7 @@ function exportToPDF() {
     let title = document.createElement("title");
     title.innerHTML = "Print";
 
+    //not sure if this is even used.
     css.setAttribute("rel", "stylesheet");
     css.setAttribute("type", "text/css");
     css.setAttribute("href", "{{ url_for('static', filename='css/planner.css') }}");
@@ -74,6 +106,7 @@ function exportToPDF() {
     printWindow.document.head.appendChild(title);
     printWindow.document.head.appendChild(css);
 
+    //for the study plan duration.
     for(let i = 0 ; i < duration; i ++)
     {
         //make header row
@@ -96,6 +129,7 @@ function exportToPDF() {
 
             periodContainer.appendChild(periodHeader);
 
+            //create each unit.
             for(let unit of unitsList)
             {
                 let data = document.createElement("td");
@@ -131,8 +165,6 @@ function exportToPDF() {
                 // also get NS
                 let periodNS = document.createElement("tr");
                 let unitsNS = getById(`Y${year}NS${period}`).children;
-                // let periodHeader = document.createElement("th");
-                // periodHeader.innerHTML = `Non-Standard ${period}, ${2023 + (year-1)}`; //resemble starting year
 
                 // periodNS.appendChild(periodHeader);
                 if(unitsNS.length > 0)
@@ -143,12 +175,8 @@ function exportToPDF() {
 
                     for(let NSunit of unitsNS)
                     {
-                        // let data = document.createElement("td");
                         data.innerHTML += NSunit.textContent;
                         data.innerHTML += " " + getUnitInformation(NSunit.id).name + " ";
-
-
-                        // periodNS.appendChild(data);
                     }
 
                     periodNS.appendChild(data);
@@ -177,6 +205,7 @@ function exportToPDF() {
     printWindow.document.body.appendChild(document.createElement("br"));
     printWindow.document.body.appendChild(otherNote);
 
+    //the CSS for the print planner.
     let style = document.createElement("style");
     style.innerHTML = `
 
@@ -276,6 +305,9 @@ function exportToPDF() {
     };
 }
 
+/**
+ * Highlights the units based on their semester offered,
+ */
 getById("SemesterFilter").addEventListener("click", () => {
 
     //clear last previous filters()
@@ -297,6 +329,7 @@ getById("SemesterFilter").addEventListener("click", () => {
         }
     }
 
+        //KEY   COLOUR
         let legend = new Map([
         ["S1", "blue"],
         ["S2", "purple"],
@@ -306,6 +339,9 @@ getById("SemesterFilter").addEventListener("click", () => {
         statusBar.displayLegend(legend);
 });
 
+/**
+ * Highlights units that have corequisites.
+ */
 getById("corequisiteFilter").addEventListener("click", () =>
 {
     clearHighlighting();
@@ -329,6 +365,9 @@ getById("corequisiteFilter").addEventListener("click", () =>
     statusBar.displayLegend(legend);
 });
 
+/**
+ * Highlights units if they have prerequisites.
+ */
 getById("prequisiteFilter").addEventListener("click", () =>
 {
     clearHighlighting();
@@ -337,7 +376,8 @@ getById("prequisiteFilter").addEventListener("click", () =>
     {
         let item = getById(unit.unitCode);
 
-        if(unit.prerequisites.length > 0)
+        //if unit has 'and' or 'or' prerequsities.
+        if(unit.prerequisites[0].length > 0 || unit.prerequisites[1].length > 0)
         {
             item.classList.toggle("yellow");
         } else {
@@ -352,6 +392,9 @@ getById("prequisiteFilter").addEventListener("click", () =>
     statusBar.displayLegend(legend);
 });
 
+/**
+ * Highlight units if they have point requirements.
+ */
 getById("pointRequirementsFilter").addEventListener("click", () =>
 {
     clearHighlighting();

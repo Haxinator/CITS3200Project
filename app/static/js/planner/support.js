@@ -2,8 +2,6 @@
  * support.js contains support functions which are used by other files to simplify code,
  * aid in modularisation and make code easier to read.
  * 
- * The functions should be self-explainitory and relatively simple.
- * 
  * Any questions ask Josh.
 */
 
@@ -12,6 +10,13 @@ import { unitConditionsMet } from "./checks.js";
 import { infoBar } from "./classes.js";
 import { makeExportPDFButton } from "./buttons.js";
 
+/**
+ * With the enrollment period provided, this function gets all units
+ * currently enrolled in this period, retrieves their credit points and
+ * adds them to totalCreditPoints which is returned at the end of the function.
+ * @param semester the enrollment period
+ * @returns total number of credit points for units currently enrolled in this period.
+ */
 export function creditPointsInPeriod(semester) {
     let totalCreditPoints = 0;
 
@@ -24,14 +29,16 @@ export function creditPointsInPeriod(semester) {
     return totalCreditPoints;
 }
 
-//adds given element to main
+//adds given element to the root element (the main element).
 export function addToRoot(element)
 {
     document.getElementById("root").appendChild(element);
 }
 
-// true if all units haven't been added.
-// false otherwise.
+/**
+ * Checks if all units have been enrolled into the planner.
+ * @returns true if all units have be enrolled, false otherwise.
+ */
 export function allUnitsNotAdded()
 {
     let allUnitsNotAdded = false;
@@ -49,39 +56,39 @@ export function allUnitsNotAdded()
     return allUnitsNotAdded;
 }
 
+/**
+ * Short hand for document.getElementById(id).
+ * @param {*} id the id of the element.
+ * @returns element the id belongs to.
+ */
 export function getById(id)
 {
     return document.getElementById(id);
 }
 
-//Dummy functions for testing
-//creates fake units for testing.
-// function makeUnitArray(size)
-// {
-//     const units = [];
-
-//     for(let i = 0; i< size; i++)
-//     {
-//         units[i] = "unit00" + i;
-//     }
-
-//     return units;
-// }
-
-//removes given value from given array and returns new array.
+/**
+ * removes given value from given array.
+ * @param {*} array the array to remove an element from
+ * @param {*} value element to remove from list.
+ */
 export function removeFromArray(array, value)
 {
     let index = array.indexOf(value);
     array.splice(index, 1);
     
+    //if no elements left make array empty.
     if(array == undefined) { 
         array = [];
     }
 
 }
 
-//enrolls unit into period
-//unit is unit as represented in the DOM.
+/**
+ * Enrolls unit into a given period in the DOM. 
+ * Unit is unit as represented in the DOM.
+ * @param {*} unit unit element to enroll into period
+ * @param {*} container period element to enroll unit into.
+ */
 export function enrollInPeroid(unit, container)
 {
     let unitInfo = getUnitInformation(unit.id);
@@ -94,7 +101,11 @@ export function enrollInPeroid(unit, container)
 
 }
 
-// gets unitInformation for a given unit.
+/**
+ * Gets a map containing the unit information for a given unit.
+ * @param {*} unitCode unit code of the unit
+ * @returns the unit information map.
+ */
 export function getUnitInformation(unitCode) {
 
     // have to wait until both planner and optionsBar exist.
@@ -108,20 +119,31 @@ export function getUnitInformation(unitCode) {
     }
 }
 
-//get container by period for cleaner code
+/**
+ * Get container by period for cleaner code
+ * @param {*} year year of teaching period.
+ * @param {*} period teaching period.
+ * @returns Teaching period element from DOM.
+ */
 export function getByPeriod(year, period)
 {
     return document.getElementById("Y" + year + period);
 }
 
-//get the teaching period a unit is offered for cleaner code.
+/**
+ * Get the teaching period a unit is offered for cleaner code.
+ * @param {*} id unit code for given unit.
+ * @returns teaching period the given unit is offered
+ */
 export function getPeriodOffered(id)
 {
     return getUnitInformation(id).semester;
 }
 
-// update the text contents of the info bar to the
-// info provided.
+/**
+ * update the text contents of the info bar to the info provided.
+ * @param {*} info information you want to display on the info bar.
+ */
 export function updateInfoBar(info){
     if(getById("infoBar") != undefined)
     {
@@ -129,21 +151,32 @@ export function updateInfoBar(info){
     }    
 }
 
-// is the unit in unitInformation param.
+/**
+ * If given unit exists in the major. Useful if a unit is a prerequiste
+ * and yet not in the major (that way we ignore it).
+ * @param {*} unitCode unit code of given unit.
+ * @returns true if unit is in major, false otherwise.
+ */
 export function unitExists(unitCode)
 {
     return (getUnitInformation(unitCode) != undefined);
 }
 
-//true if alphabetical character.
-//false otherwise.
+/**
+ * Checks if a given character is an alphabetical character.
+ * @param {*} char character provided
+ * @returns true if char is an alphabetical character, false otherwise.
+ */
 export function isAlpha(char)
 {
     //if lower case different to uppercase, it is a character.
     return char.toLowerCase() != char.toUpperCase();
 }
 
-//given a unit object highlights unit if it has a problem
+/**
+ * Highlights the given unit in red if it has problems.
+ * @param {*} unit unit to highlight
+ */
 export function highlightIfUnitHasProblems(unit)
 {
     // unit in DOM
@@ -157,18 +190,30 @@ export function highlightIfUnitHasProblems(unit)
     }
 }
 
-// true if element in DOM, false otherwise
+/**
+ * Checks if given element exists in DOM.
+ * @param {*} elementId element to check for
+ * @returns true if element in DOM, false otherwise.
+ */
 export function inDOM(elementId){
     return getById(elementId) != null
 }
 
-// gets last character in a string.
-// assumed param is a string.
+/**
+ * Returns last character of string provided.
+ * @param {*} string string provided
+ * @returns last character in string provided.
+ */
 export function getLastCharacter(string)
 {
     return string.slice(-1);
 }
 
+/**
+ * Checks if given unit is an option unit.
+ * @param {*} unitCode unit code of unit.
+ * @returns true if unit is option and false otherwise.
+ */
 export function isOption(unitCode)
 {
     // if option table was created.
@@ -182,7 +227,9 @@ export function isOption(unitCode)
 
 }
 
-//clears all highlighting
+/**
+ * Clears all highlighting in DOM (except problems)
+ */
 export function clearHighlighting()
 {
     //clear planner highlighting
@@ -240,8 +287,10 @@ export function clearHighlighting()
     }
 }
 
-//searches planner and looks for any problems
-//problems being prerequisites not met, credit points not met, etc.
+/**
+ * Searches planner and looks for any problems.
+ * Problems being prerequisites not met, credit points not met, etc.
+ */
 export function checkPlannerForErrors()
 {
     // Check for problems.
@@ -303,7 +352,10 @@ export function checkPlannerForErrors()
 
 }
 
-//returns unit information of all units, option and planner units.
+/**
+ * Returns unit information of all units, option and planner units.
+ * @returns a map containing all unit information from the planner and option table.
+ */
 export function getAllUnitInfo()
 {
     if(optionsTable == undefined)
@@ -317,8 +369,13 @@ export function getAllUnitInfo()
     }
 }
 
-//determines which period comes first.
-//-1 if 1 comes first, 1 if 2 comes first or 0 if they're in the same period.
+/**
+ * Determines which teaching period comes first.
+ * -1 if 1 comes first, 1 if 2 comes first or 0 if they're in the same period.
+ * @param {*} period1 first teaching period
+ * @param {*} period2 Second teching period
+ * @returns -1 if period 1 comes first, 1 if period 2 comes first or 0 if they're in the same period.
+ */
 export function comparePeriods(period1, period2)
 {
     if(period1.length == period2.length)

@@ -1,19 +1,21 @@
 /*
-* The main function that ties everything together.
-* makes one function call:
-* o FetchCourseRequirementsAndBuildPlanner.
+* The main makes one function call:
+* FetchMaxBroadening()
 *
-* It fetches the course requirements and makes the entire planner.
+* It fetches the broadening units for the selected major
+* then makes other XMLHttp requests to get the 
+* course requirements and make the entire planner.
 *
-* Contains XMLHTTP requests for the planner.
+* this file contains all the XMLHTTP requests for the planner.
 *
 * As always, for anything confusing ask Josh.
 */
 
 import {Table, sideBar} from "./classes.js";
-import "./buttons.js"
+import "./buttons.js" //adds button event listeners
 import { makeExportPDFButton } from "./buttons.js";
 
+//exports to be used for other files
 export var planner;
 export var optionsTable;
 export var optionsBar;
@@ -22,15 +24,14 @@ export var statusBar;
 //------------------- INSTANCE FUNCTIONS -------------------------//
 
 fetchMaxBroadening();
-// fetchCourseRequirementsAndBuildPlanner();
 
 // --------------------------- XHTTP ---------------------------------//
 
 
-//get option units
-//list all option units, when user selects one, 
-//look at combinations to show user next legal unit
-//for that combination.
+/*
+ * Get option units then create option bar, option table and status bar.
+ * if no option units, don't create option bar or table.
+ * */
 function fetchOptionUnits() {
     let major = specialization;
     const xhttp = new XMLHttpRequest();
@@ -70,7 +71,9 @@ function fetchOptionUnits() {
     xhttp.send();
 }
 
-//get option unit combinations.
+/*
+ * Get all of the legal option unit combinations.
+*/
 function fetchOptionUnitCombinations() {
     let major = specialization;
     const xhttp = new XMLHttpRequest();
@@ -79,13 +82,16 @@ function fetchOptionUnitCombinations() {
     xhttp.open('GET', url, true);
     xhttp.onload = (e) => {
         let response = JSON.parse(xhttp.responseText);
-        // console.log(response);
         optionsBar.addOptionCombinations(response);
     }
 
     xhttp.send();
 }
 
+/*
+* Fetches the max number of broadening units for the given specialization,
+* which is passed to the planner. Generates the planner if http response was ok.
+ */
 function fetchMaxBroadening(){
     let major = specialization;
 
@@ -97,7 +103,6 @@ function fetchMaxBroadening(){
         if (this.readyState == 4 && this.status == 200) {
             //if no error
             let response = JSON.parse(xhttp.responseText);
-            // console.log(response[0]["max_broadening_pts"]);
 
             fetchCourseRequirementsAndBuildPlanner(response[0]["max_broadening_pts"]);
         } else {
@@ -109,10 +114,11 @@ function fetchMaxBroadening(){
     xhttp.send();
 }
 
-//LOL MY FUNCTIO NOW!
-//Sends request to 4j for some awesome unit info.
-//mmmm unit info.
-//Creates a the planner based on that info.
+/*
+ * Sends a request to neo4j to get the units offered for a major.
+ * Creates the planner based on the response.
+ * @param maxBroadening the max broadening units for the chosen specialization.
+ */
 function fetchCourseRequirementsAndBuildPlanner(maxBroadening) {
     let major = specialization;
     let bridging = "NONE,";
@@ -140,6 +146,8 @@ function fetchCourseRequirementsAndBuildPlanner(maxBroadening) {
             //if no error
             let response = JSON.parse(xhttp.responseText);
             planner = new Table(maxBroadening);
+
+            //remove broadening units depending on number of bridging units taken.
             planner.maxBroadening -= (6*bridgingCount);
 
             console.log(response);
