@@ -1,39 +1,59 @@
+<!-- Extends the base layout template -->
 {% extends "base.html" %}
+
 {% block content %}
+<!-- Main content container -->
 <div class="content">
+    <!-- Flex column grouping for layout organization -->
     <div class="column-group flex">
+        <!-- Three-quarter column container to give space for the login form -->
         <div class="column-three-quarter">
+            <!-- Container for sub-page content -->
             <div id="ctl00_pnlSubPageContent" class="width-full">
+                <!-- Login form container -->
                 <div class="form">
+                    <!-- Login form heading -->
                     <h3>Please login</h3>
+                    <!-- Login form table layout -->
                     <table>
                         <tbody>
+                            <!-- Staff number input row -->
                             <tr>
                                 <td>
+                                    <!-- Label for staff number input -->
                                     <span id="ctl00_LeftCol_lblUWAPersonID">Staff Number</span>
                                 </td>
                                 <td>
+                                    <!-- Staff number text input -->
                                     <input type="text" id="ctl00_LeftCol_txtUWAPersonID">
+                                    <!-- Placeholder for potential error messages or indicators (hidden by default) -->
                                     <span style="color:Red;visibility:hidden;">*</span>
                                     <span style="color:Red;visibility:hidden;">*</span>
                                     <br>
+                                    <!-- Description/instruction related to the staff number input -->
                                     <span id="ctl00_LeftCol_lblUWAPersonIDMsg" style="margin-top: 0em">Your eight-digit staff number starting with a zero (eg. 00012345).</span>
                                 </td>
                             </tr>
+                            <!-- Password input row -->
                             <tr>
                                 <td>
+                                    <!-- Label for password input -->
                                     <span id="ctl00_LeftCol_lblPassword">Password</span>
                                 </td>
                                 <td>
+                                    <!-- Password input field -->
                                     <input type="password" id="ctl00_LeftCol_txtPassword">
+                                    <!-- Placeholder for potential error messages or indicators (hidden by default) -->
                                     <span style="color:Red;visibility:hidden;">*</span>
                                     <br>
                                     <br>
+                                    <!-- Password reset link -->
                                     <a id="ctl00_LeftCol_hplSSPRInfo" href="#">Forgotten my password</a>
                                 </td>
                             </tr>
                         </tbody>
                     </table>
+                    <!-- Center-aligned login button -->
                     <p style="text-align: center">
                         <input type="button" value="Log In" id="ctl00_LeftCol_btnSubmit">
                     </p>

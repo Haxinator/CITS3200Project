@@ -51,7 +51,6 @@ getById("root").parentElement.parentElement.addEventListener("click", (e) =>{
  */
 function exportToPDF() {
     // Get the table element
-    // var element = document.getElementById("table").outerHTML;
     let plannerTable = getById("table");
     let hasNS = getById("Y1NS1") != undefined; //see if there are NS.
     let year = 1;
@@ -143,8 +142,6 @@ function exportToPDF() {
                 // also get NS
                 let periodNS = document.createElement("tr");
                 let unitsNS = getById(`Y${year}NS${period}`).children;
-                // let periodHeader = document.createElement("th");
-                // periodHeader.innerHTML = `Non-Standard ${period}, ${2023 + (year-1)}`; //resemble starting year
 
                 // periodNS.appendChild(periodHeader);
                 if(unitsNS.length > 0)
@@ -155,12 +152,8 @@ function exportToPDF() {
 
                     for(let NSunit of unitsNS)
                     {
-                        // let data = document.createElement("td");
                         data.innerHTML += NSunit.textContent;
                         data.innerHTML += " " + getUnitInformation(NSunit.id).name + " ";
-
-
-                        // periodNS.appendChild(data);
                     }
 
                     periodNS.appendChild(data);

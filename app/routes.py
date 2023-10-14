@@ -1,43 +1,59 @@
 from flask import render_template, flash, redirect, url_for, request, jsonify
 from neo4j import GraphDatabase
-# from neo4j import __version__ as neo4j_version
 from app import app
 import itertools
 
 # ------------------------------------- HTML RENDERING ------------------------------------------------
-# Home page
+
+## @brief Render the home page.
+# This endpoint provides access to the main landing page of the application.
 @app.route('/')
 @app.route('/index/')
 def index():
-    # Render the index template with the title
     return render_template('index.html', title='Home')
 
-# getStarted
+## @brief Navigate to the "Get Started" page.
+# The "Get Started" page introduces the users to the application and allows them to enter their Specifications and ATAR qualifications. 
+# a starting point for new users.
 @app.route('/getStarted/')
 def getStarted():
-    # Render the index template with the title
     return render_template('getStarted.html', title='Get Started')
 
-# Stafflogin
+## @brief Provide access to staff login.
+# The staff can use this page to authenticate and gain access to additional features, such as editing the backend database.
 @app.route('/staffLogin/')
 def staffLogin():
-    # Render the staff Login template with the title
     return render_template('staffLogin.html', title='Staff Login')
 
-
-
+## @brief Process user preferences and redirect to preferences page.
+# This function fetches data from the form post request, maps specialization codes
+# to their full names, and renders the preferences page with the collected data.
+# @return Rendered template for the preferences page.
 @app.route('/preferences', methods=['POST'])
 def preferences():
-    # You can access form data using request.form
+    # Mapping of specialization codes to their full descriptions
+    specAsName = {
+        "SP-EBIOM": "Biomedical Engineering",
+        "SP-ECHEM": "Chemical Engineering",
+        "SP-ECIVI": "Civil Engineering",
+        "SP-EELEC": "Electrical and Electronic Engineering",
+        "SP-EENVI": "Environmental Engineering",
+        "SP-EMECH": "Mechanical Engineering",
+        "SP-EMINI": "Mining Engineering",
+        "SP-ESOFT": "Software Engineering",
+        "SP-EAUTO": "Automation and Robotics Engineering"
+    }
     specialization = request.form['specialization']
+    specialization_name = specAsName.get(specialization)
     yearLevel = request.form['yearLevel']
-    #prints out unit code SP-ECHEM
-    #Create vars to pass to preferences page
     mathSpecialist = request.form['mathSpecialist']
     chemistry = request.form['chemistry']
     physics = request.form['physics']
-    return render_template('preferences.html', title='Preferences', specialization = specialization, mathSpecialist = mathSpecialist, chemistry = chemistry, physics = physics, yearLevel = yearLevel) # Render the preferences page
-
+    
+    # Rendering the preferences page with user's chosen preferences
+    return render_template('preferences.html', title='Preferences', specialization=specialization, 
+                           mathSpecialist=mathSpecialist, chemistry=chemistry, physics=physics, 
+                           yearLevel=yearLevel, specialization_name=specialization_name)
 
 # ------------------------------------- NEO4J QUERIES ------------------------------------------------
 """

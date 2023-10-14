@@ -2,20 +2,32 @@
 
 {% block content %}
 
-<!-- Include Bootstrap CSS -->
+<!-- External CSS link: Bootstrap for styling and responsiveness -->
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-<!-- Include the index-specific CSS file -->
+
+<!-- Local CSS link: Custom styling for this specific page -->
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/getStartedStyle.css') }}">
 
+<!-- Main content container with centered text -->
 <div class="container text-center">
+
+    <!-- Main title for the page -->
     <h1 class="display-4 mb-4">Bachelors of Professional Engineering (Honours)</h1>
-    <div class="feature-box"><p>To be eligible for admission to the Bachelor of Professional Engineering (Honours) - BH011 program, candidates must meet the following prerequisites:
+    
+    <!-- Informational box with admission prerequisites -->
+    <div class="feature-box">
+        <p>To be eligible for admission to the Bachelor of Professional Engineering (Honours) - BH011 program, candidates must meet the following prerequisites:</p>
         <p>(1) A scaled score above 50% in ATAR Mathematics Methods.</p>
         <p>(2) Completion of at least one of the following ATAR subjects: Mathematics Specialists, Chemistry, or Physics.</p>
-            <p>In the event that a candidate has not completed all three of the specified ATAR subjects, they will be required to enroll in a bridging unit for each uncompleted subject. These bridging units will be counted as broadening units in their course structure.</p> </p></div>
+        <p>In the event that a candidate has not completed all three of the specified ATAR subjects, they will be required to enroll in a bridging unit for each uncompleted subject. These bridging units will be counted as broadening units in their course structure.</p>
+    </div>
+    
+    <!-- Sub-heading prompting user to select their specialization -->
     <h3 class="lead">Please select your specialization:</h3>
 
+    <!-- Form to gather user's education background and specialization preferences -->
     <form action="{{ url_for('preferences') }}" method="post" id="specialization-form">
+        <!-- Dropdown for commencement year selection -->
         <div class="form-group">
             <select class="form-control" name="yearLevel" id="yearLevel" required>
                 <option value="" disabled selected>Select the Commencement Year</option>
@@ -24,25 +36,16 @@
             </select>
         </div>
 
+        <!-- Dropdown for specialization, initially disabled -->
         <div class="form-group">
             <select class="form-control" name="specialization" id="specialization" required disabled>
                 <option value="" selected>Commencement Year must be selected to continue</option>
-                <!-- <option value="" disabled selected>Select Specialization</option>
-                <option value="SP-EBIOM">Biomedical Engineering</option>
-                <option value="SP-ECHEM">Chemical Engineering</option>
-                <option value="SP-ECIVI">Civil Engineering</option>
-                <option value="SP-EELEC">Electrical and Electronic Engineering</option>
-                <option value="SP-EENVI">Environmental Engineering</option>
-                <option value="SP-EMECH">Mechanical Engineering</option>
-                <option value="SP-EMINI">Mining Engineering</option>
-                <option value="SP-ESOFT">Software Engineering</option> -->
-                
             </select>
         </div>
 
-        <!-- High School Courses Questions -->
-        <!-- High School Courses Questions -->
+        <!-- Radio button queries about high school courses taken by the user -->
         <div class="form-group">
+            <!-- Query for Mathematics Specialist ATAR -->
             <label>Did you take Mathematics Specialist ATAR in high school and did you achieve a scaled score of >50%?</label><br>
             <div class="btn-group btn-group-toggle" data-toggle="buttons">
                 <label class="btn btn-secondary active">
@@ -53,7 +56,8 @@
                 </label>
             </div>
         </div>
-        
+
+        <!-- Query for Chemistry ATAR -->
         <div class="form-group">
             <label>Did you take Chemistry ATAR in high school and did you achieve a scaled score of >50%?</label><br>
             <div class="btn-group btn-group-toggle" data-toggle="buttons">
@@ -65,7 +69,8 @@
                 </label>
             </div>
         </div>
-        
+
+        <!-- Query for Physics ATAR -->
         <div class="form-group">
             <label>Did you take Physics ATAR in high school and did you achieve a scaled score of >50%?</label><br>
             <div class="btn-group btn-group-toggle" data-toggle="buttons">
@@ -77,11 +82,14 @@
                 </label>
             </div>
         </div>
+
+        <!-- Submit button with initial disabled state -->
         <div class="form-group">
             <button type="submit" class="button border" disabled style="opacity:0.5;">Submit</button>
         </div>
     </form>
 </div>
+<!-- Script for form validation, error handling, and dynamic content loading -->
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -116,6 +124,8 @@
             }
         });
     });
+    
+    // Form validation logic to ensure user has selected appropriate options
 
     function validateForm() {
         // Retrieve form elements
@@ -161,7 +171,7 @@
         fetchMajors();
     });
 
-    //put xhttp request HERE
+    //call to retrieve majors based on the year selected by the user
     //xhttp to fetch all majors on offer.
     function fetchMajors() {
 
@@ -189,7 +199,7 @@
         }
     }
 
-    //generate new drop down list from response.
+    // Function to dynamically generate dropdown options for specializations
     function generateList(responseJSON, year)
     {
         specialization = document.getElementById("specialization");
