@@ -37,10 +37,11 @@ def preferences():
     "SP-EENVI": "Environmental Engineering",
     "SP-EMECH": "Mechanical Engineering",
     "SP-EMINI": "Mining Engineering",
-    "SP-ESOFT": "Software Engineering"
+    "SP-ESOFT": "Software Engineering",
+    "SP-EAUTO": "Automation and Robotics Engineering"
     }
     specialization = request.form['specialization']
-    specialization_name = specAsName.get(specialization, "Unknown Specialization")
+    specialization_name = specAsName.get(specialization)
     yearLevel = request.form['yearLevel']
     #prints out unit code SP-ECHEM
     #Create vars to pass to preferences page
