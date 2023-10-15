@@ -110,7 +110,7 @@ export function unitConditionsMet(unitCode, container)
  * @param {*} identifier is the unit type identifier.
  * @returns 
  */
-export function unitType(unitCode, identifier)
+function unitType(unitCode, identifier)
 {
     if(identifier === "P" && unitCode.substring(0,4) === "CITS")
     {
@@ -127,7 +127,7 @@ export function unitType(unitCode, identifier)
  * @param {*} container Teaching period from DOM.
  * @returns true if point requirements met, false otherwise.
  */
-export function pointRequirementsMet(unitCode, container)
+function pointRequirementsMet(unitCode, container)
 {
     let unit = getUnitInformation(unitCode);
     let pointCount = 0;
@@ -214,7 +214,7 @@ export function pointRequirementsMet(unitCode, container)
  * @param {*} container teaching period from DOM.
  * @returns true if corequisites were met, false otherwise.
  */
-export function corequisitesMet(unitCode, container)
+function corequisitesMet(unitCode, container)
 {
     let unit = getUnitInformation(unitCode);
     let corequisites = unit.corequisites;
@@ -252,7 +252,7 @@ export function corequisitesMet(unitCode, container)
  * @param {*} container teaching period from DOM.
  * @returns true if prerequisites met, false otherwise.
  */
-export function unitPreRequisitiesMet(unitCode, container)
+function unitPreRequisitiesMet(unitCode, container)
 {
     let unit = getUnitInformation(unitCode);
     let andPrerequisites = unit.prerequisites[1];
