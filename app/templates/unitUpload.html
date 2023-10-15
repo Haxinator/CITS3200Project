@@ -1,5 +1,8 @@
 {% extends "base.html" %}
 {% block content %}
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/unitupload.css') }}">
+
+
 <div class="content">
     <div class="column-group flex">
         <div class="column-three-quarter">
@@ -7,16 +10,67 @@
                 <h3 class="display-4 mb-4">Input Unit Details to Upload to the Database</h3>
 
                 <form id="uploadform">
-                    <input type="text" value="Unit Code">
-                    <input type="text" value="Unit Name">
+                    <fieldset>
+                        <legend>Unit Information</legend>
+                        <div id="inputline">
+                            <label for="unitcode">Unit Code:</label>
+                                <input type="text" id="unitcode" placeholder="Unit Code">
+                        </div>
+                        <div id="inputline">
+                            <label for="unitname">Unit Name:</label>
+                                <input type="text" id="unitname" placeholder="Unit Name">
+                        </div>
+                        <div id="inputline">
+                            <label for="semester">Semester Offered:</label>
+                            <select id="semester">
+                                <option value=""></option>
+                                <option value="S1">S1</option>
+                                <option value="S2">S2</option>
+                                <option value="Both">Both</option>
+                                <option value="NS">NS</option>
+                            </select>
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <legend>Unit Details</legend>
+                        <div id="inputline">
+                            <label for="unittype">Unit Type:</label>
+                            <select id="unittype">
+                                <option value=""></option>
+                                <option value="ATAR">ATAR</option>
+                                <option value="Bridging">Bridging</option>
+                                <option value="Bridging">Other Majors (might hardcode)</option>
+                            </select>
+                        </div>
+                        <div id="inputline">
+                            <label for="unitlevel">Unit Level:</label>
+                                <select id="unitlevel">
+                                    <option value=""></option>
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                    <option value="5">5</option>
+                                </select>
+                        </div>
+                           
+                        <div id="inputline">
+                            <label for="creditpoints">Credit Points:</label>
+                                <input type="number" id="creditpoints" placeholder="Number of Points">
+                        </div>
+    
+                        <div id="inputline">
+                            <label for="pointsreq">Points Required:</label>
+                                <input type="number" placeholder="Points">
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <legend>Prerequisites, Corequisites and Incompatible Units</legend>
+                    </fieldset>
 
-                    <input type="select" value="Semester Offered">
-                    <input type="select" value="Unit Type">
-                    <input type="select" value="Unit Level">
-                    <input type="number" value="Credit Points">
-
-                    <input type="number" value="Points Required">
-                    
+                    <div>
+                        <button type="submit" class="button border">Upload</button>
+                    </div>
 
                 </form>
 
