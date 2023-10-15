@@ -148,6 +148,11 @@ function exportToPDF() {
                         data.innerHTML += "**";
                     }
 
+                    if(unitInfo.creditPoints == 12)
+                    {
+                        data.setAttribute("colspan", 2);
+                    }
+
                     let span = document.createElement("span");
                     span.innerHTML = unitName;
                     data.append(document.createElement("br"));
