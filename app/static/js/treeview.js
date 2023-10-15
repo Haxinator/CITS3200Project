@@ -4,6 +4,12 @@
  */
 google.charts.load('current', {packages:['wordtree']});
 
+
+/**
+ * Draws the tree on the web app
+ * @param {*} array list of strings generated from getBranches()
+ * @param {*} display_type whether to put the branches before the chosen_unit (prefix) or right after (suffix)
+ */
 function drawUnitPaths(array, display_type) { 
     let data = google.visualization.arrayToDataTable(array);
 
@@ -25,8 +31,8 @@ function drawUnitPaths(array, display_type) {
 /**
  * Helper function that gets the path lists generated from the database 
  * and make them into one big string for parsing
- * @param {*} branches 
- * @param {*} type 
+ * @param {*} branches lists of paths generated from database
+ * @param {*} type direction of the paths (forward traversal or backwards traversal)
  * @returns array of 'path' strings 
  */
 function getBranches(branches, type) {
@@ -66,7 +72,6 @@ function get_prereqs() {
         console.log(xhttp.responseText);
         unitpaths = getBranches(response, "prereq");
         if (unitpaths.length != 1) {
-            console.log(unitpaths);
             drawUnitPaths(unitpaths, 'prefix');
         }
         else {
