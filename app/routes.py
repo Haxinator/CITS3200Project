@@ -56,9 +56,10 @@ def preferences():
                            yearLevel=yearLevel, specialization_name=specialization_name)
 
 # ------------------------------------- NEO4J QUERIES ------------------------------------------------
-"""
-Creates the driver to connect application to remote database and run queries with it
-"""
+
+## @brief Creates the driver to connect application to remote database and run queries with it
+# The driver function from the Neo4j library establishes connection to the database by putting 
+# the following parameters: Database URI, authentication (user, password), and security protocols (certificates)
 driver = GraphDatabase.driver(
     "bolt://e5218dc4.databases.neo4j.io:7687", 
     auth=("neo4j", "svH9RLz19fQFpDDgjnQCZMO9MF6WEVPRmtpXEaNVQ2o"), 
@@ -66,10 +67,8 @@ driver = GraphDatabase.driver(
     trust="TRUST_ALL_CERTIFICATES"
 )
 
-"""
-Query: Get all majors that offers a specified year
-Return: dataframe containing the major code and its name
-"""
+## @brief Query: Get all majors that offers a specified year
+# @return dataframe containing the major code and its name
 @app.route("/get_majors=<string:year>", methods=["GET"])
 def get_majors(year):
     with driver.session() as session:
@@ -83,10 +82,8 @@ def get_majors(year):
         data = results.data()
         return jsonify(data)
     
-"""
-Query: Get the maximum broadening points of a specified major
-Return: maximum broadening points property of specified major
-"""  
+## @brief Query: Get the maximum broadening points of a specified major
+# @return: maximum broadening points property of specified major 
 @app.route("/get_max_broadening=<string:major>", methods=["GET"])
 def get_broadening_pts(major):
     with driver.session() as session:
@@ -99,33 +96,28 @@ def get_broadening_pts(major):
         data = results.data()
         return jsonify(data)
     
-"""
-Query: Return relevant information about core units within a certain major + any bridging unit required
-Information: 
-String (parsable): unitcode, unitname, type, semester, point_req, incompatibilities, notes
-Interger: level, credit_points
-Arrays: or_req, and_req, unit_req, corequisites
-- or_req = an array of units taken from 
-- and_req = 
-- corequisites = 
 
-AND-OR DOCUMENTATION
+## @brief Query: Return relevant information about units within a certain major in a specified year
+# There are two types of units: core, options, bridging
+# The first function returns information about core and required bridging units for the interactive timetable
+# Bridging unit notes: The number and type of bridging units to query depends on the ATAR prerequisites the user has accomplished in the `Get Started` page prior the table
+# The second function returns information about option units for the options bar
+#
+# @return Information consists of the following:
+# String (parsable): unitcode, unitname, type, semester, point_req, incompatibilities, notes
+# Interger: level, credit_points
+# Arrays: or_req, and_req, unit_req, corequisites
+# - or_req = an array of units returned from querying unit-to-unit relationship REQUIRES with "OR" type 
+# - and_req = an array of units returned from querying unit-to-unit relationship REQUIRES with "AND" type 
+# - unit_req = combination of `or_req` and `and_req`
+# - corequisites = an array of units returned from querying unit-to-unit relationship COREQUIRES 
 
-"""
+# core units + bridging units
 @app.route("/unitInformation/<string:major>/bridging=<string:bridging>/year=<string:year>", methods=["GET"])
 def send_unit_information(major, bridging, year):
     with driver.session() as session:
         units = bridging.split(",") 
         unit_conditions = " OR ".join([f"bridge.unitcode = '{unit}'" for unit in units])
-
-    # REVISED VERSION: ----------------------------------------------------------------------
-        # fix js first before implementing this query
-        # 'unit_req' property now implements AND-OR
-        # instead of returning e.g., ["MATH1012", "GENG2000", "CITS1401", "ENSC2004", "CITS2401"],  
-        # it returns e.g., [" MATH1012_AND", " GENG2000_AND", " CITS1401_OR", " ENSC2004_AND", " CITS2401_OR"]
-        # AND = must-have unit 
-        # OR = not necessarily a must-have but can fill the requirements if one of them are taken
-        # ATAR-type units have an "NA" (non-applicable) flag as they do not appear on the table
 
         query = f"""
         MATCH ((u:Unit)-[a:CORE_OF]->(m:Major))
@@ -150,6 +142,7 @@ def send_unit_information(major, bridging, year):
         data = results.data()
         return jsonify(data)
 
+# option units
 @app.route("/option_units=<string:major>/year=<string:year>", methods=["GET"])
 def get_option_units(major, year):
     with driver.session() as session:
@@ -171,7 +164,15 @@ def get_option_units(major, year):
         data = results.data()
         return jsonify(data)
 
-#NOTE TO SELF: ADD option unit combos for civil TvT 
+## @brief Query: return valid option combinations for a major
+# There are currently only three majors with option units: Mechanical, Chemical, and Civil
+# Mechanical engineering: Three option units must be taken. At least one Group A unit must be taken. If the user is taking GENG4411, then GENG4412 must be taken as well.
+# Chemical engineering: Four option units must be taken: two from Group A and two from Group B.
+# Civil engineering: Five units must be taken. There should be at lease one Group A unit.
+# 
+# The function creatses a list of available options are made if the chosen major is one of the three majors. Otherwise list remains empty.
+# These units are shuffled to create new lists of valid combinations. These lists are appended to final `combintions` list
+# @return lists of valid combination lists
 @app.route("/option_combos=<string:major>/year=<string:year>", methods=["GET"])  
 def get_option_combos(major, year): 
      with driver.session() as session:
@@ -257,12 +258,15 @@ def get_option_combos(major, year):
      
 
 # ------------------------------------- TREE VIEW QUERIES ------------------------------------
+  
+## @brief Query: Get all parent units of a specified unit that is connected to specified major
+# The function raverses the graph with `chosen_unit` as the starting node. 
+# Only travels a distance of 5 `hops` maximum. 
+# After traversal, a filter is used to only obtain unit nodes that are connected to the chosen major and ATAR/bridging units.
+# The function then create paths - a list of `unitcodes` that the program has found in its search
+# @return A list paths from chosen unit
 
-"""
-Query: Get all parent units of a specified unit that is connected to specified major
-Return: A list paths from chosen unit
-Paths: A list of `unitcodes` that the program has found in its search
-"""  
+# Forward traversal (prerequisites)
 @app.route("/prereqs/<string:major>/<string:chosen_unit>", methods=["GET"])
 def get_prereq_units(chosen_unit, major):
     with driver.session() as session:
@@ -278,11 +282,7 @@ def get_prereq_units(chosen_unit, major):
         data = results.data()
         return jsonify(data)
 
-"""
-Query: Get all child units of a specified unit that is connected to specified major
-Return: A list paths from chosen unit
-Paths: A list of `unitcodes` that the program has found in its search
-"""  
+# Backwards traversal (child units)
 @app.route("/child_units/<string:major>/<string:chosen_unit>", methods=["GET"])
 def get_child_units(chosen_unit, major):
     with driver.session() as session:
