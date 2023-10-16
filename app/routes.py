@@ -186,8 +186,8 @@ def get_option_combos(major, year):
 
         # lists of different option units
         if(major == "SP-EMECH" or major == "SP-ECHEM" or major == "SP-ECIVL"):
-            options_a = result_list[0]['options']
-            options_b = result_list[1]['options']
+            options_a = [group['options'] for group in result_list if group['group_type'] == "GROUP_A_OF"][0]
+            options_b = [group['options'] for group in result_list if group['group_type'] == "GROUP_B_OF"][0]
             both = options_a+options_b
 
         combinations = []
@@ -240,16 +240,16 @@ def get_option_combos(major, year):
             for combination in group_b:
                 ga_1 = ["CIVL5550"]
                 ga_2 = ["CIVL5552"]
-                valid_combo = list(combination) 
-                combos_1.append(ga_1 + valid_combo)
-                combos_1.append(ga_2 + valid_combo)
+                valid_combo_1 = ga_1 + list(combination)
+                valid_combo_2 = ga_2 + list(combination)
+                combos_1.append(valid_combo_1)
+                combos_1.append(valid_combo_2)
 
             # two group A; 3 group B
             group_b = list(itertools.combinations(options_b, 3))
             combos_2 = []
             for combination in group_b:
-                valid_combo = list(combination) 
-                valid_combo = valid_combo + options_a
+                valid_combo = options_a + list(combination)
                 combos_2.append(valid_combo)
             # combine two types of combinations
             combinations = combos_1 + combos_2
