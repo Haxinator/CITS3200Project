@@ -2601,6 +2601,13 @@
     "parallel": false,
     "timeout": 300,
     "tests": []
+  }, {
+    "id": "c740b46c-e992-405a-a923-3b6bd4bcffe5",
+    "name": "CITS3200",
+    "persistSession": false,
+    "parallel": false,
+    "timeout": 300,
+    "tests": ["0bd3ab9f-bbee-45ac-bbea-bcb4b3ebbc48", "69a08698-f08a-46c8-b80b-d4b68ed3dee6", "d07dcaec-0a74-4105-8e61-2960075e9d46", "f55229b8-9db6-4fa5-a3a6-d5e158c523a6", "f9214009-6254-4ca3-b6b6-ff097183338d"]
   }],
   "urls": ["http://localhost:5000/"],
   "plugins": []
