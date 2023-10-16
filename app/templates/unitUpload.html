@@ -1,6 +1,33 @@
 {% extends "base.html" %}
 {% block content %}
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/unitupload.css') }}">
+<script>
+    function createUnitIn(inid) {
+        var dform = document.getElementById(inid);
+        var newdiv = document.createElement("div")
+        newdiv.setAttribute("id", "inputline")
+
+        var unit = document.createElement("input");
+        unit.setAttribute("placeholder", "Unit Code");
+        unit.setAttribute("type", "text");
+        newdiv.appendChild(unit);
+
+        var select = document.createElement("select");
+        select.setAttribute("class", "BBFormSelectList")
+        var option1 = document.createElement("option");
+        option1.setAttribute("value", "AND")
+        option1.innerHTML = "AND"
+        select.appendChild(option1)
+        var option2 = document.createElement("option");
+        option2.setAttribute("value", "OR")
+        option2.innerHTML = "OR"
+        select.appendChild(option2)
+
+        newdiv.appendChild(select)
+        dform.appendChild(newdiv)
+
+    }
+</script>
 
 
 <div class="content">
@@ -12,17 +39,17 @@
                 <form id="uploadform">
                     <fieldset>
                         <legend>Unit Information</legend>
-                        <div id="inputline">
+                        <div class="inputline">
                             <label for="unitcode">Unit Code:</label>
                                 <input type="text" id="unitcode" placeholder="Unit Code">
                         </div>
-                        <div id="inputline">
+                        <div class="inputline">
                             <label for="unitname">Unit Name:</label>
                                 <input type="text" id="unitname" placeholder="Unit Name">
                         </div>
-                        <div id="inputline">
+                        <div class="inputline">
                             <label for="semester">Semester Offered:</label>
-                            <select id="semester">
+                            <select id="semester" class="BBFormSelectList">
                                 <option value=""></option>
                                 <option value="S1">S1</option>
                                 <option value="S2">S2</option>
@@ -33,18 +60,25 @@
                     </fieldset>
                     <fieldset>
                         <legend>Unit Details</legend>
-                        <div id="inputline">
+                        <div class="inputline">
                             <label for="unittype">Unit Type:</label>
-                            <select id="unittype">
+                            <select id="unittype" class="BBFormSelectList">
                                 <option value=""></option>
                                 <option value="ATAR">ATAR</option>
                                 <option value="Bridging">Bridging</option>
-                                <option value="Bridging">Other Majors (might hardcode)</option>
+                                <option value="SP-EMECH">SP-EMECH</option>
+                                <option value="SP-ESOFT">SP-ESOFT</option>
+                                <option value="SP-ECHEM">SP-ECHEM</option>
+                                <option value="SP-EBIOM">SP-EBIOM</option>
+                                <option value="SP-ECIVI">SP-ECIVI</option>
+                                <option value="SP-EELEC">SP-EELEC</option>
+                                <option value="SP-EENVI">SP-EENVI</option>
+                                <option value="SP-EMINI">SP-EMINI</option>                              
                             </select>
                         </div>
-                        <div id="inputline">
+                        <div class="inputline">
                             <label for="unitlevel">Unit Level:</label>
-                                <select id="unitlevel">
+                                <select id="unitlevel" class="BBFormSelectList">
                                     <option value=""></option>
                                     <option value="1">1</option>
                                     <option value="2">2</option>
@@ -54,18 +88,48 @@
                                 </select>
                         </div>
                            
-                        <div id="inputline">
+                        <div class="inputline">
                             <label for="creditpoints">Credit Points:</label>
                                 <input type="number" id="creditpoints" placeholder="Number of Points">
                         </div>
     
-                        <div id="inputline">
+                        <div class="inputline">
                             <label for="pointsreq">Points Required:</label>
                                 <input type="number" placeholder="Points">
                         </div>
                     </fieldset>
                     <fieldset>
                         <legend>Prerequisites, Corequisites and Incompatible Units</legend>
+                        <div class="inputline" id="pre">
+                            <label for="unitcodepreq">Prerequisites:</label><br>
+                                <input type="text" id="unitcodepreq" placeholder="Unit Code">
+                                <select id="relpreq" class="BBFormSelectList">
+                                    <option value=""></option>
+                                    <option value="AND">AND</option>
+                                    <option value="OR">OR</option>
+                                </select>
+                                <button type="button" class="button add" onclick="createUnitIn('pre');">Add</button>
+                        </div>
+                        <div class="inputline" id="co">
+                            <label for="unitcodeco">Corequisites:</label><br>
+                                <input type="text" id="unitcodeco" placeholder="Unit Code">
+                                <select id="relco" class="BBFormSelectList">
+                                    <option value=""></option>
+                                    <option value="AND">AND</option>
+                                    <option value="OR">OR</option>
+                                </select>
+                                <button type="button" class="button add" onclick="createUnitIn('co');">Add</button>
+                        </div>
+                        <div id="in" class="inputline">
+                            <label for="unitcodein">Incompatible Units:</label><br>
+                                <input type="text" id="unitcodein" placeholder="Unit Code">
+                                <select id="relin" class="BBFormSelectList">
+                                    <option value=""></option>
+                                    <option value="AND">AND</option>
+                                    <option value="OR">OR</option>
+                                </select>
+                                <button type="button" class="button add" onclick="createUnitIn('in');">Add</button>
+                        </div>
                     </fieldset>
 
                     <div>
