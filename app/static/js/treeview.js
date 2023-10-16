@@ -1,7 +1,15 @@
 
-//make trEEEEEEEEEEEEEEEEEE 
+/**
+ * Loads Google charts packages 
+ */
 google.charts.load('current', {packages:['wordtree']});
 
+
+/**
+ * Draws the tree on the web app
+ * @param {*} array list of strings generated from getBranches()
+ * @param {*} display_type whether to put the branches before the chosen_unit (prefix) or right after (suffix)
+ */
 function drawUnitPaths(array, display_type) { 
     let data = google.visualization.arrayToDataTable(array);
 
@@ -20,35 +28,35 @@ function drawUnitPaths(array, display_type) {
     chart.draw(data, options);
 }
 
-// helper function
+/**
+ * Helper function that gets the path lists generated from the database 
+ * and make them into one big string for parsing
+ * @param {*} branches lists of paths generated from database
+ * @param {*} type direction of the paths (forward traversal or backwards traversal)
+ * @returns array of 'path' strings 
+ */
 function getBranches(branches, type) {
     let paths = [['unit_sequences']]
     for (let p in branches) {
         if (type == "prereq") {
-            console.log(branches[p].prerequisites);
             prereqUnits = branches[p].prerequisites;
-            //let seq = prereqUnits;
-            //if (prereqUnits.length != 1) {
             prereqUnits.reverse();
             let seq = prereqUnits.join(" ");
-            //}
-            
             paths.push([seq]);
         }
         if (type == "child") {
             console.log(branches[p].child_units);
             childUnits = branches[p].child_units;
-            //let seq = childUnits;
-            //if (childUnits.length != 1) {
             let seq = childUnits.join(" ");
-            //}
             paths.push([seq]);
         }    
     }
     return paths;
 }
 
-//retrieve the requirements of chosen unit 
+/**
+ * Generates tree view based on paths obtained from forward traversal
+ */
 function get_prereqs() {
     chosen_unit = document.getElementById("chosen_unit").value;
     let major = specialization;
@@ -60,12 +68,10 @@ function get_prereqs() {
     let server = '/prereqs/'.concat(major, "/", chosen_unit);
     xhttp.open("GET", server, true);
     xhttp.onload = function (e) {
-        //document.getElementById('prereqs_head').innerHTML = "This unit requires the following:"
         response = JSON.parse(xhttp.responseText);
         console.log(xhttp.responseText);
         unitpaths = getBranches(response, "prereq");
         if (unitpaths.length != 1) {
-            console.log(unitpaths);
             drawUnitPaths(unitpaths, 'prefix');
         }
         else {
@@ -76,7 +82,9 @@ function get_prereqs() {
     xhttp.send();
 }
 
-//retrieve units that require chosen unit
+/**
+ * Generates tree view based on paths obtained from backward traversal
+ */
 function get_children() {
     chosen_unit = document.getElementById("chosen_unit").value;
     let major = specialization;
@@ -88,7 +96,6 @@ function get_children() {
     let server = '/child_units/'.concat(major, "/", chosen_unit);
     xhttp.open("GET", server, true);
     xhttp.onload = function (e) {
-        //document.getElementById('child_head').innerHTML = "This unit is a requirement for the following:"
         response = JSON.parse(xhttp.responseText);
         unitpaths = getBranches(response, "child");
         console.log(unitpaths);

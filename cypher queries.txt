@@ -34,7 +34,7 @@ MORE ROBUST VERSION (W/ MERGE) - to avoid uploading duplicate units to database 
 //loading units
 LOAD CSV WITH HEADERS FROM 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRWr8QNW9F6FkXMeNq3ytscAlHhZ-E_yQCyutZuFVtoQvcygdzmSBR3BfsAFZJjDsybIHfyEPY9SIUj/pub?gid=1006418552&single=true&output=csv' AS row
 MERGE (u:Unit {unitcode: row.unitcode})
-ON CREATE SET u.unitname = row.unitname, u.semester = row.semester, u.type = row.type, u.level = row.level, u.credit_points = row.credit_points, u.points_req = row.points_req, u.incompatible_units = row.incompatible_units, u.corequisites = row.corequisites
+ON CREATE SET u.unitname = row.unitname, u.semester = row.semester, u.type = row.type, u.level = row.level, u.credit_points = row.credit_points, u.points_req = row.points_req, u.incompatible_units = row.incompatible_units, u.notes = row.notes
 
 //loading unit relationships
 LOAD CSV WITH HEADERS FROM 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRxQJBNXRmpfqGbl2ZbKPFLgPLVsqFgiMxtk33pne9bomN1VOSXMkQi778mg-vteejKloFaI7oGoEA3/pub?gid=889593185&single=true&output=csv' AS row
@@ -60,7 +60,7 @@ MULTIPLE YEAR SUPPORT SAMPLE - Software Engineering 2022
 //loading units
 LOAD CSV WITH HEADERS FROM 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQfaz-FOCK4_htdAlU0ysxBkn1iCdhgtHdjQc6pJCxh9qKkiJ-3auUUrl_tNhXnd-MjBzWImlituYd9/pub?gid=0&single=true&output=csv' AS row
 MERGE (u:Unit {unitcode: row.unitcode})
-ON CREATE SET u.unitname = row.unitname, u.semester = row.semester, u.type = row.type, u.level = row.level, u.credit_points = row.credit_points, u.points_req = row.points_req, u.incompatible_units = row.incompatible_units, u.corequisites = row.corequisites
+ON CREATE SET u.unitname = row.unitname, u.semester = row.semester, u.type = row.type, u.level = row.level, u.credit_points = row.credit_points, u.points_req = row.points_req, u.incompatible_units = row.incompatible_units, u.notes = row.notes
 
 //loading unit relationships
 LOAD CSV WITH HEADERS FROM 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQfaz-FOCK4_htdAlU0ysxBkn1iCdhgtHdjQc6pJCxh9qKkiJ-3auUUrl_tNhXnd-MjBzWImlituYd9/pub?gid=982367849&single=true&output=csv' AS row
