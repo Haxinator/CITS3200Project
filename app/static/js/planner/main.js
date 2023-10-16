@@ -82,6 +82,7 @@ function fetchOptionUnitCombinations() {
     xhttp.open('GET', url, true);
     xhttp.onload = (e) => {
         let response = JSON.parse(xhttp.responseText);
+        console.log(response);
         optionsBar.addOptionCombinations(response);
     }
 
