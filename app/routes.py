@@ -35,11 +35,11 @@ def preferences():
     specAsName = {
         "SP-EBIOM": "Biomedical Engineering",
         "SP-ECHEM": "Chemical Engineering",
-        "SP-ECIVI": "Civil Engineering",
+        "SP-ECIVL": "Civil Engineering",
         "SP-EELEC": "Electrical and Electronic Engineering",
         "SP-EENVI": "Environmental Engineering",
         "SP-EMECH": "Mechanical Engineering",
-        "SP-EMINI": "Mining Engineering",
+        "SP-EMINE": "Mining Engineering",
         "SP-ESOFT": "Software Engineering",
         "SP-EAUTO": "Automation and Robotics Engineering"
     }
