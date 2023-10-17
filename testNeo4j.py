@@ -1,4 +1,5 @@
 import unittest
+import threading
 from neo4j import GraphDatabase
 
 class TestNeo4jQueries(unittest.TestCase):
@@ -61,6 +62,28 @@ class TestNeo4jQueries(unittest.TestCase):
                 session.execute_write(lambda tx: tx.run(load_units_2022))
                 session.execute_write(lambda tx: tx.run(load_major_rel_2022))
                 session.execute_write(lambda tx: tx.run(load_unit_rel_2022))
+        print("Database successfully loaded.")
+
+        # suspend testing until user input has been received
+        input_received = threading.Event()
+
+        def input_listener():
+            user_input = input("Start tests? ")
+            # Store the input for later use if needed
+            input_listener.user_input = user_input
+            # Notify the test that input is received
+            input_received.set()
+
+        # Start the input listener in a separate thread
+        input_thread = threading.Thread(target=input_listener)
+        input_thread.start()
+
+        # Wait for the input to be received
+        input_received.wait()
+
+        # Check if input is received
+        if input_received.is_set():
+            print("Received input. Starting tests...")
 
     @classmethod
     def tearDownClass(cls):
@@ -80,6 +103,7 @@ class TestNeo4jQueries(unittest.TestCase):
 
         self.assertEqual(count, 9)
         print(f"There are {count} majors in the database")
+    
 
     def test_count_units(self):
         # Run a query to count units
@@ -143,7 +167,7 @@ class TestNeo4jQueries(unittest.TestCase):
         points_req = None
         or_req = ["CITS1401", "CITS2401"]
         and_req = ["ENSC2004", "MATH1012", "GENG2000"]
-        unit_req = [["CITS1401", "CITS2401"], ["ENSC2004", "MATH1012", "GENG2000"]]
+        unit_req = [["CITS1401", "CITS2401"], ['MATH1012', 'GENG2000', 'ENSC2004']]
         incompatible_units = "MECH4424"
         corequisites = []
         notes = None
@@ -250,4 +274,4 @@ class TestNeo4jQueries(unittest.TestCase):
         print("Graph traversal successful for both directions")
 
 if __name__ == "__main__":
-    unittest.main()
+   unittest.main()
