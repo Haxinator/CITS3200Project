@@ -1,0 +1,56 @@
+fieldset { 
+    border:1px solid lightgray;
+    margin: 10px;
+}
+
+legend {
+    font-weight: 700;
+    margin-left: 1%;
+}
+
+.inputline {
+    margin-left: 2%;
+    padding-bottom: 4px;
+}
+
+select {
+    appearance: none;
+    border: 1px solid #cacaca;
+    border-radius: 0;
+    background-color: #fefefe;
+    font-family: inherit;
+    font-size: .8888888889rem;
+    font-weight: normal;
+    line-height: 1.3333;
+    color: #0a0a0a;
+    background-origin: content-box;
+    background-position: right -0.8888888889rem center;
+    background-repeat: no-repeat;
+    background-size: 9px 6px;
+    padding-right: 1.3333333333rem;
+    height: 22px !important;
+}
+
+input {
+    appearance: none;
+    border: 1px solid #cacaca;
+    border-radius: 0;
+    background-color: #fefefe;
+    font-family: inherit;
+    font-size: .8888888889rem;
+    font-weight: normal;
+    line-height: 1.3333;
+    color: #0a0a0a;
+    background-origin: content-box;
+    background-position: right -0.8888888889rem center;
+    background-repeat: no-repeat;
+    background-size: 9px 6px;
+    padding-right: 1.3333333333rem;
+}
+
+.add {
+    width: 90px !important;
+    height: 22px !important;
+    padding: 0px !important;
+    font-size: 15px !important;
+}
