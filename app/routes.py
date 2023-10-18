@@ -25,6 +25,11 @@ def getStarted():
 def staffLogin():
     return render_template('staffLogin.html', title='Staff Login')
 
+## @brief Provide database Access to staff
+@app.route('/unitUpload/')
+def unitUpload():
+    return render_template('unitUpload.html', title='DB Management')
+
 ## @brief Process user preferences and redirect to preferences page.
 # This function fetches data from the form post request, maps specialization codes
 # to their full names, and renders the preferences page with the collected data.
